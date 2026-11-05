@@ -6,6 +6,7 @@
 	 * @version 2.0.0
 	 * @author Revolution Trading Pros
 	 */
+	import { useCrmAccess } from '#lib/crm/access.svelte.js';
 	import { page } from '$app/state';
 	import { MediaQuery } from 'svelte/reactivity';
 	import IconLayoutSidebarLeftCollapse from '@tabler/icons-svelte-runes/icons/layout-sidebar-left-collapse';
@@ -81,7 +82,8 @@
 		tip = null;
 	}
 
-	const menuSections = [
+	const access = useCrmAccess();
+	const allMenuSections = [
 		{
 			title: null,
 			items: [{ icon: IconDashboard, label: 'Overview', href: '/admin' }]
@@ -147,6 +149,15 @@
 			]
 		}
 	];
+
+	const menuSections = $derived(
+		allMenuSections
+			.map((section) => ({
+				...section,
+				items: section.items.filter((item) => access.page(item.href))
+			}))
+			.filter((section) => section.items.length > 0)
+	);
 
 	function closeSidebar() {
 		props.onclose?.();
@@ -227,7 +238,11 @@
 >
 	<!-- Header -->
 	<div class="sidebar-header">
-		<a href="/admin" class="sidebar-logo" aria-label="Revolution Trading Pros admin home">
+		<a
+			href={access.global ? '/admin' : '/admin/crm'}
+			class="sidebar-logo"
+			aria-label="Revolution Trading Pros admin home"
+		>
 			<img src="/revolution-trading-pros-mark.png" alt="" width="256" height="256" />
 		</a>
 		{#if isWide.current}
@@ -404,7 +419,9 @@
 		border-radius: var(--radius-sm, 4px);
 		color: var(--admin-text-muted);
 		cursor: pointer;
-		transition: background-color 0.2s ease, color 0.2s ease;
+		transition:
+			background-color 0.2s ease,
+			color 0.2s ease;
 	}
 
 	.header-btn:hover:not(:disabled) {
@@ -488,7 +505,9 @@
 		letter-spacing: 0.01em;
 		margin-bottom: 0.25rem;
 		position: relative;
-		transition: background-color 0.2s ease, color 0.2s ease;
+		transition:
+			background-color 0.2s ease,
+			color 0.2s ease;
 	}
 
 	.nav-item::before {
@@ -597,7 +616,10 @@
 		font-size: 0.875rem;
 		letter-spacing: 0.01em;
 		cursor: pointer;
-		transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+		transition:
+			background-color 0.2s ease,
+			color 0.2s ease,
+			border-color 0.2s ease;
 	}
 
 	.exit-btn:hover {

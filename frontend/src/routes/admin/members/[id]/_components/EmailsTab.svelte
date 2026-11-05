@@ -1,71 +1,104 @@
 <script lang="ts">
-	import {
-		IconMail,
-		IconSend,
-		IconCheck,
-		IconClock,
-		IconAlertTriangle,
-		IconTrendingUp
-	} from '#lib/icons/index.js';
-	import type { EmailHistoryItem } from './helpers';
-	import { formatDateTime, getEmailStatusColor } from './helpers';
-
-	interface Props {
-		emailHistory: EmailHistoryItem[];
+	import { IconMail, IconSend } from '#lib/icons/index.js';
+	import type { MemberProfile } from '#lib/api/member-profile.js';
+	import { recordedInstant, recordedWallClock } from './profile-display.js';
+	import HistoryControls from './HistoryControls.svelte';
+	let {
+		result,
+		loading,
+		error,
+		busy = false,
+		onPage,
+		onPerPage,
+		onRefresh,
+		onSendEmail
+	}: {
+		result: MemberProfile['emails'] | null;
+		loading: boolean;
+		error: string;
+		busy?: boolean;
+		onPage: (page: number) => void;
+		onPerPage: (size: number) => void;
+		onRefresh: () => void;
 		onSendEmail: () => void;
-	}
-
-	let { emailHistory, onSendEmail }: Props = $props();
+	} = $props();
 </script>
 
-<div class="panel">
+<section class="panel" aria-label="Linked email receipts">
 	<div class="panel-header">
 		<h3>Email History</h3>
-		<button class="btn-primary small" onclick={onSendEmail}>
-			<IconSend size={16} />
-			Send Email
-		</button>
+		<button onclick={onSendEmail} disabled={busy}><IconSend size={16} />Send Email</button>
 	</div>
-	{#if emailHistory.length === 0}
-		<div class="empty-state">
-			<IconMail size={48} stroke={1} />
-			<h4>No Emails Sent</h4>
-			<p>No emails have been sent to this member yet</p>
-		</div>
-	{:else}
-		<div class="email-list">
-			{#each emailHistory as email (email.id)}
-				<div class="email-item">
-					<div class={['email-icon', getEmailStatusColor(email.status)]}>
-						<IconMail size={20} />
-					</div>
-					<div class="email-content">
-						<div class="email-subject">{email.subject}</div>
-						<div class="email-meta">
-							<span class="email-campaign">{email.campaign_type}</span>
-							<span class="email-date">{formatDateTime(email.sent_at)}</span>
-						</div>
-					</div>
-					<div class={['email-status', getEmailStatusColor(email.status)]}>
-						{#if email.status === 'opened'}
-							<IconCheck size={16} />
-							Opened
-						{:else if email.status === 'clicked'}
-							<IconTrendingUp size={16} />
-							Clicked
-						{:else if email.status === 'bounced'}
-							<IconAlertTriangle size={16} />
-							Bounced
-						{:else}
-							<IconClock size={16} />
-							Sent
-						{/if}
-					</div>
-				</div>
-			{/each}
-		</div>
-	{/if}
-</div>
+	<div class="content">
+		<p class="hint">
+			Provider acceptance requires a stored acknowledgement. Queued or unknown outcomes do not
+			establish delivery; recorded opens and clicks can include automated activity.
+		</p>
+		{#if result && !loading && !error}<p class="hint">{result.coverage} {result.observations}</p>
+			{#if result.emails.length === 0}<div class="empty-state">
+					<IconMail size={48} />
+					<h4>No linked email receipts on this page</h4>
+					<p>Absence of linked receipts does not establish that no email was sent.</p>
+				</div>{:else}<div class="rows">
+					{#each result.emails as email (email.id)}<article class="card">
+							<div class="card-header">
+								<h4>{email.subject}</h4>
+								<span class="status">{email.outcome}</span>
+							</div>
+							<p>{email.recipient}</p>
+							<dl>
+								<div>
+									<dt>Recorded status</dt>
+									<dd>{email.recorded_status}</dd>
+								</div>
+								<div>
+									<dt>Provider</dt>
+									<dd>{email.provider ?? 'Not recorded'}</dd>
+								</div>
+								<div>
+									<dt>Provider reference</dt>
+									<dd>{email.provider_message_id ?? 'Not recorded'}</dd>
+								</div>
+								<div>
+									<dt>Provider acceptance time</dt>
+									<dd>{recordedInstant(email.sent_at)}</dd>
+								</div>
+								<div>
+									<dt>Queued</dt>
+									<dd>{recordedInstant(email.queued_at)}</dd>
+								</div>
+								<div>
+									<dt>Historical record created</dt>
+									<dd>{recordedWallClock(email.created_at)}</dd>
+								</div>
+								<div>
+									<dt>Stored open signal</dt>
+									<dd>{recordedWallClock(email.opened_at)}</dd>
+								</div>
+								<div>
+									<dt>Stored click signal</dt>
+									<dd>{recordedWallClock(email.clicked_at)}</dd>
+								</div>
+								<div>
+									<dt>Stored bounce signal</dt>
+									<dd>{recordedWallClock(email.bounced_at)}</dd>
+								</div>
+							</dl>
+							{#if email.error}<p class="error">{email.error}</p>{/if}
+						</article>{/each}
+				</div>{/if}{/if}
+	</div>
+	<HistoryControls
+		label="email receipts"
+		pagination={result?.pagination ?? null}
+		{loading}
+		{error}
+		{busy}
+		{onPage}
+		{onPerPage}
+		{onRefresh}
+	/>
+</section>
 
 <style>
 	.panel {
@@ -74,106 +107,91 @@
 		border-radius: 16px;
 		overflow: hidden;
 	}
-
 	.panel-header {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
+		gap: 1rem;
 		padding: 1.25rem 1.5rem;
 		border-bottom: 1px solid var(--border-muted, #21262d);
 	}
-
-	.panel-header h3 {
+	h3 {
 		font-size: 1rem;
-		font-weight: 600;
-		color: var(--text-primary, #f0f6fc);
 		margin: 0;
-	}
-
-	.empty-state {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		padding: 4rem 2rem;
-		color: var(--text-tertiary, #6e7681);
-		text-align: center;
-	}
-
-	.empty-state h4 {
 		color: var(--text-primary, #f0f6fc);
-		margin: 1rem 0 0.5rem;
 	}
-
-	.email-list {
-		padding: 1rem;
-	}
-
-	.email-item {
-		display: flex;
-		align-items: center;
-		gap: 1rem;
-		padding: 1rem;
-		border-bottom: 1px solid var(--border-muted, #21262d);
-	}
-
-	.email-item:last-child {
-		border-bottom: none;
-	}
-
-	.email-icon {
-		width: 40px;
-		height: 40px;
-		border-radius: 10px;
-		background: rgba(230, 184, 0, 0.1);
-		display: flex;
-		align-items: center;
-		justify-content: center;
-	}
-
-	.email-content {
-		flex: 1;
-	}
-
-	.email-subject {
-		font-size: 0.875rem;
-		color: var(--text-primary, #f0f6fc);
-		font-weight: 500;
-	}
-
-	.email-meta {
-		display: flex;
-		gap: 1rem;
-		margin-top: 0.25rem;
-		font-size: 0.75rem;
-		color: var(--text-tertiary, #6e7681);
-	}
-
-	.email-status {
-		display: flex;
-		align-items: center;
-		gap: 0.375rem;
-		font-size: 0.75rem;
-		font-weight: 500;
-	}
-
-	.btn-primary {
+	button {
 		display: inline-flex;
 		align-items: center;
+		justify-content: center;
 		gap: 0.5rem;
-		padding: 0.75rem 1.25rem;
-		border-radius: 10px;
-		font-weight: 600;
+		padding: 0.6rem 0.9rem;
+		border: 1px solid var(--border-default, #30363d);
+		border-radius: 9px;
 		cursor: pointer;
-		transition: all 0.2s;
-		border: none;
-		font-size: 0.875rem;
-		background: var(--primary-500);
-		color: var(--bg-base);
+		background: var(--bg-surface, #1c2128);
+		color: var(--text-primary, #f0f6fc);
 	}
-
-	.btn-primary.small {
-		padding: 0.5rem 0.875rem;
-		font-size: 0.8125rem;
+	button:disabled {
+		opacity: 0.5;
+		cursor: default;
+	}
+	.content {
+		padding: 1.25rem 1.5rem;
+	}
+	.hint,
+	.empty-state {
+		color: var(--text-secondary, #8b949e);
+		line-height: 1.6;
+	}
+	.empty-state {
+		padding: 2rem;
+		text-align: center;
+	}
+	.rows {
+		display: grid;
+		gap: 1rem;
+	}
+	.card {
+		padding: 1rem;
+		border: 1px solid var(--border-muted, #21262d);
+		border-radius: 12px;
+		background: var(--bg-base, #0d1117);
+	}
+	.card-header {
+		display: flex;
+		justify-content: space-between;
+		gap: 0.75rem;
+		align-items: center;
+		flex-wrap: wrap;
+	}
+	h4 {
+		margin: 0 0 0.5rem;
+		color: var(--text-primary, #f0f6fc);
+	}
+	dl {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+		gap: 1rem;
+	}
+	dt {
+		font-size: 0.75rem;
+		color: var(--text-secondary, #8b949e);
+	}
+	dd {
+		margin: 0.35rem 0 0;
+		overflow-wrap: anywhere;
+	}
+	.status {
+		border: 1px solid var(--border-default, #30363d);
+		border-radius: 99px;
+		padding: 0.25rem 0.65rem;
+		font-size: 0.8rem;
+	}
+	.error {
+		color: var(--error-emphasis, #f85149);
+	}
+	p {
+		overflow-wrap: anywhere;
 	}
 </style>

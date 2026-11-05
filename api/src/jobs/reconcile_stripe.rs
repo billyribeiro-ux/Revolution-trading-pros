@@ -239,7 +239,7 @@ pub async fn run_once(state: &AppState) -> anyhow::Result<usize> {
 
 async fn fix_missing_in_stripe(state: &AppState, row_id: i64, sub_id: &str) -> Value {
     let result = sqlx::query(
-        "UPDATE user_memberships SET status = 'cancelled', updated_at = NOW() WHERE id = $1",
+        "UPDATE user_memberships SET status = 'cancelled', updated_at = (NOW() AT TIME ZONE 'UTC') WHERE id = $1",
     )
     .bind(row_id)
     .execute(&state.db.pool)
@@ -272,7 +272,7 @@ async fn fix_status(
     after: &str,
 ) -> Value {
     let result =
-        sqlx::query("UPDATE user_memberships SET status = $1, updated_at = NOW() WHERE id = $2")
+        sqlx::query("UPDATE user_memberships SET status = $1, updated_at = (NOW() AT TIME ZONE 'UTC') WHERE id = $2")
             .bind(after)
             .bind(row_id)
             .execute(&state.db.pool)
@@ -308,7 +308,7 @@ async fn fix_cancel_at_period_end(
     after: bool,
 ) -> Value {
     let result = sqlx::query(
-        "UPDATE user_memberships SET cancel_at_period_end = $1, updated_at = NOW() WHERE id = $2",
+        "UPDATE user_memberships SET cancel_at_period_end = $1, updated_at = (NOW() AT TIME ZONE 'UTC') WHERE id = $2",
     )
     .bind(after)
     .bind(row_id)
@@ -345,7 +345,7 @@ async fn fix_period_end(
     after: NaiveDateTime,
 ) -> Value {
     let result = sqlx::query(
-        "UPDATE user_memberships SET current_period_end = $1, updated_at = NOW() WHERE id = $2",
+        "UPDATE user_memberships SET current_period_end = $1, updated_at = (NOW() AT TIME ZONE 'UTC') WHERE id = $2",
     )
     .bind(after)
     .bind(row_id)

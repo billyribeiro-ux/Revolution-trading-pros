@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { useCrmAccess } from '#lib/crm/access.svelte.js';
+	const access = useCrmAccess();
 	import { onMount } from 'svelte';
 	import {
 		IconMail,
@@ -70,7 +72,9 @@
 
 		try {
 			const filters: SequenceFilters = {
-				search: searchQuery || undefined, page: currentPage, per_page: 20,
+				search: searchQuery || undefined,
+				page: currentPage,
+				per_page: 20,
 				status: selectedStatus !== 'all' ? selectedStatus : undefined
 			};
 
@@ -92,7 +96,8 @@
 				totalSent: sequences.reduce((sum, s) => sum + s.total_sent, 0)
 			};
 		} catch (err) {
-			if (generation === loadGeneration) error = err instanceof Error ? err.message : 'Failed to load sequences';
+			if (generation === loadGeneration)
+				error = err instanceof Error ? err.message : 'Failed to load sequences';
 		} finally {
 			if (generation === loadGeneration) isLoading = false;
 		}
@@ -106,7 +111,9 @@
 	}
 
 	function scheduleSequencesReload() {
-		loadGeneration += 1; currentPage = 1; isLoading = true;
+		loadGeneration += 1;
+		currentPage = 1;
+		isLoading = true;
 		if (searchTimeout) {
 			clearTimeout(searchTimeout);
 		}
@@ -129,7 +136,9 @@
 	}
 
 	function handleStatusChange(value: SequenceStatus | 'all') {
-		selectedStatus = value; currentPage = 1; loadGeneration += 1;
+		selectedStatus = value;
+		currentPage = 1;
+		loadGeneration += 1;
 
 		if (searchTimeout) {
 			clearTimeout(searchTimeout);
@@ -142,6 +151,10 @@
 	}
 
 	async function duplicateSequence(id: string) {
+		if (!access.can('POST', '/sequences/{id}/duplicate')) {
+			error = 'Your role cannot duplicate sequences.';
+			return;
+		}
 		if (actionInProgress) return;
 		actionInProgress = id;
 		try {
@@ -161,6 +174,10 @@
 	}
 
 	async function confirmDeleteSequence() {
+		if (!access.can('DELETE', '/sequences/{id}')) {
+			error = 'Your role cannot delete sequences.';
+			return;
+		}
 		if (!pendingDeleteId || actionInProgress) return;
 		showDeleteModal = false;
 		const id = pendingDeleteId;
@@ -178,11 +195,23 @@
 	}
 
 	async function toggleSequenceStatus(sequence: EmailSequence) {
+		if (
+			!access.can(
+				'POST',
+				sequence.status === 'active' ? '/sequences/{id}/pause' : '/sequences/{id}/activate'
+			)
+		) {
+			error = 'Sequence execution requires manage permission.';
+			return;
+		}
 		if (actionInProgress) return;
 		actionInProgress = sequence.id;
 		try {
 			const newStatus: SequenceStatus = sequence.status === 'active' ? 'paused' : 'active';
-			await crmAPI.updateSequence(sequence.id, { status: newStatus, expected_version: sequence.authoring_version });
+			await crmAPI.updateSequence(sequence.id, {
+				status: newStatus,
+				expected_version: sequence.authoring_version
+			});
 			await loadSequences();
 		} catch (err) {
 			error =
@@ -238,7 +267,8 @@
 		isInitialized = true;
 
 		return () => {
-			loadGeneration += 1; isInitialized = false;
+			loadGeneration += 1;
+			isInitialized = false;
 			if (searchTimeout) {
 				clearTimeout(searchTimeout);
 			}
@@ -264,11 +294,7 @@
 
 <!-- Handle escape key for modal -->
 
-
-
 <div class="admin-crm-sequences">
-	
-
 	<div class="admin-page-container">
 		<!-- Header -->
 		<header class="page-header">
@@ -278,10 +304,13 @@
 				<button class="btn-refresh" onclick={() => loadSequences()} disabled={isLoading}>
 					<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
 				</button>
-				<a href="/admin/crm/sequences/new" class="btn-primary">
-					<IconPlus size={18} />
-					New Sequence
-				</a>
+				{#if access.page('/admin/crm/sequences/new')}<a
+						href="/admin/crm/sequences/new"
+						class="btn-primary"
+					>
+						<IconPlus size={18} />
+						New Sequence
+					</a>{/if}
 			</div>
 		</header>
 
@@ -329,7 +358,8 @@
 		<div class="filters-bar">
 			<div class="search-box">
 				<IconSearch size={18} />
-				<input autocomplete="off"
+				<input
+					autocomplete="off"
 					id="page-searchquery"
 					name="page-searchquery"
 					type="text"
@@ -344,7 +374,9 @@
 					</button>
 				{/if}
 			</div>
-			<select id="sequences-selectedstatus" name="sequences_selectedstatus"
+			<select
+				id="sequences-selectedstatus"
+				name="sequences_selectedstatus"
 				class="filter-select"
 				bind:value={selectedStatus}
 				onchange={(event) =>
@@ -378,10 +410,13 @@
 				<IconMail size={48} />
 				<h3>No sequences found</h3>
 				<p>Create your first email sequence to start automating your campaigns</p>
-				<a href="/admin/crm/sequences/new" class="btn-primary">
-					<IconPlus size={18} />
-					Create Sequence
-				</a>
+				{#if access.page('/admin/crm/sequences/new')}<a
+						href="/admin/crm/sequences/new"
+						class="btn-primary"
+					>
+						<IconPlus size={18} />
+						Create Sequence
+					</a>{/if}
 			</div>
 		{:else}
 			<div class={['table-container', { loading: isLoading }]}>
@@ -410,9 +445,16 @@
 											<span class="sequence-title">{sequence.title}</span>
 											<span class="sequence-meta">
 												<IconClock size={12} />
-												{sequence.emails_count === null ? 'Emails need review' : `${sequence.emails_count} emails`}
+												{sequence.emails_count === null
+													? 'Emails need review'
+													: `${sequence.emails_count} emails`}
 											</span>
-											{#if sequence.trigger_error}<span class="sequence-meta">Trigger needs review. <a href="/admin/crm/sequences/{sequence.id}/edit">Review trigger settings</a></span>{/if}
+											{#if sequence.trigger_error}<span class="sequence-meta"
+													>Trigger needs review. {#if access.page(`/admin/crm/sequences/${sequence.id}/edit`)}<a
+															href="/admin/crm/sequences/{sequence.id}/edit"
+															>Review trigger settings</a
+														>{/if}</span
+												>{/if}
 										</div>
 									</div>
 								</td>
@@ -442,7 +484,13 @@
 												class="btn-icon"
 												title={sequence.status === 'active' ? 'Pause' : 'Activate'}
 												onclick={() => toggleSequenceStatus(sequence)}
-												disabled={actionInProgress !== null}
+												disabled={actionInProgress !== null ||
+													!access.can(
+														'POST',
+														sequence.status === 'active'
+															? '/sequences/{id}/pause'
+															: '/sequences/{id}/activate'
+													)}
 											>
 												{#if sequence.status === 'active'}
 													<IconPlayerPause size={16} />
@@ -458,28 +506,37 @@
 										>
 											<IconChartBar size={16} />
 										</a>
-										<a
-											href="/admin/crm/sequences/{sequence.id}/subscribers"
-											class="btn-icon"
-											title="View Subscribers"
-										>
-											<IconUsers size={16} />
-										</a>
+										{#if access.page(`/admin/crm/sequences/${sequence.id}/subscribers`)}<a
+												href="/admin/crm/sequences/{sequence.id}/subscribers"
+												class="btn-icon"
+												title="View Subscribers"
+											>
+												<IconUsers size={16} />
+											</a>{/if}
 										<button
 											class="btn-icon"
 											title="Send Test Email"
-											onclick={() => { testSequenceId = sequence.id; }}
+											disabled={!access.can('POST', '/sequences/{id}/test') ||
+												!access.can('GET', '/sequences/{id}/tests')}
+											onclick={() => {
+												testSequenceId = sequence.id;
+											}}
 										>
 											<IconSend size={16} />
 										</button>
-										<a href="/admin/crm/sequences/{sequence.id}/edit" class="btn-icon" title="Edit">
-											<IconEdit size={16} />
-										</a>
+										{#if access.page(`/admin/crm/sequences/${sequence.id}/edit`)}<a
+												href="/admin/crm/sequences/{sequence.id}/edit"
+												class="btn-icon"
+												title="Edit"
+											>
+												<IconEdit size={16} />
+											</a>{/if}
 										<button
 											class="btn-icon"
 											title="Duplicate"
 											onclick={() => duplicateSequence(sequence.id)}
-											disabled={actionInProgress !== null}
+											disabled={actionInProgress !== null ||
+												!access.can('POST', '/sequences/{id}/duplicate')}
 										>
 											<IconCopy size={16} />
 										</button>
@@ -487,7 +544,8 @@
 											class="btn-icon danger"
 											title="Delete"
 											onclick={() => deleteSequence(sequence.id)}
-											disabled={actionInProgress !== null}
+											disabled={actionInProgress !== null ||
+												!access.can('DELETE', '/sequences/{id}')}
 										>
 											<IconTrash size={16} />
 										</button>
@@ -499,12 +557,24 @@
 				</table>
 			</div>
 		{/if}
-	<nav aria-label="Sequence pages"><button onclick={() => changePage(-1)} disabled={currentPage <= 1 || isLoading}>Previous page</button><span> Page {currentPage} of {totalPages} </span><button onclick={() => changePage(1)} disabled={currentPage >= totalPages || isLoading}>Next page</button></nav>
+		<nav aria-label="Sequence pages">
+			<button onclick={() => changePage(-1)} disabled={currentPage <= 1 || isLoading}
+				>Previous page</button
+			><span> Page {currentPage} of {totalPages} </span><button
+				onclick={() => changePage(1)}
+				disabled={currentPage >= totalPages || isLoading}>Next page</button
+			>
+		</nav>
 	</div>
 	<!-- End admin-page-container -->
 </div>
 
-{#if testSequenceId}{#key testSequenceId}<SequenceTestDialog sequenceId={testSequenceId} onclose={() => { testSequenceId = null; }} />{/key}{/if}
+{#if testSequenceId}{#key testSequenceId}<SequenceTestDialog
+			sequenceId={testSequenceId}
+			onclose={() => {
+				testSequenceId = null;
+			}}
+		/>{/key}{/if}
 
 <ConfirmationModal
 	isOpen={showDeleteModal}
@@ -607,7 +677,6 @@
 		transition: all 0.2s;
 		text-decoration: none;
 	}
-
 
 	.btn-primary:disabled {
 		opacity: 0.5;
@@ -1011,5 +1080,4 @@
 		animation: spin 1s linear infinite;
 		margin-bottom: 1rem;
 	}
-
 </style>

@@ -1,237 +1,163 @@
-//! Registration handler — POST /api/auth/register.
-//!
-//! Extracted from `auth.rs` during R12-B as a pure structural move.
-
+//! Create one ordinary account and one current recipient-bound verification capability.
+use super::helpers::{ClientAddr, client_ip, enforce_ip_rate_limit_strict};
+use crate::{
+    AppState,
+    services::{account_links, crm_logs},
+    utils,
+};
 use axum::{
     Json,
     extract::State,
     http::{HeaderMap, StatusCode},
 };
-use serde_json::json;
-
-use super::helpers::{ClientAddr, client_ip, enforce_ip_rate_limit_strict};
-use crate::{
-    AppState,
-    // FIX-2026-04-26 (Priority 2): pull in ValidatedJson extractor for hot-path handlers.
-    middleware::validated_json::ValidatedJson,
-    models::{CreateUser, User},
-    utils::{generate_verification_token, hash_password_async, validate_password},
-};
-
-/// Registration response (no tokens - must verify email first)
-#[derive(Debug, serde::Serialize)]
-pub(super) struct RegisterResponse {
-    message: String,
+use serde::Deserialize;
+use serde_json::{Value, json};
+use validator::ValidateEmail;
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+pub(super) struct RegisterInput {
+    name: String,
     email: String,
-    requires_verification: bool,
+    password: String,
+    password_confirmation: Option<String>,
+    terms_accepted: Option<bool>,
+    marketing_consent: Option<bool>,
 }
-
-/// Register a new user
-/// POST /api/auth/register
-// FIX-2026-04-26 (Priority 2): migrated Json<CreateUser> -> ValidatedJson<CreateUser>.
-// FIX-2026-04-26 (Priority 4): added HeaderMap + per-IP rate limit (5 / 15min).
-// Original signature: async fn register(State(state): State<AppState>, Json(input): Json<CreateUser>)
+fn storage(error: sqlx::Error) -> (StatusCode, Json<Value>) {
+    if error
+        .as_database_error()
+        .is_some_and(|e| e.is_unique_violation())
+    {
+        return (
+            StatusCode::UNPROCESSABLE_ENTITY,
+            Json(
+                json!({"message":"Validation failed","errors":{"email":["Email already registered"]}}),
+            ),
+        );
+    }
+    tracing::error!(%error,"Registration persistence failed");
+    (
+        StatusCode::SERVICE_UNAVAILABLE,
+        Json(json!({"error":"Registration is unavailable"})),
+    )
+}
+fn invalid(message: &str) -> (StatusCode, Json<Value>) {
+    (StatusCode::BAD_REQUEST, Json(json!({"error":message})))
+}
 pub(super) async fn register(
     State(state): State<AppState>,
     peer: ClientAddr,
     headers: HeaderMap,
-    ValidatedJson(input): ValidatedJson<CreateUser>,
-) -> Result<Json<RegisterResponse>, (StatusCode, Json<serde_json::Value>)> {
-    // FIX-2026-04-26 (Priority 4): per-IP rate limit BEFORE Argon2 hashing
-    // (otherwise an attacker can DOS by burning CPU on hash attempts).
-    // P1-3 (2026-05-17): IP is now spoof-resistant (trusted-proxy aware).
+    Json(input): Json<RegisterInput>,
+) -> Result<Json<Value>, (StatusCode, Json<Value>)> {
     let ip = client_ip(peer.0, &headers, &state.config.trusted_proxy_cidrs);
     enforce_ip_rate_limit_strict(&state, &ip, "register", 5, 900).await?;
-
-    // Validate email format
-    if !input.email.contains('@') || !input.email.contains('.') {
+    let name = input.name.trim();
+    let email = input.email.trim().to_lowercase();
+    if name.is_empty()
+        || name.chars().count() > 200
+        || name.chars().any(char::is_control)
+        || email.len() > 254
+        || !email.validate_email()
+    {
+        return Err(invalid("Provide a valid bounded name and email"));
+    }
+    if input
+        .password_confirmation
+        .as_ref()
+        .is_some_and(|confirm| confirm != &input.password)
+    {
+        return Err(invalid("Passwords do not match"));
+    }
+    utils::validate_password(&input.password).map_err(invalid)?;
+    let exists: bool =
+        sqlx::query_scalar("SELECT EXISTS(SELECT 1 FROM users WHERE LOWER(email)=$1)")
+            .bind(&email)
+            .fetch_one(&state.db.pool)
+            .await
+            .map_err(storage)?;
+    if exists {
         return Err((
             StatusCode::UNPROCESSABLE_ENTITY,
-            Json(json!({
-                "message": "Validation failed",
-                "errors": {
-                    "email": ["Invalid email format"]
-                }
-            })),
+            Json(
+                json!({"message":"Validation failed","errors":{"email":["Email already registered"]}}),
+            ),
         ));
     }
-
-    // ICT L11+ Security: Validate password strength with hardened rules
-    if let Err(password_error) = validate_password(&input.password) {
-        return Err((
-            StatusCode::UNPROCESSABLE_ENTITY,
-            Json(json!({
-                "message": "Validation failed",
-                "errors": {
-                    "password": [password_error]
-                }
-            })),
-        ));
-    }
-
-    // Check if email exists
-    let existing: Option<User> = sqlx::query_as(
-        "SELECT id, email, password_hash, name, role, email_verified_at, avatar_url, mfa_enabled, created_at, updated_at FROM users WHERE email = $1"
-    )
-        .bind(&input.email)
-        .fetch_optional(&state.db.pool)
+    let hash = utils::hash_password_async(&input.password)
         .await
-        .map_err(|e| {
-            tracing::error!("Database error: {}", e);
+        .map_err(|_| {
             (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Json(json!({"error": "Database error"})),
+                StatusCode::SERVICE_UNAVAILABLE,
+                Json(json!({"error":"Password hashing is unavailable"})),
             )
         })?;
-
-    if existing.is_some() {
-        return Err((
-            StatusCode::UNPROCESSABLE_ENTITY,
-            Json(json!({
-                "message": "Validation failed",
-                "errors": {
-                    "email": ["Email already registered"]
-                }
-            })),
-        ));
-    }
-
-    // Hash password
-    let password_hash = hash_password_async(&input.password).await.map_err(|e| {
-        tracing::error!("Password hashing error: {}", e);
-        (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            Json(json!({"error": "Password hashing failed"})),
-        )
-    })?;
-
-    // FIX-2026-04-26 (Priority 5): wrap user-insert + verification-token-insert in a
-    // single Postgres transaction. Previously a crash between the two writes (or a
-    // unique-violation on retry) yielded an account that could not self-verify.
-    // Reference pattern: routes/user.rs::update_profile.
-    let mut tx = state.db.pool.begin().await.map_err(|e| {
-        tracing::error!("Failed to begin transaction: {}", e);
-        (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            Json(json!({"error": "Database error"})),
-        )
-    })?;
-
-    // Create user with email_verified_at = NULL (unverified)
-    // Original pool reference: .fetch_one(&state.db.pool)
-    let user: User = sqlx::query_as(
-        r"
-        INSERT INTO users (email, password_hash, name, role, email_verified_at, created_at, updated_at)
-        VALUES ($1, $2, $3, 'user', NULL, NOW(), NOW())
-        RETURNING id, email, password_hash, name, role, email_verified_at, avatar_url, mfa_enabled, created_at, updated_at
-        ",
+    let mut tx = state.db.pool.begin().await.map_err(storage)?;
+    let metadata = json!({"registration_preferences":{"terms_accepted":input.terms_accepted,"marketing_consent_requested":input.marketing_consent}});
+    let id:i64=sqlx::query_scalar("INSERT INTO users(name,email,password_hash,role,is_active,email_verified_at,metadata,created_at,updated_at) VALUES($1,$2,$3,'user',true,NULL,$4,NOW() AT TIME ZONE 'UTC',NOW() AT TIME ZONE 'UTC') RETURNING id").bind(name).bind(&email).bind(hash).bind(metadata).fetch_one(&mut *tx).await.map_err(storage)?;
+    let (raw, recipient, actual_name) =
+        account_links::verification_on(&mut tx, id)
+            .await
+            .map_err(|error| {
+                (
+                    StatusCode::from_bytes(error.status.as_bytes())
+                        .unwrap_or(StatusCode::INTERNAL_SERVER_ERROR),
+                    Json(json!({"error":error.message})),
+                )
+            })?;
+    let context = json!({"operation":"account_registered","member_id":id,"actor_id":null,"source":"public_registration","marketing_consent_requested":input.marketing_consent,"description":"Account registered; email ownership is pending"});
+    sqlx::query("INSERT INTO user_activity_log(user_id,action,entity_type,entity_id,details,created_at) VALUES($1,'account_registered','member_account',$1,$2,NOW())").bind(id).bind(&context).execute(&mut *tx).await.map_err(storage)?;
+    crm_logs::record(
+        &mut tx,
+        "info",
+        "system",
+        "Account registered",
+        context,
+        None,
     )
-    .bind(&input.email)
-    .bind(&password_hash)
-    .bind(&input.name)
-    .fetch_one(&mut *tx)
     .await
-    .map_err(|e| {
-        tracing::error!("User creation error: {}", e);
-        (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            Json(json!({"error": "Failed to create user"})),
-        )
-    })?;
-
-    // Generate verification token
-    let (raw_token, hashed_token) = generate_verification_token();
-
-    // FIX-L-2 (2026-04-29): defensively delete any pre-existing verification
-    // tokens for this user before inserting the new one. Matches the
-    // resend-verification handler's pattern (auth.rs:537). The
-    // email-already-registered check at line 196 makes a real collision
-    // unreachable today, but this protects against a future code path that
-    // creates a user via a different route and then issues a verification
-    // email. Idempotent — DELETE of zero rows is a no-op.
-    sqlx::query("DELETE FROM email_verification_tokens WHERE user_id = $1")
-        .bind(user.id)
-        .execute(&mut *tx)
-        .await
-        .ok();
-
-    // Store verification token (expires in 24 hours)
-    sqlx::query(
-        r"
-        INSERT INTO email_verification_tokens (user_id, token, expires_at)
-        VALUES ($1, $2, NOW() + INTERVAL '24 hours')
-        ",
-    )
-    .bind(user.id)
-    .bind(&hashed_token)
-    .execute(&mut *tx)
-    .await
-    .map_err(|e| {
-        tracing::error!("Failed to create verification token: {}", e);
-        (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            Json(json!({"error": "Failed to create verification token"})),
-        )
-    })?;
-
-    // FIX-2026-04-26 (Priority 5): commit BEFORE any external HTTP calls (email send).
-    tx.commit().await.map_err(|e| {
-        tracing::error!("Failed to commit registration transaction: {}", e);
-        (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            Json(json!({"error": "Database error"})),
-        )
-    })?;
-
-    // Batch 6: send welcome + verification via send_transactional.
-    // Best-effort — don't fail registration if email is down; the user
-    // can request a resend. The email_logs row provides retry visibility.
-    let verification_link = format!(
-        "{}/verify-email?token={}",
-        state.config.app_url.trim_end_matches('/'),
-        raw_token
-    );
-    let _ = state
+    .map_err(storage)?;
+    tx.commit().await.map_err(storage)?;
+    let welcome = state
         .services
         .email
-        .send_transactional(
+        .send_transactional_linked(
             &state.db.pool,
-            &user.email,
+            id,
+            &recipient,
             "welcome",
-            json!({
-                "name": user.name,
-                "app_url": state.config.app_url.clone(),
-            }),
+            json!({"name":actual_name,"app_url":state.config.app_url}),
         )
         .await;
-    let _ = state
+    if welcome.is_err() {
+        tracing::warn!(
+            user_id = id,
+            "Registration welcome was not accepted; linked receipt retains its actual state"
+        )
+    }
+    let link = format!(
+        "{}/verify-email?token={raw}",
+        state.config.app_url.trim_end_matches('/')
+    );
+    if state
         .services
         .email
-        .send_transactional(
+        .send_transactional_linked(
             &state.db.pool,
-            &user.email,
+            id,
+            &recipient,
             "email-verification",
-            json!({
-                "name": user.name,
-                "verification_link": verification_link,
-                "expires_in_hours": 24,
-            }),
+            json!({"name":actual_name,"verification_link":link,"expires_in_hours":24}),
         )
-        .await;
-
-    tracing::info!(
-        target: "security_audit",
-        event = "user_registered",
-        user_id = %user.id,
-        verification_required = true,
-        "ICT 11+ AUDIT: User registered - pending email verification"
-    );
-
-    // Return success without tokens - user must verify email first
-    Ok(Json(RegisterResponse {
-        message: "Registration successful! Please check your email to verify your account."
-            .to_string(),
-        email: user.email,
-        requires_verification: true,
-    }))
+        .await
+        .is_err()
+    {
+        tracing::warn!(
+            user_id = id,
+            "Registration verification was not accepted; linked receipt retains its actual state"
+        )
+    }
+    Ok(Json(
+        json!({"message":"Registration created. Email verification is required; check your mailbox or request a new verification link.","email":recipient,"requires_verification":true}),
+    ))
 }

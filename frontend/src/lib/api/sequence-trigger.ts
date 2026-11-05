@@ -1,3 +1,5 @@
+import { assertCrmClientRequest } from '#lib/crm/request-gate.js';
+import { notifyCrmDenial } from '#lib/crm/denial.js';
 import { sequenceId, sequenceEmailId } from './email-sequence-catalog.js';
 export interface SequenceTriggerRecord {
 	id: string;
@@ -82,11 +84,13 @@ export function sequenceTriggerHistory(value: unknown, id: string) {
 export async function getSequenceTriggerHistory(id: string, page = 1) {
 	id = sequenceId(id);
 	count(page, 1);
+	assertCrmClientRequest(`/api/admin/crm/sequences/${id}/triggers?page=${page}&per_page=20`);
 	const response = await fetch(`/api/admin/crm/sequences/${id}/triggers?page=${page}&per_page=20`, {
 		credentials: 'include',
 		cache: 'no-store'
 	});
 	const value: unknown = await response.json().catch(() => null);
+	notifyCrmDenial(response.status);
 	if (!response.ok) {
 		const row = value && typeof value === 'object' ? (value as Record<string, unknown>) : {};
 		throw new Error(

@@ -12,14 +12,15 @@
 		onRefresh: () => void;
 		notes: Note[];
 		onAddNote: () => void;
+		canAddNote: boolean;
 	}
 
-	let { notes, onAddNote, error, loading, meta, onPage, onRefresh }: Props = $props();
+	let { notes, onAddNote, canAddNote, error, loading, meta, onPage, onRefresh }: Props = $props();
 </script>
 
 <div class="notes-section">
 	<div class="notes-header">
-		<button class="btn-primary" onclick={onAddNote}>
+		<button class="btn-primary" onclick={onAddNote} disabled={!canAddNote}>
 			<IconPlus size={18} />
 			Add Note
 		</button>

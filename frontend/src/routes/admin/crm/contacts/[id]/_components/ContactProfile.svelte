@@ -2,7 +2,8 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { crmAPI } from '#lib/api/crm.js';
-	import { emailApi } from '#lib/api/email.js';
+	import { getCrmNativeTemplatePicker } from '#lib/api/crm-native-template-picker.js';
+	import { useCrmAccess } from '#lib/crm/access.svelte.js';
 	import { contactNumericId, contactMessageActivity } from '#lib/api/crm-contact-contract.js';
 	import { apiErrorMessage } from '#lib/utils/api-error-message.js';
 	import type {
@@ -28,6 +29,28 @@
 	import AddNoteModal from './AddNoteModal.svelte';
 	import SendEmailModal from './SendEmailModal.svelte';
 	let { contactId, back = '/admin/crm' }: { contactId: string; back?: string } = $props();
+	const access = useCrmAccess();
+	const denied = 'Your current CRM permissions do not allow this operation.';
+	const rights = $derived({
+		contact: access.can('GET', '/contacts/{id}'),
+		timeline: access.can('GET', '/contacts/{id}/timeline'),
+		notes: access.can('GET', '/contacts/{id}/notes'),
+		emails: access.can('GET', '/contacts/{id}/emails'),
+		tags: access.can('GET', '/contacts/{id}/tags'),
+		lists: access.can('GET', '/contacts/{id}/lists'),
+		edit: access.can('PUT', '/contacts/{id}'),
+		delete: access.can('DELETE', '/contacts/{id}'),
+		recalculate: access.can('POST', '/contacts/{id}/recalculate-score'),
+		note: access.can('POST', '/contacts/{id}/notes'),
+		send: access.can('POST', '/contacts/{id}/send-email'),
+		templates: access.can('GET', '/contacts/native-templates'),
+		tagOptions: access.can('GET', '/imports/options', { kind: 'tags' }),
+		listOptions: access.can('GET', '/imports/options', { kind: 'lists' }),
+		addTag: access.can('POST', '/contacts/{id}/tags'),
+		removeTag: access.can('DELETE', '/contacts/{id}/tags/{tag}'),
+		addList: access.can('POST', '/contacts/{id}/lists'),
+		removeList: access.can('DELETE', '/contacts/{id}/lists/{list}')
+	});
 	let contact = $state<ContactRecord | null>(null),
 		loading = $state(true),
 		error = $state(''),
@@ -89,6 +112,7 @@
 	const message = (cause: unknown) =>
 		apiErrorMessage(cause, 'The contact service could not confirm the operation');
 	async function loadContact() {
+		if (!rights.contact) { contact = null; loading = false; error = denied; return; }
 		const generation = ++generations.contact;
 		loading = true;
 		error = '';
@@ -102,6 +126,7 @@
 		}
 	}
 	async function loadTimeline(page = 1) {
+		if (!rights.timeline) { timeline = null; timelineLoading = false; timelineError = denied; return; }
 		const generation = ++generations.timeline;
 		timelineLoading = true;
 		timelineError = '';
@@ -115,6 +140,7 @@
 		}
 	}
 	async function loadNotes(page = 1) {
+		if (!rights.notes) { notes = null; notesLoading = false; notesError = denied; return; }
 		const generation = ++generations.notes;
 		notesLoading = true;
 		notesError = '';
@@ -128,6 +154,7 @@
 		}
 	}
 	async function loadEmails(page = 1) {
+		if (!rights.emails) { emails = null; emailsLoading = false; emailsError = denied; return; }
 		const generation = ++generations.emails;
 		emailsLoading = true;
 		emailsError = '';
@@ -141,6 +168,7 @@
 		}
 	}
 	async function loadTags() {
+		if (!rights.tags) { tags = []; tagsLoading = false; tagsError = denied; return; }
 		const generation = ++generations.tags;
 		tagsLoading = true;
 		tagsError = '';
@@ -154,6 +182,7 @@
 		}
 	}
 	async function loadLists(page = 1) {
+		if (!rights.lists) { lists = null; listsLoading = false; listsError = denied; return; }
 		const generation = ++generations.lists;
 		listsLoading = true;
 		listsError = '';
@@ -178,6 +207,7 @@
 	}
 	async function recalculate() {
 		if (busy || recalculating) return;
+		if (!rights.recalculate) { notice = denied; return; }
 		recalculating = true;
 		notice = '';
 		try {
@@ -194,6 +224,7 @@
 	}
 	async function loadOptions(page = 1) {
 		if (!picker) return;
+		if (!(picker === 'tag' ? rights.tagOptions : rights.listOptions)) { options = null; optionLoading = false; optionError = denied; return; }
 		const kind = picker,
 			generation = ++generations.options;
 		optionLoading = true;
@@ -212,12 +243,15 @@
 		}
 	}
 	function openPicker(kind: 'tag' | 'list') {
+		if (!(kind === 'tag' ? rights.addTag && rights.tagOptions : rights.addList && rights.listOptions)) { notice = denied; return; }
 		picker = kind;
 		options = null;
 		optionSearch = '';
 		void loadOptions();
 	}
 	async function changeMembership(kind: 'tag' | 'list', id: string, action: 'add' | 'remove') {
+		const permitted = kind === 'tag' ? (action === 'add' ? rights.addTag : rights.removeTag) : (action === 'add' ? rights.addList : rights.removeList);
+		if (!permitted) { notice = denied; optionError = denied; return; }
 		if (busy) return;
 		busy = true;
 		notice = '';
@@ -239,6 +273,7 @@
 	}
 	async function saveNote() {
 		if (busy || !noteContent.trim()) return;
+		if (!rights.note) { noteError = denied; return; }
 		busy = true;
 		noteError = '';
 		try {
@@ -256,6 +291,7 @@
 	}
 	async function removeContact() {
 		if (busy) return;
+		if (!rights.delete) { notice = denied; return; }
 		busy = true;
 		notice = '';
 		try {
@@ -271,23 +307,24 @@
 		}
 	}
 	async function loadTemplates(page = 1) {
+		if (!rights.templates) { templates = []; templateLoading = false; templateError = 'Native template access is not permitted. You can compose a custom message.'; return; }
 		const generation = ++generations.templates;
 		templateLoading = true;
 		templateError = '';
 		try {
-			const value = await emailApi.getTemplates({ search: templateSearch, page, per_page: 25 });
+			const value = await getCrmNativeTemplatePicker({ search: templateSearch, page, per_page: 25 });
 			if (disposed || generation !== generations.templates) return;
-			templates = value.templates.map((template) => ({
+			templates = value.data.map((template) => ({
 				id: template.id,
 				name: template.name,
 				subject: template.subject,
-				body_html: template.html_content,
-				body_text: template.plain_text_content ?? undefined
+				body_html: template.body_html,
+				body_text: template.body_text ?? undefined
 			}));
 			if (selectedTemplate && !templates.some((item) => item.id === selectedTemplate?.id))
 				templates = [selectedTemplate, ...templates];
-			templatePage = page;
-			templatePages = Math.max(1, Math.ceil(value.total / 25));
+			templatePage = value.meta.current_page;
+			templatePages = value.meta.last_page;
 		} catch (cause) {
 			if (!disposed && generation === generations.templates) templateError = message(cause);
 		} finally {
@@ -295,7 +332,7 @@
 		}
 	}
 	function selectTemplate(id: string | number | null) {
-		if (intent) return;
+		if (intent || (id !== null && !rights.templates)) return;
 		selectedTemplateId = id;
 		const template = templates.find((item) => item.id === String(id));
 		selectedTemplate = template ?? null;
@@ -304,11 +341,13 @@
 		if (!body.trim()) body = template.body_html;
 	}
 	function openEmail() {
+		if (!rights.send) { notice = denied; return; }
 		emailOpen = true;
-		if (!intent) void loadTemplates();
+		if (!intent && rights.templates) void loadTemplates();
 	}
 	function newMessage() {
 		if (sending) return;
+		if (!rights.send) { messageError = denied; return; }
 		intent = null;
 		receipt = null;
 		recovered = [];
@@ -317,10 +356,11 @@
 		body = '';
 		selectedTemplateId = null;
 		selectedTemplate = null;
-		void loadTemplates();
+		if (rights.templates) void loadTemplates();
 	}
 	async function sendMessage() {
 		if (sending || !contact || !subject.trim() || !body.trim()) return;
+		if (!rights.send || ((intent?.template_id || selectedTemplateId) && !rights.templates)) { messageError = denied; return; }
 		sending = true;
 		messageError = '';
 		try {
@@ -344,6 +384,7 @@
 	}
 	async function refreshMessage() {
 		if (!intent || sending) return;
+		if (!rights.emails) { messageError = denied; return; }
 		sending = true;
 		messageError = '';
 		try {
@@ -373,23 +414,26 @@
 <div class="profile">
 	<a href={back}>← Back to contacts</a>
 	{#if notice}<p role="status">{notice}</p>{/if}
-	{#if loading && !contact}<p role="status">Loading contact…</p>{:else if error}<p role="alert">
+	{#if !rights.contact}<p>{denied}</p>{:else if loading && !contact}<p role="status">Loading contact…</p>{:else if error}<p role="alert">
 			{error}
 		</p>
 		<button onclick={() => void loadContact()}>Retry contact</button>{:else if contact}
 		<ContactHeader
 			{contact}
 			{contactId}
+			canEdit={rights.edit}
+			canDelete={rights.delete}
+			canSend={rights.send}
 			onRefresh={() => void refresh()}
 			onSendEmail={openEmail}
 			onDelete={() => {
 				confirmDelete = true;
 			}}
 		/>
-		<ContactStatsGrid {contact} {recalculating} onRecalculate={() => void recalculate()} />
+		<ContactStatsGrid {contact} {recalculating} canRecalculate={rights.recalculate} onRecalculate={() => void recalculate()} />
 		{#if confirmDelete}<section aria-label="Confirm contact deletion">
 				<p>Delete {contact.email} and its recorded contact links?</p>
-				<button disabled={busy} onclick={() => void removeContact()}>Confirm delete contact</button
+				<button disabled={busy || !rights.delete} onclick={() => void removeContact()}>Confirm delete contact</button
 				><button
 					disabled={busy}
 					onclick={() => {
@@ -415,6 +459,12 @@
 				{tagsLoading}
 				{listsLoading}
 				{busy}
+				canReadTags={rights.tags}
+				canReadLists={rights.lists}
+				canAddTag={rights.addTag && rights.tagOptions}
+				canRemoveTag={rights.removeTag}
+				canAddList={rights.addList && rights.listOptions}
+				canRemoveList={rights.removeList}
 				onAddTag={() => openPicker('tag')}
 				onRemoveTag={(id) => void changeMembership('tag', id, 'remove')}
 				onAddList={() => openPicker('list')}
@@ -423,6 +473,7 @@
 				onRefreshLists={() => void loadLists()}
 				onListsPage={(page) => void loadLists(page)}
 			/>
+		{:else if activeTab === 'emails' && !rights.emails}<p>Contact email history is not permitted.</p>
 		{:else if activeTab === 'emails'}<EmailsPanel
 				emails={emails?.data ?? []}
 				error={emailsError}
@@ -431,7 +482,9 @@
 				onPage={(page) => void loadEmails(page)}
 				onRefresh={() => void loadEmails()}
 			/>
+		{:else if activeTab === 'notes' && !rights.notes}<p>Contact notes are not permitted.</p>
 		{:else if activeTab === 'notes'}<NotesPanel
+				canAddNote={rights.note}
 				notes={notes?.data ?? []}
 				error={notesError}
 				loading={notesLoading}
@@ -439,11 +492,12 @@
 				onPage={(page) => void loadNotes(page)}
 				onRefresh={() => void loadNotes()}
 				onAddNote={() => {
+					if (!rights.note) return;
 					noteOpen = true;
 					noteError = '';
 				}}
 			/>
-		{:else}<ActivityPanel
+		{:else if !rights.timeline}<p>Contact activity is not permitted.</p>{:else}<ActivityPanel
 				timeline={timeline?.data ?? []}
 				error={timelineError}
 				loading={timelineLoading}
@@ -457,7 +511,7 @@
 	{/if}
 </div>
 <PickerModal
-	open={picker !== null}
+	open={picker !== null && (picker === 'tag' ? rights.addTag && rights.tagOptions : rights.addList && rights.listOptions)}
 	kind={picker ?? 'tag'}
 	items={options?.data.map((item) => ({ id: item.id, name: item.title })) ?? []}
 	{busy}
@@ -481,7 +535,7 @@
 	}}
 />
 <AddNoteModal
-	open={noteOpen}
+	open={noteOpen && rights.note}
 	{busy}
 	error={noteError}
 	bind:content={noteContent}
@@ -492,6 +546,9 @@
 />
 <SendEmailModal
 	open={emailOpen}
+	canUseTemplates={rights.templates}
+	canSend={rights.send && (!(intent?.template_id || selectedTemplateId) || rights.templates)}
+	canRefreshReceipt={rights.emails}
 	{contact}
 	{templates}
 	loadingTemplates={templateLoading}

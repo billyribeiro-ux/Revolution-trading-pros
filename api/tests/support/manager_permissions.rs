@@ -3,6 +3,7 @@ use super::{Adapter, request};
 use axum::{Router, http::StatusCode};
 use serde_json::{Value, json};
 use sqlx::PgPool;
+use uuid::Uuid;
 const ROOT: &str = "/api/admin/crm";
 fn grant(module: &str, action: &str) -> Value {
     json!({"module":module,"action":action,"allowed":true})
@@ -178,7 +179,7 @@ pub async fn proof(api: &Router, pool: &PgPool, tokens: &[String], adapter: &Ada
         format!("{ROOT}/campaigns"),
         format!("{ROOT}/logs"),
         format!("{ROOT}/settings"),
-        "/api/admin/member-management".to_string(),
+        format!("/api/admin/member-management/{user}"),
         "/api/admin/email/templates".to_string(),
         "/api/admin/email/campaigns".to_string(),
     ] {
@@ -700,8 +701,11 @@ async fn catalog_boundaries(
     assert_eq!(same.0, StatusCode::OK, "{same:?}");
     *assignment = same.1;
 }
-async fn active_account(api: &Router, pool: &PgPool, tokens: &[String], user: i64) {
-    let delegated = Some(tokens[1].as_str());
+async fn active_account(api: &Router, pool: &PgPool, _tokens: &[String], source_user: i64) {
+    let user:i64=sqlx::query_scalar("INSERT INTO users(name,email,password_hash,role,is_active) VALUES('Authority state probe',$1,'not-a-login-password','user',true) RETURNING id").bind(format!("manager-authority-{}@example.test",Uuid::new_v4())).fetch_one(pool).await.unwrap();
+    sqlx::query("INSERT INTO crm_managers(user_id,role_id) SELECT $1,role_id FROM crm_managers WHERE user_id=$2").bind(user).bind(source_user).execute(pool).await.unwrap();
+    let secret = std::env::var("JWT_SECRET").unwrap();
+    let old = revolution_api::utils::create_jwt_versioned(user, &secret, 1, 0).unwrap();
     sqlx::query("UPDATE users SET is_active=false WHERE id=$1")
         .bind(user)
         .execute(pool)
@@ -712,12 +716,12 @@ async fn active_account(api: &Router, pool: &PgPool, tokens: &[String], user: i6
             api,
             "GET",
             &format!("{ROOT}/contacts"),
-            delegated,
+            Some(&old),
             Value::Null
         )
         .await
         .0,
-        StatusCode::FORBIDDEN
+        StatusCode::UNAUTHORIZED
     );
     sqlx::query("UPDATE users SET is_active=true,deleted_at=NOW() WHERE id=$1")
         .bind(user)
@@ -729,12 +733,12 @@ async fn active_account(api: &Router, pool: &PgPool, tokens: &[String], user: i6
             api,
             "GET",
             &format!("{ROOT}/permissions"),
-            delegated,
+            Some(&old),
             Value::Null
         )
         .await
         .0,
-        StatusCode::FORBIDDEN
+        StatusCode::UNAUTHORIZED
     );
     sqlx::query("UPDATE users SET deleted_at=NULL WHERE id=$1")
         .bind(user)
@@ -746,14 +750,39 @@ async fn active_account(api: &Router, pool: &PgPool, tokens: &[String], user: i6
             api,
             "GET",
             &format!("{ROOT}/contacts"),
-            delegated,
+            Some(&old),
+            Value::Null
+        )
+        .await
+        .0,
+        StatusCode::UNAUTHORIZED,
+        "Reactivation never restores a revoked token"
+    );
+    let version: i64 = sqlx::query_scalar("SELECT auth_version FROM users WHERE id=$1")
+        .bind(user)
+        .fetch_one(pool)
+        .await
+        .unwrap();
+    let fresh = revolution_api::utils::create_jwt_versioned(user, &secret, 1, version).unwrap();
+    assert_eq!(
+        request(
+            api,
+            "GET",
+            &format!("{ROOT}/contacts"),
+            Some(&fresh),
             Value::Null
         )
         .await
         .0,
         StatusCode::OK
     );
+    sqlx::query("DELETE FROM users WHERE id=$1")
+        .bind(user)
+        .execute(pool)
+        .await
+        .unwrap();
 }
+
 async fn policy_repair(api: &Router, pool: &PgPool, tokens: &[String], role: &mut Value) {
     let saved = role["permissions"].clone();
     sqlx::query("UPDATE crm_manager_roles SET permissions=$2 WHERE id=$1")
@@ -1723,6 +1752,19 @@ async fn member_source_boundaries(
 ) {
     let admin = Some(tokens[0].as_str());
     let token = &tokens[1];
+    update_role(api, &tokens[0], role, json!([grant("sequences", "manage")])).await;
+    let denied_event = uuid::Uuid::new_v4();
+    denied_unchanged(api,pool,adapter,token,"POST",&format!("{ROOT}/sequences/events"),json!({"event_id":denied_event,"contact_id":contact,"event_name":"manager.denied.source","properties":{}})).await;
+    let event_count: i64 =
+        sqlx::query_scalar("SELECT COUNT(*) FROM crm_trigger_events WHERE source_key=$1")
+            .bind(format!("custom:{denied_event}"))
+            .fetch_one(pool)
+            .await
+            .unwrap();
+    assert_eq!(
+        event_count, 0,
+        "A sequence execution grant cannot resolve a foreign contact or persist its event without contacts.view"
+    );
     let permissions = json!([
         grant("campaigns", "manage"),
         grant("sequences", "manage"),

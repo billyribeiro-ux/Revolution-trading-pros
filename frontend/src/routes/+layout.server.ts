@@ -13,6 +13,7 @@
 
 import type { LayoutServerLoad } from './$types';
 import { building } from '$app/env';
+import { isAdminRole } from '#lib/config/role-policy.js';
 import { seoDefaults } from '#lib/seo/defaults.js';
 import { createSEOContext } from '#lib/seo/resolve.js';
 import type { Environment } from '#lib/seo/types.js';
@@ -59,6 +60,9 @@ export const load: LayoutServerLoad = async ({ locals, url }) => {
 	});
 
 	return {
+		crmUserId: locals.user ? String(locals.user.id) : null,
+		globalAdmin: isAdminRole(locals.user?.role),
+		...(locals.crmCapabilities ? { crmCapabilities: locals.crmCapabilities } : {}),
 		// Initial consent state from cookie (read in hooks.server.ts)
 		initialConsent: (locals as { consent?: unknown }).consent,
 		hasConsentInteraction: (locals as { hasConsentInteraction?: boolean }).hasConsentInteraction,

@@ -17,8 +17,7 @@ pub(super) async fn proof(api: &Router, pool: &PgPool) {
     assert_eq!(anonymous.status(), StatusCode::UNAUTHORIZED);
     assert_eq!(anonymous.headers()["cache-control"], "no-store");
     let id:i64=sqlx::query_scalar("INSERT INTO users(email,name,password_hash,role,email_verified_at) VALUES('configured-auth-proof@example.test','Configured authorization fixture','not-a-login-password','user',NOW()) RETURNING id").fetch_one(pool).await.unwrap();
-    let token =
-        revolution_api::utils::create_jwt(id, &std::env::var("JWT_SECRET").unwrap(), 1).unwrap();
+    let mut token = String::new();
     for role in [
         "user",
         "member",
@@ -36,6 +35,18 @@ pub(super) async fn proof(api: &Router, pool: &PgPool) {
     ] {
         for verified in [false, true] {
             sqlx::query("UPDATE users SET role=$2,email_verified_at=CASE WHEN $3 THEN NOW() ELSE NULL END WHERE id=$1").bind(id).bind(role).bind(verified).execute(pool).await.unwrap();
+            let version: i64 = sqlx::query_scalar("SELECT auth_version FROM users WHERE id=$1")
+                .bind(id)
+                .fetch_one(pool)
+                .await
+                .unwrap();
+            token = revolution_api::utils::create_jwt_versioned(
+                id,
+                &std::env::var("JWT_SECRET").unwrap(),
+                1,
+                version,
+            )
+            .unwrap();
             let (status, user) =
                 request(api, "GET", "/api/auth/me", Some(&token), Value::Null).await;
             assert_eq!(status, StatusCode::OK, "{user}");
@@ -115,6 +126,25 @@ pub(super) async fn proof(api: &Router, pool: &PgPool) {
         .execute(pool)
         .await
         .unwrap();
+    assert_eq!(
+        request(api, "GET", "/api/auth/me", Some(&token), Value::Null)
+            .await
+            .0,
+        StatusCode::UNAUTHORIZED,
+        "A real role transition revokes the previous authority token"
+    );
+    let version: i64 = sqlx::query_scalar("SELECT auth_version FROM users WHERE id=$1")
+        .bind(id)
+        .fetch_one(pool)
+        .await
+        .unwrap();
+    token = revolution_api::utils::create_jwt_versioned(
+        id,
+        &std::env::var("JWT_SECRET").unwrap(),
+        1,
+        version,
+    )
+    .unwrap();
     let (_, user) = request(api, "GET", "/api/auth/me", Some(&token), Value::Null).await;
     assert_eq!(user["is_superadmin"], false);
     assert_eq!(user["is_developer"], false);

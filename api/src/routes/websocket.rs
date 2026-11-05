@@ -416,75 +416,16 @@ async fn ws_handler_inner(
             }
         };
 
-        // Enforce Redis token_version epoch check so revoked/banned tokens cannot connect
-        if let Some(ref redis) = state.services.redis {
-            match redis.get_token_version(claims.sub).await {
-                Ok(current_version) if claims.token_version < current_version => {
-                    warn!(
-                        user_id = %claims.sub,
-                        token_version = %claims.token_version,
-                        current_version = %current_version,
-                        "WebSocket connection rejected: stale token_version"
-                    );
-                    return (
-                        StatusCode::UNAUTHORIZED,
-                        Json(json!({"error": "Token has been revoked", "code": 4001})),
-                    )
-                        .into_response();
+        let account =
+            match crate::services::account_authority::authenticate(&state.db.pool, &claims).await {
+                Ok(account) => account,
+                Err((status, message)) => {
+                    return (status, Json(json!({"error":message,"code":4001}))).into_response();
                 }
-                Ok(_) => {}
-                Err(e) => {
-                    error!(user_id = %claims.sub, error = %e, "Redis token_version check failed on WebSocket upgrade");
-                    return (
-                        StatusCode::UNAUTHORIZED,
-                        Json(json!({"error": "Authentication temporarily unavailable", "code": 4001})),
-                    )
-                        .into_response();
-                }
-            }
-        }
-
-        // Verify user is active and check role / active membership for room access
-        let user_row: Option<(Option<String>, bool)> =
-            sqlx::query_as("SELECT role, is_active FROM users WHERE id = $1")
-                .bind(claims.sub)
-                .fetch_optional(&state.db.pool)
-                .await
-                .ok()
-                .flatten();
-
-        let Some((role_opt, is_active)) = user_row else {
-            return (
-                StatusCode::UNAUTHORIZED,
-                Json(json!({"error": "Unauthorized", "code": 4001})),
-            )
-                .into_response();
-        };
-
-        if !is_active {
-            return (
-                StatusCode::FORBIDDEN,
-                Json(json!({"error": "Account is disabled", "code": 4003})),
-            )
-                .into_response();
-        }
-
-        let role = role_opt.as_deref().unwrap_or("");
-        let is_staff = matches!(role, "admin" | "super_admin" | "super-admin" | "developer");
-        if is_staff {
-            true
-        } else {
-            let membership: Option<(i64,)> = sqlx::query_as(
-                "SELECT id FROM user_memberships \
-                 WHERE user_id = $1 AND status IN ('active', 'trial', 'trialing') LIMIT 1",
-            )
-            .bind(claims.sub)
-            .fetch_optional(&state.db.pool)
+            };
+        crate::routes::room_content::ensure_room_access(&state, &account.user)
             .await
-            .ok()
-            .flatten();
-            membership.is_some()
-        }
+            .is_ok()
     } else {
         false
     };
@@ -515,6 +456,10 @@ async fn handle_socket(
     let connection_id = uuid::Uuid::new_v4().to_string();
     let (mut sender, mut receiver) = socket.split();
 
+    let auth_pool = state.db.pool.clone();
+    let auth_state = state.clone();
+    let auth_secret = state.config.jwt_secret.clone();
+    let auth_token = params.token.clone();
     // Parse initial rooms to subscribe to (capped at MAX_ROOMS_PER_CONNECTION and gated by membership).
     // RUST_DEEP_AUDIT_2026-06-07 (P2-9): de-duplicate (and drop empties) so a
     // `?rooms=alpha,alpha` cannot double-increment a room's connection count
@@ -615,6 +560,25 @@ async fn handle_socket(
     // Spawn task to send messages to client
     let mut send_handle = tokio::spawn(async move {
         while let Some(msg) = rx.recv().await {
+            if has_room_access {
+                let Some(raw) = auth_token.as_deref() else {
+                    break;
+                };
+                let Ok(claims) = verify_jwt(raw, &auth_secret, "access") else {
+                    break;
+                };
+                let Ok(account) =
+                    crate::services::account_authority::authenticate(&auth_pool, &claims).await
+                else {
+                    break;
+                };
+                if crate::routes::room_content::ensure_room_access(&auth_state, &account.user)
+                    .await
+                    .is_err()
+                {
+                    break;
+                }
+            }
             if let Ok(json) = serde_json::to_string(&msg)
                 && sender.send(Message::Text(json.into())).await.is_err()
             {
@@ -642,6 +606,16 @@ async fn handle_socket(
                             .unwrap_or("");
 
                         if action.eq_ignore_ascii_case("subscribe") {
+                            if !has_room_access {
+                                let _ = tx_for_receive
+                                    .send(WsMessage::Error {
+                                        code: "AUTH_REQUIRED".into(),
+                                        message: "Authenticate before subscribing to private rooms"
+                                            .into(),
+                                    })
+                                    .await;
+                                continue;
+                            }
                             let room = v
                                 .get("channel")
                                 .or_else(|| v.get("room"))

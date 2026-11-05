@@ -9,7 +9,8 @@ import type { RequestHandler } from '@sveltejs/kit';
 
 // Production fallback - Rust API on Fly.io
 import { API_BASE_URL, BACKEND_URL } from '$app/env/private';
-import { requireAdmin, requireSuperadmin } from '#lib/server/auth.js';
+import { requireSuperadmin } from '#lib/server/auth.js';
+import { proxyMemberProfile } from '#lib/server/member-profile-proxy.js';
 const PROD_BACKEND = API_BASE_URL || BACKEND_URL || 'http://localhost:8080';
 
 /**
@@ -55,40 +56,7 @@ export const DELETE: RequestHandler = async (event) => {
  * GET /api/admin/member-management/:id
  * Get member with full details
  */
-export const GET: RequestHandler = async (event) => {
-	const { token } = requireAdmin(event);
-	const memberId = event.params.id;
-	const authHeader = `Bearer ${token}`;
-
-	try {
-		const response = await fetch(`${PROD_BACKEND}/api/admin/member-management/${memberId}`, {
-			method: 'GET',
-			headers: {
-				'Content-Type': 'application/json',
-				Accept: 'application/json',
-				Authorization: authHeader
-			}
-		});
-
-		const text = await response.text();
-		if (!text) {
-			return Response.json(
-				{ error: 'Empty response from server' },
-				{ status: response.status || 500 }
-			);
-		}
-
-		try {
-			const data = JSON.parse(text);
-			return Response.json(data, { status: response.status });
-		} catch {
-			return Response.json({ error: 'Invalid response from server' }, { status: 500 });
-		}
-	} catch (error) {
-		console.error('[API] Get member error:', error);
-		return Response.json({ error: 'Failed to get member' }, { status: 500 });
-	}
-};
+export const GET: RequestHandler = (event) => proxyMemberProfile(event, 'member-management');
 
 /**
  * PUT /api/admin/member-management/:id

@@ -1,3 +1,5 @@
+import { assertCrmClientRequest } from '#lib/crm/request-gate.js';
+import { notifyCrmDenial } from '#lib/crm/denial.js';
 import { sequenceId, sequenceEmailId } from './email-sequence-catalog.js';
 import type { CampaignTestReceipt } from './campaign-test.js';
 
@@ -126,10 +128,12 @@ export async function getSequenceTestHistory(
 ): Promise<SequenceTestBatch[]> {
 	id = sequenceId(id);
 	const query = requestId ? `?request_id=${sequenceEmailId(requestId)}` : '';
+	assertCrmClientRequest(`/api/admin/crm/sequences/${id}/tests${query}`);
 	const response = await fetch(`/api/admin/crm/sequences/${id}/tests${query}`, {
 		credentials: 'include',
 		cache: 'no-store'
 	});
+	notifyCrmDenial(response.status);
 	const value: unknown = await response.json().catch(() => null);
 	if (!response.ok) throw failure(value, 'Sequence test history is unavailable');
 	return sequenceTestHistory(value, id, requestId);
@@ -148,12 +152,14 @@ export async function sendSequenceTest(
 		request_id: sequenceEmailId(intent.request_id)
 	};
 	// One explicit request. A replay uses exactly the same durable intent.
+	assertCrmClientRequest(`/api/admin/crm/sequences/${id}/test`, 'POST');
 	const response = await fetch(`/api/admin/crm/sequences/${id}/test`, {
 		method: 'POST',
 		credentials: 'include',
 		headers: { 'Content-Type': 'application/json' },
 		body: JSON.stringify(body)
 	});
+	notifyCrmDenial(response.status);
 	const value: unknown = await response.json().catch(() => null);
 	if (![200, 202, 502, 503].includes(response.status) || !object(value) || !('data' in value))
 		throw failure(value, 'Sequence test outcome is unconfirmed; check saved receipts');

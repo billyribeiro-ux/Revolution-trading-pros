@@ -230,7 +230,7 @@ pub(super) async fn grant_membership(
     Json(input): Json<GrantMembershipRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     // Verify user exists
-    let user_exists: Option<(i64,)> = sqlx::query_as("SELECT id FROM users WHERE id = $1")
+    let user_exists: Option<(i64,)> = sqlx::query_as("SELECT id FROM users WHERE id = $1 AND deleted_at IS NULL AND COALESCE(LOWER(role),'')<>'deleted'")
         .bind(input.user_id)
         .fetch_optional(&state.db.pool)
         .await
@@ -281,7 +281,7 @@ pub(super) async fn grant_membership(
     let membership: AdminUserMembershipRow = sqlx::query_as(
         r"
         INSERT INTO user_memberships (user_id, plan_id, starts_at, expires_at, status, payment_provider, cancel_at_period_end, current_period_start, current_period_end, created_at, updated_at)
-        VALUES ($1, $2, $3, $4, $5, 'admin', false, $3, $4, NOW(), NOW())
+        VALUES ($1, $2, $3, $4, $5, 'admin', false, $3, $4, (NOW() AT TIME ZONE 'UTC'), (NOW() AT TIME ZONE 'UTC'))
         RETURNING id, user_id, plan_id,
             (SELECT name FROM membership_plans WHERE id = $2) as plan_name,
             (SELECT slug FROM membership_plans WHERE id = $2) as plan_slug,
@@ -329,7 +329,7 @@ pub(super) async fn update_user_membership(
         set_clauses.push(format!("cancel_at_period_end = ${param_count}"));
     }
 
-    set_clauses.push("updated_at = NOW()".to_string());
+    set_clauses.push("updated_at = (NOW() AT TIME ZONE 'UTC')".to_string());
 
     if set_clauses.len() == 1 {
         return Err((

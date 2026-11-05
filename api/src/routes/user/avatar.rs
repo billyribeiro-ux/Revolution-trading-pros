@@ -104,7 +104,7 @@ pub(super) async fn upload_avatar(
             let avatar_url = format!("/uploads/avatars/{filename}");
 
             // Update user avatar_url in database
-            sqlx::query("UPDATE users SET avatar_url = $1, updated_at = NOW() WHERE id = $2")
+            sqlx::query("UPDATE users SET avatar_url = $1, updated_at = NOW() AT TIME ZONE 'UTC' WHERE id = $2")
                 .bind(&avatar_url)
                 .bind(user.id)
                 .execute(&state.db.pool)
@@ -154,16 +154,18 @@ pub(super) async fn delete_avatar(
     }
 
     // Clear avatar_url in database
-    sqlx::query("UPDATE users SET avatar_url = NULL, updated_at = NOW() WHERE id = $1")
-        .bind(user.id)
-        .execute(&state.db.pool)
-        .await
-        .map_err(|e| {
-            (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Json(json!({"error": e.to_string()})),
-            )
-        })?;
+    sqlx::query(
+        "UPDATE users SET avatar_url = NULL, updated_at = NOW() AT TIME ZONE 'UTC' WHERE id = $1",
+    )
+    .bind(user.id)
+    .execute(&state.db.pool)
+    .await
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     tracing::info!(
         target: "user_audit",

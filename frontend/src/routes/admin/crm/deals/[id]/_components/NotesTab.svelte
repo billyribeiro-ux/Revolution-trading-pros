@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { useCrmAccess } from '#lib/crm/access.svelte.js';
+	const access = useCrmAccess();
 	import IconNotes from '@tabler/icons-svelte-runes/icons/notes';
 	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
 	import { formatDateTime, type DealNote } from './helpers';
@@ -13,7 +15,11 @@
 
 <div class="notes-section">
 	<div class="notes-header">
-		<button class="btn-primary" onclick={onOpenAdd}>
+		<button
+			class="btn-primary"
+			disabled={!access.can('POST', '/deals/{id}/notes')}
+			onclick={onOpenAdd}
+		>
 			<IconPlus size={18} />
 			Add Note
 		</button>

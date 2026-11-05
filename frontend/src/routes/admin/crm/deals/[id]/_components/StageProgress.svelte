@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { useCrmAccess } from '#lib/crm/access.svelte.js';
+	const access = useCrmAccess();
 	import type { Deal, Pipeline, Stage } from '#lib/crm/types.js';
 
 	interface Props {
@@ -27,7 +29,7 @@
 			<button
 				class={['stage-item', { current: isCurrent, past: isPast }]}
 				onclick={() => !isCurrent && onSelectStage(stage)}
-				disabled={isCurrent}
+				disabled={isCurrent || !access.can('PATCH', '/deals/{id}/stage')}
 				style:--stage-color={stage.color || '#6366f1'}
 			>
 				<span class="stage-indicator"></span>

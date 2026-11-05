@@ -1,6 +1,7 @@
 /** Preserve the Rust deal contract through the authenticated same-origin proxy. */
 import { API_BASE_URL, BACKEND_URL as ENV_BACKEND_URL } from '$app/env/private';
-import { requireAdmin } from '#lib/server/auth.js';
+import { requireCrmOperation } from '#lib/server/crm-auth.js';
+import { crmAccessFailure } from '#lib/server/crm-context.js';
 import type { RequestHandler } from '@sveltejs/kit';
 const backend = API_BASE_URL || ENV_BACKEND_URL || 'http://localhost:8080';
 
@@ -8,7 +9,12 @@ async function forward(
 	event: Parameters<RequestHandler>[0],
 	method: 'GET' | 'POST'
 ): Promise<Response> {
-	const { token } = requireAdmin(event);
+	let token: string;
+	try {
+		({ token } = await requireCrmOperation(event));
+	} catch (error) {
+		return crmAccessFailure(error);
+	}
 	let body: unknown;
 	if (method === 'POST') {
 		try {
@@ -24,7 +30,10 @@ async function forward(
 			`${backend}/api/admin/crm/deals${method === 'GET' ? event.url.search : ''}`,
 			{
 				method,
-				headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+				headers: {
+					Authorization: `Bearer ${token}`,
+					'Content-Type': 'application/json'
+				},
 				...(method === 'POST' ? { body: JSON.stringify(body) } : {}),
 				signal: AbortSignal.timeout(30000)
 			}

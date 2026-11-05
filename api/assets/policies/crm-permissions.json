@@ -2622,6 +2622,10 @@
 				{
 					"module": "sequences",
 					"action": "manage"
+				},
+				{
+					"module": "contacts",
+					"action": "view"
 				}
 			],
 			"params": {},

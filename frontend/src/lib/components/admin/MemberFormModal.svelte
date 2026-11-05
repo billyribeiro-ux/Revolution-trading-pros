@@ -9,6 +9,7 @@
 	import {
 		membersApi,
 		type Member,
+		type MemberEditSeed,
 		type CreateMemberRequest,
 		type UpdateMemberRequest
 	} from '#lib/api/members.js';
@@ -36,7 +37,7 @@
 	interface Props {
 		isOpen: boolean;
 		mode?: 'create' | 'edit';
-		member?: Member | null;
+		member?: MemberEditSeed | null;
 		onSave?: (member: Member, temporaryPassword?: string) => void;
 		onSaved?: (member: Member, temporaryPassword?: string) => void;
 		onClose: () => void;
@@ -75,7 +76,7 @@
 	let name = $state(seedIsEdit ? seedMember?.name || '' : '');
 	let email = $state(seedIsEdit ? seedMember?.email || '' : '');
 	let password = $state('');
-	let role = $state('user');
+	let role = $state(seedIsEdit ? seedMember?.role ?? '' : 'user');
 	let sendWelcomeEmail = $state(true);
 
 	// FORM STATE - Extended Profile

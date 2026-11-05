@@ -27,7 +27,7 @@ const MAX_LOGGED_BODY_BYTES: usize = 16 * 1024;
 
 pub async fn scrub_internal_errors(request: Request, next: Next) -> Response {
     let method = request.method().clone();
-    let path = request.uri().path().to_owned();
+    let path = crate::middleware::request_trace::diagnostic_path(&request).to_owned();
 
     let response = next.run(request).await;
     if response.status() != StatusCode::INTERNAL_SERVER_ERROR {

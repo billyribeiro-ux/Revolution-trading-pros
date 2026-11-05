@@ -112,6 +112,10 @@ async fn main() -> anyhow::Result<()> {
         cache_invalidator,
     };
 
+    revolution_api::services::account_mfa::upgrade_legacy_storage(&state)
+        .await
+        .map_err(|error| anyhow::anyhow!("MFA storage upgrade failed: {:?}", error))?;
+
     tokio::spawn(revolution_api::routes::performance::run_host_sampler());
     tokio::spawn(revolution_api::services::media_jobs::run(state.clone()));
     tokio::spawn(revolution_api::services::crm_webhooks::run(
@@ -309,7 +313,7 @@ async fn main() -> anyhow::Result<()> {
         .layer(RequestBodyTimeoutLayer::new(
             std::time::Duration::from_secs(30),
         ))
-        .layer(TraceLayer::new_for_http())
+        .layer(TraceLayer::new_for_http().make_span_with(middleware::request_trace::request_span))
         .with_state(state);
 
     // Start server

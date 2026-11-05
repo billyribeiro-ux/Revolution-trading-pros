@@ -2,9 +2,9 @@
 	import { SvelteSet } from 'svelte/reactivity';
 	import { onMount } from 'svelte';
 	import { page } from '$app/state';
-	import { goto } from '$app/navigation';
+	import { goto, afterNavigate } from '$app/navigation';
 	import { serviceMembersStore, emailStore } from '#lib/stores/members.svelte.js';
-	import type { Member } from '#lib/api/members.js';
+	import { SERVICE_STATUSES, type ServiceStatus, type ServiceMemberRecord, type ServiceMemberFilters } from '#lib/api/member-statistics.js';
 	// FIX-2026-04-26: replaced native alert() with toastStore.
 	import { toastStore } from '#lib/stores/toast.svelte.js';
 	import {
@@ -37,32 +37,37 @@
 
 	// Local state
 	let searchQuery = $state('');
-	let statusFilter = $state('');
+	let statusFilter = $state<ServiceStatus | ''>('');
+	let routeError = $state<string | null>(null);
 	let selectedMembers = new SvelteSet<number>();
 	let showEmailModal = $state(false);
 	let emailSubject = $state('');
 	let emailBody = $state('');
 
-	onMount(() => {
-		void loadInitialData();
-	});
-
-	async function loadInitialData() {
-		await serviceMembersStore.loadServiceMembers(serviceId);
-		await emailStore.loadTemplates();
+	onMount(() => { void emailStore.loadTemplates(); });
+	afterNavigate(() => { void loadFromUrl(); });
+	async function loadFromUrl() {
+		routeError = null;
+		selectedMembers.clear();
+		try {
+			if (!Number.isSafeInteger(serviceId) || serviceId <= 0) throw new Error('Invalid membership plan identifier');
+			const query = page.url.searchParams;
+			const status = query.get('status') || '';
+			if (status && !SERVICE_STATUSES.some((value) => value === status)) throw new Error('Invalid plan membership status');
+			const currentPage = Number(query.get('page') || 1), perPage = Number(query.get('per_page') || 25);
+			if (!Number.isSafeInteger(currentPage) || currentPage < 1 || currentPage > 10000 || !Number.isSafeInteger(perPage) || perPage < 1 || perPage > 100) throw new Error('Invalid service member pagination');
+			searchQuery = query.get('search') || '';
+			statusFilter = SERVICE_STATUSES.find((value) => value === status) || '';
+			await serviceMembersStore.loadServiceMembers(serviceId, { search: searchQuery, status: statusFilter, page: currentPage, per_page: perPage });
+		} catch (error) { serviceMembersStore.reset(); routeError = error instanceof Error ? error.message : 'Unable to load service members'; }
 	}
-
-	async function handleSearch() {
-		await serviceMembersStore.loadServiceMembers(serviceId, {
-			search: searchQuery,
-			status: statusFilter
-		});
+	async function navigateFilters(filters: ServiceMemberFilters) {
+		const url = new URL(page.url.href);
+		for (const [key, value] of Object.entries(filters)) if (value === undefined || value === '') url.searchParams.delete(key); else url.searchParams.set(key, String(value));
+		await goto(url, { reset: false });
 	}
-
-	async function handleStatusFilter(status: string) {
-		statusFilter = status;
-		await serviceMembersStore.loadServiceMembers(serviceId, { search: searchQuery, status });
-	}
+	async function handleSearch() { await navigateFilters({ search: searchQuery, status: statusFilter, page: 1 }); }
+	async function handleStatusFilter(status: ServiceStatus | '') { await navigateFilters({ search: searchQuery, status, page: 1 }); }
 
 	function toggleMemberSelection(id: number) {
 		if (selectedMembers.has(id)) {
@@ -94,9 +99,8 @@
 			toastStore.success(result.message);
 			showEmailModal = false;
 			selectedMembers.clear();
-		} catch {
-			// FIX-2026-04-26: replaced native alert() with toastStore.error.
-			toastStore.error('Failed to send emails');
+		} catch (error) {
+			toastStore.error(error instanceof Error ? error.message : 'Failed to send emails');
 		}
 	}
 
@@ -123,16 +127,17 @@
 	}
 
 	function formatCurrency(amount: number | null | undefined): string {
-		const safe = typeof amount === 'number' && Number.isFinite(amount) ? amount : Number(amount ?? 0) || 0;
+		if (typeof amount !== 'number' || !Number.isFinite(amount)) return 'Unavailable';
 		return new Intl.NumberFormat('en-US', {
 			style: 'currency',
 			currency: 'USD',
-			minimumFractionDigits: 0,
-			maximumFractionDigits: 0
-		}).format(safe);
+			minimumFractionDigits: 2,
+			maximumFractionDigits: 2
+		}).format(amount);
 	}
 
-	function formatDate(dateString: string): string {
+	function formatDate(dateString: string | null): string {
+		if (dateString === null) return 'Date unavailable';
 		return new Date(dateString).toLocaleDateString('en-US', {
 			year: 'numeric',
 			month: 'short',
@@ -140,7 +145,7 @@
 		});
 	}
 
-	function getMemberInitials(member: Member): string {
+	function getMemberInitials(member: ServiceMemberRecord): string {
 		if (member.first_name && member.last_name) {
 			return `${member.first_name[0]}${member.last_name[0]}`.toUpperCase();
 		}
@@ -148,9 +153,7 @@
 	}
 </script>
 
-<svelte:head>
-	<title>{service?.name || 'Service'} Members | Revolution Trading Pros</title>
-</svelte:head>
+
 
 <div class="service-members-page">
 	<!-- Header -->
@@ -166,8 +169,8 @@
 					<IconChartBar size={28} />
 				</div>
 				<div>
-					<h1>{service?.name || 'Loading...'}</h1>
-					<p class="service-type">{service?.type || ''}</p>
+					<h1>{service?.name || (loading ? 'Loading…' : 'Membership plan')}</h1>
+					<p class="service-type">{service ? 'Membership plan · plan-local cohorts' : ''}</p>
 				</div>
 			</div>
 			{#if selectedMembers.size > 0}
@@ -184,31 +187,34 @@
 		<div class="stats-grid">
 			<div class="stat-card">
 				<div class="stat-icon purple"><IconUsers size={24} /></div>
-				<div class="stat-value">{stats.total_members ?? 0}</div>
+				<div class="stat-value">{stats.total_members}</div>
 				<div class="stat-label">Total Members</div>
 			</div>
 			<div class="stat-card">
 				<div class="stat-icon emerald"><IconUserCheck size={24} /></div>
-				<div class="stat-value">{stats.active_members ?? 0}</div>
+				<div class="stat-value">{stats.active_members}</div>
 				<div class="stat-label">Active</div>
 			</div>
 			<div class="stat-card">
 				<div class="stat-icon blue"><IconCrown size={24} /></div>
-				<div class="stat-value">{stats.trial_members ?? 0}</div>
+				<div class="stat-value">{stats.trial_members}</div>
 				<div class="stat-label">Trial</div>
 			</div>
 			<div class="stat-card">
 				<div class="stat-icon red"><IconAlertTriangle size={24} /></div>
-				<div class="stat-value">{stats.churned_members ?? 0}</div>
-				<div class="stat-label">Churned</div>
+				<div class="stat-value">{stats.cancelled_members + stats.expired_members}</div>
+				<div class="stat-label">Cancelled or expired in this plan</div>
 			</div>
 			<div class="stat-card">
 				<div class="stat-icon gold"><IconCurrencyDollar size={24} /></div>
-				<div class="stat-value">{formatCurrency(stats.total_revenue)}</div>
-				<div class="stat-label">Total Revenue</div>
+				<div class="stat-value">{formatCurrency(stats.whole_member_recorded_net_usd_order_value.net_cents / 100)}</div>
+				<div class="stat-label">Whole-member net USD order value</div>
 			</div>
 		</div>
+		<p>{stats.other_members} members have scheduled, pending, past-due, paused or other local membership status. Counts and order value use the current search/status audience.</p>
+		<p>Order value is each selected member's qualifying recorded orders across all products; it is not revenue allocated to this service. {stats.whole_member_recorded_net_usd_order_value.limitations} {stats.whole_member_recorded_net_usd_order_value.excluded_non_usd_orders} non-USD and {stats.whole_member_recorded_net_usd_order_value.excluded_unknown_currency_orders} unknown-currency orders excluded.</p>
 	{/if}
+	{#if routeError || serviceMembersStore.state.error}<div role="alert"><p>{routeError || serviceMembersStore.state.error}</p><button onclick={() => void loadFromUrl()}>Retry service members</button></div>{/if}
 
 	<!-- Toolbar -->
 	<div class="toolbar">
@@ -229,13 +235,16 @@
 		<div class="filter-group">
 			<IconFilter size={16} />
 			<select id="id-statusfilter" name="id_statusfilter" bind:value={statusFilter} onchange={() => void handleStatusFilter(statusFilter)}>
-				<option value="">All Status</option>
+				<option value="">All plan statuses</option>
 				<option value="active">Active</option>
 				<option value="trial">Trial</option>
 				<option value="cancelled">Cancelled</option>
 				<option value="expired">Expired</option>
+				<option value="scheduled">Scheduled</option><option value="pending">Pending</option><option value="past_due">Past due</option><option value="paused">Paused</option><option value="other">Other</option>
 			</select>
 		</div>
+		<label>Members per page <select aria-label="Members per page" value={serviceMembersStore.state.filters.per_page || 25} onchange={(event) => void navigateFilters({ per_page: Number(event.currentTarget.value), page: 1 })}>{#each [1, 10, 25, 50, 100] as size (size)}<option value={size}>{size}</option>{/each}</select></label>
+		<button onclick={() => void loadFromUrl()} disabled={loading}>Refresh service members</button>
 	</div>
 
 	<!-- Members Table -->
@@ -245,11 +254,12 @@
 				<div class="loader"></div>
 				<p>Loading members...</p>
 			</div>
+		{:else if routeError || serviceMembersStore.state.error}<p>Member rows are unavailable until the request succeeds.</p>
 		{:else if members.length === 0}
 			<div class="empty-state">
 				<IconUsers size={64} stroke={1} />
 				<h3>No members found</h3>
-				<p>No members have subscribed to this service yet</p>
+				<p>No members match this plan and the current filters</p>
 			</div>
 		{:else}
 			<table class="members-table">
@@ -265,10 +275,10 @@
 							/>
 						</th>
 						<th>Member</th>
-						<th>Status</th>
+						<th>Plan status / global membership</th>
 						<th>Plan</th>
-						<th>Revenue</th>
-						<th>Start Date</th>
+						<th>Whole-member net USD orders</th>
+						<th>Member joined (recorded)</th>
 						<th>Actions</th>
 					</tr>
 				</thead>
@@ -290,18 +300,18 @@
 										{getMemberInitials(member)}
 									</div>
 									<div class="member-details">
-										<div class="member-name">{member.name || ''}</div>
+										<div class="member-name">{member.name || member.email}</div>
 										<div class="member-email">{member.email || ''}</div>
 									</div>
 								</div>
 							</td>
 							<td>
-								<span class={['status-badge', getStatusClass(member.status)]}>
-									{member.status_label}
+								<span class={['status-badge', getStatusClass(member.service_status)]}>
+									{member.service_status} (plan)<br />{member.status_label} (global)
 								</span>
 							</td>
 							<td>
-								<span class="plan-name">{member.current_plan || '-'}</span>
+								<span class="plan-name">{service?.name}</span>
 							</td>
 							<td>
 								<span class="revenue">{formatCurrency(member.total_spent)}</span>
@@ -350,7 +360,7 @@
 							class="page-btn"
 							disabled={pagination.current_page === 1}
 							onclick={() =>
-								void serviceMembersStore.loadServiceMembers(serviceId, {
+								void navigateFilters({
 									page: pagination.current_page - 1
 								})}
 						>
@@ -361,9 +371,9 @@
 						>
 						<button
 							class="page-btn"
-							disabled={pagination.current_page === pagination.last_page}
+							disabled={pagination.current_page >= pagination.last_page}
 							onclick={() =>
-								void serviceMembersStore.loadServiceMembers(serviceId, {
+								void navigateFilters({
 									page: pagination.current_page + 1
 								})}
 						>

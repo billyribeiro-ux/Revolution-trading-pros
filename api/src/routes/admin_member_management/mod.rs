@@ -23,11 +23,17 @@ use sqlx::FromRow;
 
 use crate::AppState;
 
+pub(crate) mod account_actions;
 mod activity;
 mod crud;
 pub(crate) mod export;
+mod history;
 mod moderation;
 mod notes;
+pub(crate) mod order_export;
+mod profile;
+pub(crate) mod read_handlers;
+pub(crate) mod welcome;
 
 // ===============================================================================
 // SHARED TYPES
@@ -94,31 +100,12 @@ pub struct MemberNote {
 // REQUEST TYPES
 // ===============================================================================
 
-#[derive(Debug, Deserialize)]
-pub struct CreateMemberRequest {
-    pub name: String,
-    pub email: String,
-    pub password: Option<String>,
-    pub role: Option<String>,
-    pub send_welcome_email: Option<bool>,
-}
+pub use account_actions::{
+    BanMemberRequest, CreateMemberRequest, UnbanMemberRequest, UpdateMemberRequest,
+};
 
 #[derive(Debug, Deserialize)]
-pub struct UpdateMemberRequest {
-    pub name: Option<String>,
-    pub email: Option<String>,
-    pub role: Option<String>,
-    pub avatar_url: Option<String>,
-    pub password: Option<String>,
-}
-
-#[derive(Debug, Deserialize)]
-pub struct BanMemberRequest {
-    pub reason: Option<String>,
-    pub duration_days: Option<i32>,
-}
-
-#[derive(Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct CreateNoteRequest {
     pub content: String,
 }
@@ -177,7 +164,7 @@ pub fn router() -> Router<AppState> {
         .route("/export", get(export::export_members))
         .route(
             "/{id}",
-            get(crud::get_member_full)
+            get(read_handlers::show)
                 .put(crud::update_member)
                 .delete(crud::delete_member),
         )
@@ -193,4 +180,9 @@ pub fn router() -> Router<AppState> {
         .route("/{id}/notes/{note_id}", delete(notes::delete_note))
         // Activity
         .route("/{id}/activity", get(activity::get_activity))
+        .route("/{id}/emails", get(read_handlers::emails))
+        .route("/{id}/memberships", get(read_handlers::memberships))
+        .route("/{id}/orders", get(read_handlers::orders))
+        .route("/{id}/orders/export", get(order_export::download))
+        .route("/{id}/timeline", get(read_handlers::timeline))
 }

@@ -124,11 +124,11 @@ pub fn append_rules(
                         .push_bind(status.clone());
                 }
                 if matches!(status.as_str(), "active" | "trial" | "trialing") {
-                    query.push(" AND membership.starts_at<=NOW() AND (membership.expires_at IS NULL OR membership.expires_at>NOW())");
+                    query.push(" AND membership.starts_at<=(NOW() AT TIME ZONE 'UTC') AND (membership.expires_at IS NULL OR membership.expires_at>(NOW() AT TIME ZONE 'UTC'))");
                 }
                 if matches!(status.as_str(), "trial" | "trialing") {
                     query.push(
-                        " AND (membership.trial_ends_at IS NULL OR membership.trial_ends_at>NOW())",
+                        " AND (membership.trial_ends_at IS NULL OR membership.trial_ends_at>(NOW() AT TIME ZONE 'UTC'))",
                     );
                 }
             }

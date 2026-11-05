@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { useCrmAccess } from '#lib/crm/access.svelte.js';
+	const access = useCrmAccess();
 	import IconBriefcase from '@tabler/icons-svelte-runes/icons/briefcase';
 	import IconEdit from '@tabler/icons-svelte-runes/icons/edit';
 	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
@@ -72,20 +74,36 @@
 			<IconRefresh size={18} />
 		</button>
 		{#if isOpen}
-			<button class="btn-success" onclick={onOpenWin}>
+			<button
+				class="btn-success"
+				disabled={!access.can('POST', '/deals/{id}/win')}
+				onclick={onOpenWin}
+			>
 				<IconTrophy size={18} />
 				Mark Won
 			</button>
-			<button class="btn-danger-outline" onclick={onOpenLose}>
+			<button
+				class="btn-danger-outline"
+				disabled={!access.can('POST', '/deals/{id}/lose')}
+				onclick={onOpenLose}
+			>
 				<IconX size={18} />
 				Mark Lost
 			</button>
 		{/if}
-		<a href="/admin/crm/deals/{dealId}/edit" class="btn-primary">
-			<IconEdit size={18} />
-			Edit Deal
-		</a>
-		<button class="btn-icon danger" onclick={onDelete} title="Delete">
+		{#if access.page(`/admin/crm/deals/${dealId}/edit`)}<a
+				href="/admin/crm/deals/{dealId}/edit"
+				class="btn-primary"
+			>
+				<IconEdit size={18} />
+				Edit Deal
+			</a>{/if}
+		<button
+			class="btn-icon danger"
+			disabled={!access.can('DELETE', '/deals/{id}')}
+			onclick={onDelete}
+			title="Delete"
+		>
 			<IconTrash size={18} />
 		</button>
 	</div>

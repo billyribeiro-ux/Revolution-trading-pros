@@ -20,11 +20,11 @@
 
 	let { stats, formatCurrency, onRecoverChurned }: Props = $props();
 
-	let sparklineMax = $derived(Math.max(...(stats.growth_trend || []).map((p) => p.new)));
+	let sparklineMax = $derived(Math.max(1, ...stats.growth_trend.map((p) => p.new)));
 	let activePercent = $derived(
 		stats.overview.total_members > 0
 			? Math.round((stats.subscriptions.active / stats.overview.total_members) * 100)
-			: 0
+			: null
 	);
 	let activeDashOffset = $derived(
 		stats.overview.total_members > 0
@@ -47,20 +47,20 @@
 				+{stats.overview.new_this_month} this month
 			</div>
 		</div>
-		<div class="stat-sparkline">
-			{#each (stats.growth_trend || []).slice(-6) as point, i (i)}
+		<div class="stat-sparkline" title={stats.growth_scope}>
+			{#each stats.growth_trend.slice(-6) as point (point.month)}
 				<div class="sparkline-bar" style:height={`${(point.new / sparklineMax) * 100}%`}></div>
 			{/each}
 		</div>
 	</div>
 
-	<!-- Active Subscribers -->
+	<!-- Active Members -->
 	<div class="stat-card gradient-emerald">
 		<div class="stat-icon">
 			<IconUserCheck size={28} />
 		</div>
 		<div class="stat-content">
-			<div class="stat-label">Active Subscribers</div>
+			<div class="stat-label">Active Members</div>
 			<div class="stat-value">{stats.subscriptions.active.toLocaleString()}</div>
 			<div class="stat-change neutral">
 				<IconCrown size={14} />
@@ -90,7 +90,7 @@
 					transform="rotate(-90 18 18)"
 				></circle>
 			</svg>
-			<span>{activePercent}%</span>
+			<span>{activePercent === null ? '—' : `${activePercent}%`}</span>
 		</div>
 	</div>
 
@@ -100,11 +100,11 @@
 			<IconCreditCard size={28} />
 		</div>
 		<div class="stat-content">
-			<div class="stat-label">Monthly Revenue</div>
-			<div class="stat-value">{formatCurrency(stats?.revenue?.mrr ?? 0)}</div>
+			<div class="stat-label">Recorded net USD order value</div>
+			<div class="stat-value">{formatCurrency(stats.revenue.recorded_net_usd_order_value.net_cents / 100)}</div>
 			<div class="stat-change neutral">
 				<IconCurrencyDollar size={14} />
-				{formatCurrency(stats?.revenue?.avg_ltv ?? 0)} avg LTV
+				{stats.revenue.recorded_net_usd_order_value.order_count} qualifying USD orders
 			</div>
 		</div>
 	</div>
@@ -116,10 +116,10 @@
 		</div>
 		<div class="stat-content">
 			<div class="stat-label">Churn Rate</div>
-			<div class="stat-value">{stats?.subscriptions?.churn_rate ?? 0}%</div>
+			<div class="stat-value" title={stats.subscriptions.churn_rate_reason}>Unmeasured</div>
 			<div class="stat-change negative">
 				<IconAlertTriangle size={14} />
-				{stats?.subscriptions?.churned ?? 0} churned
+				{stats.subscriptions.churned} current former members
 			</div>
 		</div>
 		<button class="stat-action" onclick={onRecoverChurned}>
@@ -128,7 +128,23 @@
 	</div>
 </div>
 
+<details class="measurement-details">
+	<summary>Measurement coverage and catalogue estimate</summary>
+	<p>{stats.revenue.recorded_net_usd_order_value.limitations}</p>
+	<p>{stats.revenue.recorded_net_usd_order_value.excluded_non_usd_orders} non-USD and {stats.revenue.recorded_net_usd_order_value.excluded_unknown_currency_orders} unknown-currency qualifying orders excluded.</p>
+	<p>Monthly recurring revenue: unmeasured. {stats.revenue.mrr_reason}</p>
+	<p>Average lifetime value: unmeasured. {stats.revenue.avg_ltv_reason}</p>
+	<p>Historical churn rate: unmeasured. {stats.subscriptions.churn_rate_reason}</p>
+	<p>Monthly catalogue estimate: {stats.revenue.catalog_monthly_estimate.value === null ? 'Unavailable' : stats.revenue.catalog_monthly_estimate.value.toLocaleString('en-US', { maximumFractionDigits: 2 })} catalogue price units; currency unrecorded. {stats.revenue.catalog_monthly_estimate.included_membership_records} active membership records included, {stats.revenue.catalog_monthly_estimate.excluded_membership_records} excluded. {stats.revenue.catalog_monthly_estimate.reason}</p>
+	<p>Registration growth: {stats.overview.growth_rate === null ? stats.overview.growth_rate_reason : `${stats.overview.growth_rate}% month to date versus the previous full month`}. {stats.growth_scope}</p>
+	<p>Registration trend excludes {stats.growth_timestamp_coverage.unknown_members} members with missing recorded dates and {stats.growth_timestamp_coverage.future_members} with future recorded dates.</p>
+	<p>{stats.recorded_timestamp_basis} Evaluation uses {stats.period.timezone}; evaluated {stats.evaluated_at}.</p>
+</details>
+
 <style>
+	.measurement-details { margin: -1rem 0 2rem; color: var(--text-secondary); font-size: .875rem; }
+	.measurement-details p { margin: .6rem 0; }
+	.stat-value { overflow-wrap: anywhere; }
 	.stats-grid {
 		display: grid;
 		grid-template-columns: repeat(4, 1fr);
@@ -157,6 +173,8 @@
 	.stat-card.gradient-gold {
 		border-color: rgba(210, 153, 34, 0.3);
 	}
+	.gradient-red .stat-content { padding-bottom: 2.5rem; }
+
 	.stat-card.gradient-red {
 		border-color: rgba(248, 81, 73, 0.3);
 	}

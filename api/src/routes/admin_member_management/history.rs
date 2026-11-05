@@ -20,6 +20,8 @@ pub(crate) enum Kind {
     Notes,
     Activity,
     Emails,
+    Memberships,
+    Orders,
 }
 pub(super) fn db(error: sqlx::Error) -> ApiError {
     tracing::error!(%error, "Member profile/history persistence failed");
@@ -39,7 +41,7 @@ pub(super) fn positive(id: i64) -> Result<(), ApiError> {
 pub(super) async fn exists_on(connection: &mut PgConnection, id: i64) -> Result<(), ApiError> {
     positive(id)?;
     let exists: bool =
-        sqlx::query_scalar("SELECT EXISTS(SELECT 1 FROM users WHERE id=$1 AND deleted_at IS NULL)")
+        sqlx::query_scalar("SELECT EXISTS(SELECT 1 FROM users WHERE id=$1 AND deleted_at IS NULL AND COALESCE(LOWER(role),'')<>'deleted')")
             .bind(id)
             .fetch_one(connection)
             .await
@@ -53,7 +55,7 @@ async fn lock_on(connection: &mut PgConnection, id: i64) -> Result<(), ApiError>
     positive(id)?;
     // Stabilize soft deletion without blocking the actor's FK KEY SHARE locks.
     let id: Option<i64> = sqlx::query_scalar(
-        "SELECT id FROM users WHERE id=$1 AND deleted_at IS NULL FOR NO KEY UPDATE",
+        "SELECT id FROM users WHERE id=$1 AND deleted_at IS NULL AND COALESCE(LOWER(role),'')<>'deleted' FOR NO KEY UPDATE",
     )
     .bind(id)
     .fetch_optional(connection)
@@ -68,19 +70,18 @@ impl HistoryQuery {
         let size = self.per_page.unwrap_or(25);
         if page < 1 || !(1..=100).contains(&size) {
             return Err(ApiError::validation_error(
-                "Use a positive page and a page size from1 to100",
+                "Use a positive page and a page size from 1 to 100",
             ));
         }
-        if let Some(action) = &self.action {
-            if !matches!(kind, Kind::Activity)
+        if let Some(action) = &self.action
+            && (!matches!(kind, Kind::Activity)
                 || action.trim().is_empty()
                 || action.chars().count() > 100
-                || action.chars().any(char::is_control)
-            {
-                return Err(ApiError::validation_error(
-                    "Use a bounded recorded activity action",
-                ));
-            }
+                || action.chars().any(char::is_control))
+        {
+            return Err(ApiError::validation_error(
+                "Use a bounded recorded activity action",
+            ));
         }
         let offset = (page - 1)
             .checked_mul(size)
@@ -91,7 +92,17 @@ impl HistoryQuery {
 
 const NOTE_SELECT: &str = r#"SELECT jsonb_build_object('id',n.id,'user_id',n.user_id,'content',n.note,'created_by',n.created_by,'created_by_name',a.name,'created_at',to_char(n.created_at AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"'),'updated_at',to_char(n.updated_at AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"')) FROM member_notes n LEFT JOIN users a ON a.id=n.created_by WHERE n.user_id=$1 AND $2::text IS NULL ORDER BY n.created_at DESC NULLS LAST,n.id DESC LIMIT $3 OFFSET $4"#;
 const ACTIVITY_SELECT: &str = r#"SELECT jsonb_build_object('id',n.id,'user_id',n.user_id,'action',n.action,'description',n.details->>'description','metadata',n.details,'ip_address',n.ip_address::text,'user_agent',n.user_agent,'created_at',to_char(n.created_at AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"')) FROM user_activity_log n WHERE n.user_id=$1 AND ($2::text IS NULL OR n.action=$2) ORDER BY n.created_at DESC NULLS LAST,n.id DESC LIMIT $3 OFFSET $4"#;
-const EMAIL_SELECT: &str = r#"SELECT jsonb_build_object('id',n.id,'user_id',n.user_id,'recipient',n.to_email,'subject',n.subject,'status',n.status,'provider',n.provider,'provider_message_id',n.provider_message_id,'sent_at',to_char(n.sent_at AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"'),'queued_at',to_char(n.queued_at AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"'),'created_at',n.created_at,'opened_at',n.opened_at,'clicked_at',n.clicked_at,'bounced_at',n.bounced_at,'error',COALESCE(n.error,n.error_message)) FROM email_logs n WHERE n.user_id=$1 AND $2::text IS NULL ORDER BY n.created_at DESC NULLS LAST,n.id DESC LIMIT $3 OFFSET $4"#;
+const EMAIL_SELECT: &str = r#"SELECT jsonb_build_object(
+'id',n.id,'user_id',n.user_id,'recipient',COALESCE(n.to_email,n.email),'subject',n.subject,
+'recorded_status',n.status,
+'outcome',CASE WHEN n.status IN ('sent','delivered','opened','clicked','bounced') AND NULLIF(BTRIM(n.provider_message_id),'') IS NOT NULL AND n.sent_at IS NOT NULL THEN 'accepted' WHEN n.status='failed' THEN 'rejected' WHEN n.status='unavailable' THEN 'unavailable' WHEN n.status='queued' THEN 'queued' ELSE 'unknown' END,
+'provider',n.provider,'provider_message_id',n.provider_message_id,
+'sent_at',to_char(n.sent_at AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"'),
+'queued_at',to_char(n.queued_at AT TIME ZONE 'UTC','YYYY-MM-DD"T"HH24:MI:SS.US"Z"'),
+'created_at',n.created_at,'opened_at',n.opened_at,'clicked_at',n.clicked_at,'bounced_at',n.bounced_at,
+'error',COALESCE(n.error,n.error_message)) FROM email_logs n WHERE n.user_id=$1 AND $2::text IS NULL ORDER BY n.created_at DESC NULLS LAST,n.id DESC LIMIT $3 OFFSET $4"#;
+const MEMBERSHIP_SELECT: &str = r#"SELECT jsonb_build_object('id',n.id,'user_id',n.user_id,'plan_id',n.plan_id,'plan_name',p.name,'plan_slug',p.slug,'status',n.status,'starts_at',n.starts_at,'expires_at',n.expires_at,'cancelled_at',n.cancelled_at,'trial_ends_at',n.trial_ends_at,'grace_period_end',n.grace_period_end,'current_period_start',n.current_period_start,'current_period_end',n.current_period_end,'cancel_at_period_end',n.cancel_at_period_end,'created_at',n.created_at,'updated_at',n.updated_at,'deleted_at',n.deleted_at,'payment_provider',n.payment_provider,'stripe_subscription_id',n.stripe_subscription_id,'catalog_price_units',p.price,'catalog_currency',NULL::text,'billing_cycle',p.billing_cycle,'interval_count',p.interval_count,'total_paid',NULL::numeric,'next_payment_at',NULL::timestamp,'unmeasured_reason','Charged amount, currency and next-charge schedule are not inferred from mutable catalogue prices or entitlement expiry') FROM user_memberships n LEFT JOIN membership_plans p ON p.id=n.plan_id WHERE n.user_id=$1 AND $2::text IS NULL ORDER BY n.created_at DESC NULLS LAST,n.id DESC LIMIT $3 OFFSET $4"#;
+const ORDER_SELECT: &str = r#"SELECT jsonb_build_object('id',n.id,'user_id',n.user_id,'order_number',n.order_number,'status',n.status,'currency',n.currency,'total_units',n.total::text,'refund_units',n.refund_amount::text,'net_recorded_units',GREATEST(n.total-COALESCE(n.refund_amount,0),0)::text,'created_at',n.created_at,'completed_at',n.completed_at,'refunded_at',n.refunded_at) FROM orders n WHERE n.user_id=$1 AND $2::text IS NULL ORDER BY n.created_at DESC NULLS LAST,n.id DESC LIMIT $3 OFFSET $4"#;
 
 pub(crate) async fn read_on(
     connection: &mut PgConnection,
@@ -117,6 +128,16 @@ pub(crate) async fn read_on(
             "SELECT COUNT(*) FROM email_logs WHERE user_id=$1 AND $2::text IS NULL",
             EMAIL_SELECT,
         ),
+        Kind::Memberships => (
+            "memberships",
+            "SELECT COUNT(*) FROM user_memberships WHERE user_id=$1 AND $2::text IS NULL",
+            MEMBERSHIP_SELECT,
+        ),
+        Kind::Orders => (
+            "orders",
+            "SELECT COUNT(*) FROM orders WHERE user_id=$1 AND $2::text IS NULL",
+            ORDER_SELECT,
+        ),
     };
     let total: i64 = sqlx::query_scalar(sqlx::AssertSqlSafe(count_sql))
         .bind(member)
@@ -136,7 +157,11 @@ pub(crate) async fn read_on(
     let mut result = json!({
         "schema_version":1,"metrics_scope":format!("member_{name}"),"member_id":member,
         "pagination":{"total":total,"per_page":size,"current_page":page,"last_page":pages},
-        "timestamp_basis":if matches!(kind,Kind::Emails){"created/open/click/bounce values are recorded timestamps without timezone; sent/queued instants are UTC"}else{"recorded UTC instants"}
+        "timestamp_basis":match kind {
+            Kind::Emails => "created/open/click/bounce values are recorded timestamps without timezone; sent/queued instants are UTC",
+            Kind::Memberships | Kind::Orders => "legacy recorded timestamps without timezone; original historical timezone is not independently verified",
+            Kind::Notes | Kind::Activity => "recorded UTC instants"
+        }
     });
     result[name] = json!(rows);
     if matches!(kind, Kind::Emails) {
@@ -144,7 +169,7 @@ pub(crate) async fn read_on(
             "Only email_logs explicitly linked by recorded user_id; addresses are not guessed or reassigned"
         );
         result["observations"] = json!(
-            "Accepted/sent is a recorded provider outcome; opens/clicks are signals, not proof of human engagement"
+            "Recorded status is preserved. Accepted requires a stored provider message identifier and acceptance instant; other legacy success labels remain unknown. Opens/clicks are signals, not proof of human engagement or inbox delivery."
         );
     }
     Ok(result)
@@ -203,7 +228,7 @@ pub(crate) async fn add_note(
             .any(|c| c.is_control() && !matches!(c, '\n' | '\r' | '\t'))
     {
         return Err(ApiError::validation_error(
-            "Provide a nonempty note within10000 characters, without control characters",
+            "Provide a nonempty note within 10000 characters, without control characters",
         ));
     }
     let mut tx = state.db.pool.begin().await.map_err(db)?;

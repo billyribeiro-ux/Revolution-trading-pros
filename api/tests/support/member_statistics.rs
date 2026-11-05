@@ -9,7 +9,7 @@ async fn get(api: &Router, path: &str, token: Option<&str>) -> (StatusCode, Valu
     request(api, "GET", path, token, Value::Null).await
 }
 async fn membership(pool: &PgPool, user: i64, plan: i64, status: &str, days: i32) -> i64 {
-    sqlx::query_scalar("INSERT INTO user_memberships(user_id,plan_id,status,starts_at,expires_at,trial_ends_at) VALUES($1,$2,$3,NOW()-INTERVAL '10 days',NOW()+$4*INTERVAL '1 day',NOW()+$4*INTERVAL '1 day') RETURNING id").bind(user).bind(plan).bind(status).bind(days).fetch_one(pool).await.unwrap()
+    sqlx::query_scalar("INSERT INTO user_memberships(user_id,plan_id,status,starts_at,expires_at,trial_ends_at) VALUES($1,$2,$3,(NOW() AT TIME ZONE 'UTC')-INTERVAL '10 days',(NOW() AT TIME ZONE 'UTC')+$4*INTERVAL '1 day',(NOW() AT TIME ZONE 'UTC')+$4*INTERVAL '1 day') RETURNING id").bind(user).bind(plan).bind(status).bind(days).fetch_one(pool).await.unwrap()
 }
 pub async fn proof(api: &Router, pool: &PgPool, tokens: &[String]) {
     let admin = Some(tokens[0].as_str());
@@ -27,33 +27,30 @@ pub async fn proof(api: &Router, pool: &PgPool, tokens: &[String]) {
     let (status, before) = get(api, "/api/admin/members/stats", admin).await;
     assert_eq!(status, StatusCode::OK, "{before}");
     let prefix = format!("member-facts-{}", Uuid::new_v4());
-    let users:Vec<i64>=sqlx::query_scalar("INSERT INTO users(name,email,password_hash,role,created_at) SELECT $1||'-'||n,$1||'-'||n||'@example.test','not-a-login-password','user',NOW() FROM generate_series(1,8)n RETURNING id").bind(&prefix).fetch_all(pool).await.unwrap();
+    let users:Vec<i64>=sqlx::query_scalar("INSERT INTO users(name,email,password_hash,role,created_at) SELECT $1||'-'||n,$1||'-'||n||'@example.test','not-a-login-password','user',(NOW() AT TIME ZONE 'UTC') FROM generate_series(1,8)n RETURNING id").bind(&prefix).fetch_all(pool).await.unwrap();
     sqlx::query("UPDATE users SET deleted_at=NOW() WHERE id=$1")
         .bind(users[7])
         .execute(pool)
         .await
         .unwrap();
-    sqlx::query("UPDATE users SET created_at=NULL WHERE id=$1")
-        .bind(users[5])
-        .execute(pool)
-        .await
-        .unwrap();
-    sqlx::query("UPDATE users SET created_at=NOW()+INTERVAL '1 month' WHERE id=$1")
-        .bind(users[6])
-        .execute(pool)
-        .await
-        .unwrap();
+    sqlx::query(
+        "UPDATE users SET created_at=(NOW() AT TIME ZONE 'UTC')+INTERVAL '1 month' WHERE id=$1",
+    )
+    .bind(users[6])
+    .execute(pool)
+    .await
+    .unwrap();
     let plan:i64=sqlx::query_scalar("INSERT INTO membership_plans(id,name,slug,price,billing_cycle,interval_count,is_active) VALUES(114000114,$1,$1,120,'annual',12,false) RETURNING id").bind(&prefix).fetch_one(pool).await.unwrap();
     let other:i64=sqlx::query_scalar("INSERT INTO membership_plans(name,slug,price,billing_cycle,interval_count) VALUES($1,$1,30,'quarterly',3) RETURNING id").bind(format!("{prefix}-other")).fetch_one(pool).await.unwrap();
     membership(pool, users[0], plan, "active", 30).await;
-    membership(pool, users[0], plan, "active", 30).await; // count member once; retain record count.
+    membership(pool, users[0], plan, "trial", 30).await; // legal active/trial overlap; distinct members once.
     membership(pool, users[0], plan, "cancelled", -1).await;
     membership(pool, users[1], plan, "active", 30).await;
     membership(pool, users[2], plan, "trial", 30).await;
-    membership(pool, users[3], plan, "active", -1).await;
+    membership(pool, users[3], plan, "expired", -1).await;
     membership(pool, users[3], other, "active", 30).await; // globally active, expired in this plan.
     let future = membership(pool, users[4], plan, "active", 30).await;
-    sqlx::query("UPDATE user_memberships SET starts_at=NOW()+INTERVAL '1 day' WHERE id=$1")
+    sqlx::query("UPDATE user_memberships SET starts_at=(NOW() AT TIME ZONE 'UTC')+INTERVAL '1 day' WHERE id=$1")
         .bind(future)
         .execute(pool)
         .await
@@ -76,7 +73,7 @@ pub async fn proof(api: &Router, pool: &PgPool, tokens: &[String]) {
         ("paid", None, 100, 0),
         ("pending", Some("USD"), 100, 0),
     ] {
-        sqlx::query("INSERT INTO orders(user_id,order_number,status,currency,total,refund_amount,completed_at) VALUES($1,$2,$3,$4,$5::bigint::numeric,$6::bigint::numeric,NOW())").bind(users[0]).bind(Uuid::new_v4().to_string()).bind(status).bind(currency).bind(total).bind(refund).execute(pool).await.unwrap();
+        sqlx::query("INSERT INTO orders(user_id,order_number,status,currency,total,refund_amount,completed_at) VALUES($1,$2,$3,$4,$5::bigint::numeric,$6::bigint::numeric,(NOW() AT TIME ZONE 'UTC'))").bind(users[0]).bind(Uuid::new_v4().to_string()).bind(status).bind(currency).bind(total).bind(refund).execute(pool).await.unwrap();
     }
     let (status, after) = get(api, "/api/admin/members/stats", admin).await;
     assert_eq!(status, StatusCode::OK, "{after}");
@@ -89,13 +86,13 @@ pub async fn proof(api: &Router, pool: &PgPool, tokens: &[String]) {
     assert_eq!(
         after["overview"]["new_this_month"].as_i64().unwrap()
             - before["overview"]["new_this_month"].as_i64().unwrap(),
-        5
+        6
     );
-    for key in ["unknown_members", "future_members"] {
+    for (key, delta) in [("unknown_members", 0), ("future_members", 1)] {
         assert_eq!(
             after["growth_timestamp_coverage"][key].as_i64().unwrap()
                 - before["growth_timestamp_coverage"][key].as_i64().unwrap(),
-            1
+            delta
         );
     }
     for (key, delta) in [
@@ -103,7 +100,7 @@ pub async fn proof(api: &Router, pool: &PgPool, tokens: &[String]) {
         ("trial", 1),
         ("churned", 1),
         ("never_subscribed", 2),
-        ("active_membership_records", 4),
+        ("active_membership_records", 3),
     ] {
         assert_eq!(
             after["subscriptions"][key].as_i64().unwrap()

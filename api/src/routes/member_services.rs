@@ -44,8 +44,8 @@ fn search(value: Option<String>) -> Result<Option<String>, ApiError> {
     }
     Ok(value.filter(|v| !v.is_empty()).map(|v| format!("%{v}%")))
 }
-const PLAN_SQL: &str = "SELECT jsonb_build_object('id',p.id,'name',p.name,'type','membership_plan','price_units',p.price,'currency',NULL,'billing_cycle',p.billing_cycle,'interval_count',p.interval_count,'is_active',p.is_active,'members_count',(SELECT COUNT(DISTINCT s.user_id) FROM user_memberships s JOIN admin_member_facts m ON m.id=s.user_id WHERE s.plan_id=p.id AND s.deleted_at IS NULL AND s.starts_at<=NOW() AND (s.expires_at IS NULL OR s.expires_at>NOW()) AND (s.status='active' OR(s.status IN('trial','trialing') AND(s.trial_ends_at IS NULL OR s.trial_ends_at>NOW()))))) FROM membership_plans p";
-fn plan_query(id: i64) -> Result<QueryBuilder<'static, Postgres>, ApiError> {
+const PLAN_SQL: &str = "SELECT jsonb_build_object('id',p.id,'name',p.name,'type','membership_plan','price_units',p.price,'currency',NULL,'billing_cycle',p.billing_cycle,'interval_count',p.interval_count,'is_active',p.is_active,'members_count',(SELECT COUNT(DISTINCT s.user_id) FROM user_memberships s JOIN admin_member_facts m ON m.id=s.user_id WHERE s.plan_id=p.id AND s.deleted_at IS NULL AND s.starts_at<=(NOW() AT TIME ZONE 'UTC') AND (s.expires_at IS NULL OR s.expires_at>(NOW() AT TIME ZONE 'UTC')) AND (s.status='active' OR(s.status IN('trial','trialing') AND(s.trial_ends_at IS NULL OR s.trial_ends_at>(NOW() AT TIME ZONE 'UTC')))))) FROM membership_plans p";
+fn plan_query(id: i64) -> Result<QueryBuilder<Postgres>, ApiError> {
     if id <= 0 {
         return Err(ApiError::validation_error(
             "Membership plan identifier must be positive",
@@ -110,11 +110,11 @@ pub(super) async fn catalog(state: &AppState, params: CatalogQuery) -> Result<Va
 // One local status per member: current active > current trial > latest effective record.
 // Historical rows remain in the audience; future grants are scheduled, not current active.
 const COHORT_SQL: &str = r#"WITH ranked AS(SELECT s.*,CASE
- WHEN s.status='active' AND s.starts_at<=NOW() AND(s.expires_at IS NULL OR s.expires_at>NOW()) THEN 'active'
- WHEN s.status IN('trial','trialing') AND s.starts_at<=NOW() AND(s.expires_at IS NULL OR s.expires_at>NOW()) AND(s.trial_ends_at IS NULL OR s.trial_ends_at>NOW()) THEN 'trial'
+ WHEN s.status='active' AND s.starts_at<=(NOW() AT TIME ZONE 'UTC') AND(s.expires_at IS NULL OR s.expires_at>(NOW() AT TIME ZONE 'UTC')) THEN 'active'
+ WHEN s.status IN('trial','trialing') AND s.starts_at<=(NOW() AT TIME ZONE 'UTC') AND(s.expires_at IS NULL OR s.expires_at>(NOW() AT TIME ZONE 'UTC')) AND(s.trial_ends_at IS NULL OR s.trial_ends_at>(NOW() AT TIME ZONE 'UTC')) THEN 'trial'
  WHEN s.status IN('cancelled','canceled') THEN 'cancelled'
- WHEN s.status='expired' OR s.expires_at<=NOW() OR(s.status IN('trial','trialing') AND s.trial_ends_at<=NOW()) THEN 'expired'
- WHEN s.starts_at>NOW() THEN 'scheduled'
+ WHEN s.status='expired' OR s.expires_at<=(NOW() AT TIME ZONE 'UTC') OR(s.status IN('trial','trialing') AND s.trial_ends_at<=(NOW() AT TIME ZONE 'UTC')) THEN 'expired'
+ WHEN s.starts_at>(NOW() AT TIME ZONE 'UTC') THEN 'scheduled'
  WHEN s.status IN('pending','past_due','paused') THEN s.status ELSE 'other' END AS local_status
  FROM user_memberships s WHERE s.plan_id=$1 AND s.deleted_at IS NULL),
  local_members AS(SELECT DISTINCT ON(user_id) user_id,local_status,id AS membership_id FROM ranked ORDER BY user_id,CASE local_status WHEN 'active' THEN 0 WHEN 'trial' THEN 1 ELSE 2 END,created_at DESC NULLS LAST,id DESC),
@@ -157,21 +157,20 @@ pub(super) async fn members(
         .await
         .map_err(storage)?
         .ok_or_else(|| ApiError::not_found("Membership plan not found"))?;
-    let stats_sql = format!(
-        r#"{COHORT_SQL} SELECT jsonb_build_object('total_members',COUNT(*),'active_members',COUNT(*) FILTER(WHERE service_status='active'),'trial_members',COUNT(*) FILTER(WHERE service_status='trial'),'cancelled_members',COUNT(*) FILTER(WHERE service_status='cancelled'),'expired_members',COUNT(*) FILTER(WHERE service_status='expired'),'other_members',COUNT(*) FILTER(WHERE service_status NOT IN('active','trial','cancelled','expired')),'whole_member_recorded_net_usd_order_value',{}) FROM audience"#,
-        super::member_statistics::ORDER_VALUE_SQL
-    );
-    let stats: Value = sqlx::query_scalar(&stats_sql)
+    let mut stats_query = QueryBuilder::<Postgres>::new(COHORT_SQL);
+    stats_query.push(r#" SELECT jsonb_build_object('total_members',COUNT(*),'active_members',COUNT(*) FILTER(WHERE service_status='active'),'trial_members',COUNT(*) FILTER(WHERE service_status='trial'),'cancelled_members',COUNT(*) FILTER(WHERE service_status='cancelled'),'expired_members',COUNT(*) FILTER(WHERE service_status='expired'),'other_members',COUNT(*) FILTER(WHERE service_status NOT IN('active','trial','cancelled','expired')),'whole_member_recorded_net_usd_order_value',"#).push(super::member_statistics::ORDER_VALUE_SQL).push(r#") FROM audience"#);
+    let stats: Value = stats_query
+        .build_query_scalar()
         .bind(id)
         .bind(&pattern)
         .bind(&status)
         .fetch_one(&mut *tx)
         .await
         .map_err(storage)?;
-    let rows_sql = format!(
-        "{COHORT_SQL} SELECT to_jsonb(m)||jsonb_build_object('status_label',initcap(replace(m.status,'_',' '))) FROM audience m ORDER BY m.created_at DESC NULLS LAST,m.id LIMIT $4 OFFSET $5"
-    );
-    let members: Vec<Value> = sqlx::query_scalar(&rows_sql)
+    let mut rows_query = QueryBuilder::<Postgres>::new(COHORT_SQL);
+    rows_query.push(r#" SELECT to_jsonb(m)||jsonb_build_object('status_label',initcap(replace(m.status,'_',' '))) FROM audience m ORDER BY m.created_at DESC NULLS LAST,m.id LIMIT $4 OFFSET $5"#);
+    let members: Vec<Value> = rows_query
+        .build_query_scalar()
         .bind(id)
         .bind(&pattern)
         .bind(&status)
@@ -185,6 +184,6 @@ pub(super) async fn members(
         .as_i64()
         .ok_or_else(|| ApiError::database_error("Invalid member count"))?;
     Ok(
-        json!({"schema_version":1,"scope":"plan_local_membership_cohort","cohort_rule":"Current active, then current trial, otherwise latest effective nondeleted membership; global member status is independent.","service":service,"stats":stats,"members":members,"pagination":{"total":total,"per_page":size,"current_page":page,"last_page":((total+size-1)/size).max(1)}}),
+        json!({"schema_version":1,"scope":"plan_local_membership_cohort","cohort_rule":"Current active, then current trial, otherwise latest effective nondeleted membership; global member status is independent. Naive membership dates use operational UTC; historical timezone provenance is unverified.","service":service,"stats":stats,"members":members,"pagination":{"total":total,"per_page":size,"current_page":page,"last_page":((total+size-1)/size).max(1)}}),
     )
 }

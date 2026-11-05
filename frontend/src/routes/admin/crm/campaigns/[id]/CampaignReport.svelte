@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { useCrmAccess } from '#lib/crm/access.svelte.js';
+	const access = useCrmAccess();
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { crmAPI } from '#lib/api/crm.js';
@@ -21,12 +23,17 @@
 		try {
 			campaign = await crmAPI.getCampaign(id);
 		} catch (cause) {
+			campaign = null;
 			error = apiErrorMessage(cause, 'Unable to load campaign report');
 		} finally {
 			loading = false;
 		}
 	}
 	async function duplicate() {
+		if (!access.can('POST', '/campaigns/{id}/duplicate')) {
+			error = 'Your role cannot duplicate campaigns.';
+			return;
+		}
 		if (busy) return;
 		busy = true;
 		error = '';
@@ -40,6 +47,10 @@
 		}
 	}
 	async function remove() {
+		if (!access.can('DELETE', '/campaigns/{id}')) {
+			error = 'Your role cannot delete campaigns.';
+			return;
+		}
 		if (busy) return;
 		busy = true;
 		error = '';

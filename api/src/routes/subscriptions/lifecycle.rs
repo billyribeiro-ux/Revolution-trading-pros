@@ -157,7 +157,7 @@ pub(super) async fn create_subscription(
             trial_ends_at, current_period_start, current_period_end,
             cancel_at_period_end, created_at, updated_at
         )
-        VALUES ($1, $2, NOW(), $3, 'free', $4, $5, $6, false, NOW(), NOW())
+        VALUES ($1, $2, (NOW() AT TIME ZONE 'UTC'), $3, 'free', $4, $5, $6, false, (NOW() AT TIME ZONE 'UTC'), (NOW() AT TIME ZONE 'UTC'))
         RETURNING *
         ",
     )
@@ -270,7 +270,7 @@ pub(super) async fn cancel_subscription(
     if cancel_immediately {
         // Cancel immediately
         sqlx::query(
-            "UPDATE user_memberships SET status = 'cancelled', cancelled_at = NOW(), updated_at = NOW() WHERE id = $1"
+            "UPDATE user_memberships SET status = 'cancelled', cancelled_at = (NOW() AT TIME ZONE 'UTC'), updated_at = (NOW() AT TIME ZONE 'UTC') WHERE id = $1"
         )
         .bind(id)
         .execute(&state.db.pool)
@@ -279,7 +279,7 @@ pub(super) async fn cancel_subscription(
     } else {
         // Cancel at period end
         sqlx::query(
-            "UPDATE user_memberships SET cancel_at_period_end = true, updated_at = NOW() WHERE id = $1"
+            "UPDATE user_memberships SET cancel_at_period_end = true, updated_at = (NOW() AT TIME ZONE 'UTC') WHERE id = $1"
         )
         .bind(id)
         .execute(&state.db.pool)
@@ -355,7 +355,7 @@ pub(super) async fn reactivate_subscription(
             })?;
 
         sqlx::query(
-            "UPDATE user_memberships SET cancel_at_period_end = false, updated_at = NOW() WHERE id = $1",
+            "UPDATE user_memberships SET cancel_at_period_end = false, updated_at = (NOW() AT TIME ZONE 'UTC') WHERE id = $1",
         )
         .bind(id)
         .execute(&state.db.pool)

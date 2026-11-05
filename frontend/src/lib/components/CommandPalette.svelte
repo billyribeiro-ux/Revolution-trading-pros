@@ -12,10 +12,10 @@
 	 */
 
 	import { onMount } from 'svelte';
+	import { useCrmAccess } from '#lib/crm/access.svelte.js';
 	import { goto } from '$app/navigation';
 	import { fade, scale, fly } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
-	import { browser } from '$app/env';
 	import { toastStore } from '#lib/stores/toast.svelte.js';
 	import {
 		IconSearch,
@@ -50,6 +50,7 @@
 
 	let { isOpen = $bindable(false), onclose }: Props = $props();
 
+	const access = useCrmAccess();
 	let searchQuery = $state('');
 	let selectedIndex = $state(0);
 
@@ -233,7 +234,7 @@
 			//   	window.location.reload();
 			//   },
 			action: () => {
-				if (!browser) return;
+				if (typeof window === 'undefined') return;
 				const RESERVED_PREFIXES = ['rtp_', 'authStore', 'auth_'];
 				for (const key of Object.keys(localStorage)) {
 					if (!RESERVED_PREFIXES.some((p) => key.startsWith(p))) {
@@ -270,15 +271,22 @@
 		return patternIdx === lowerPattern.length;
 	}
 
+	const visibleNavigationItems = $derived(navigationItems.filter((item) => access.page(item.path)));
+	const visibleQuickActions = $derived(
+		quickActions.filter(
+			(item) => access.global || ['refresh-all', 'clear-cache', 'logout'].includes(item.id)
+		)
+	);
+
 	// Filter and combine results
 	let filteredResults = $derived(
 		searchQuery.trim() === ''
-			? [...navigationItems.slice(0, 5), ...quickActions.slice(0, 3)]
+			? [...visibleNavigationItems.slice(0, 5), ...visibleQuickActions.slice(0, 3)]
 			: [
-					...navigationItems.filter(
+					...visibleNavigationItems.filter(
 						(item) => fuzzyMatch(item.label, searchQuery) || fuzzyMatch(item.category, searchQuery)
 					),
-					...quickActions.filter(
+					...visibleQuickActions.filter(
 						(item) => fuzzyMatch(item.label, searchQuery) || fuzzyMatch(item.category, searchQuery)
 					)
 				]
@@ -339,7 +347,7 @@
 	}
 
 	function saveRecentSearch(query: string) {
-		if (!browser) return;
+		if (typeof window === 'undefined') return;
 		const recent = JSON.parse(localStorage.getItem('recentSearches') || '[]') as string[];
 		const updated = [query, ...recent.filter((s) => s !== query)].slice(0, 5);
 		localStorage.setItem('recentSearches', JSON.stringify(updated));
@@ -584,7 +592,9 @@
 		font-size: 0.875rem;
 		text-align: left;
 		cursor: pointer;
-		transition: background-color 0.15s ease, color 0.15s ease;
+		transition:
+			background-color 0.15s ease,
+			color 0.15s ease;
 	}
 
 	.result-item:hover,

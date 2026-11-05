@@ -234,12 +234,12 @@ impl Database {
         // Upsert developer account
         let result = sqlx::query(r"
             INSERT INTO users (email, password_hash, name, role, email_verified_at, created_at, updated_at)
-            VALUES ($1, $2, $3, 'developer', NOW(), NOW(), NOW())
+            VALUES ($1, $2, $3, 'developer', NOW() AT TIME ZONE 'UTC', NOW() AT TIME ZONE 'UTC', NOW() AT TIME ZONE 'UTC')
             ON CONFLICT (email) DO UPDATE SET
                 password_hash = EXCLUDED.password_hash,
                 role = 'developer',
-                email_verified_at = COALESCE(users.email_verified_at, NOW()),
-                updated_at = NOW()
+                email_verified_at = COALESCE(users.email_verified_at, NOW() AT TIME ZONE 'UTC'),
+                updated_at = NOW() AT TIME ZONE 'UTC'
             RETURNING id
         ")
             .bind(&email)

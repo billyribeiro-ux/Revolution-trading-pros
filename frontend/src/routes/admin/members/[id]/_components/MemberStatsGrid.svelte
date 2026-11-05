@@ -1,134 +1,95 @@
 <script lang="ts">
 	import { IconCreditCard, IconReceipt, IconCalendar, IconChartBar } from '#lib/icons/index.js';
-	import type { Member } from '#lib/api/members.js';
-	import { formatCurrency, formatDate, getEngagementLabel } from './helpers';
-
-	interface Props {
-		member: Member;
-		engagementScore: number;
-	}
-
-	let { member, engagementScore }: Props = $props();
-
-	let engagement = $derived(getEngagementLabel(engagementScore));
-	// The `stat-icon` modifier mirrors the engagement color's Tailwind class
-	// stem (e.g. `text-emerald-400` -> `emerald-400`) so the existing static
-	// CSS map (.stat-icon.emerald-400 / .yellow-400 / .red-400) lights up.
-	// Per CLAUDE.md "match-arm exhaustiveness vs metric labels": this is a
-	// bounded set (only 4 outputs from getEngagementLabel), so no unbounded
-	// class injection risk.
-	let engagementIconClass = $derived(engagement.color.replace('text-', ''));
+	import type { MemberProfile } from '#lib/api/member-profile.js';
+	import { recordedUsdCents, recordedWallClock } from './profile-display.js';
+	let { profile }: { profile: MemberProfile } = $props();
 </script>
 
 <div class="stats-grid">
 	<div class="stat-card">
-		<div class="stat-icon purple">
-			<IconCreditCard size={24} />
-		</div>
-		<div class="stat-content">
-			<div class="stat-value">{formatCurrency(member.total_spent)}</div>
-			<div class="stat-label">Lifetime Value</div>
-		</div>
-	</div>
-	<div class="stat-card">
-		<div class="stat-icon emerald">
-			<IconReceipt size={24} />
-		</div>
-		<div class="stat-content">
-			<div class="stat-value">{member.active_subscriptions_count}</div>
-			<div class="stat-label">Active Subscriptions</div>
+		<IconCreditCard size={24} />
+		<div>
+			<div class="stat-value">{recordedUsdCents(profile.recorded_order_value.net_cents)}</div>
+			<div class="stat-label">Recorded net USD order value</div>
+			<p>
+				{profile.recorded_order_value.order_count} qualifying orders · {profile.recorded_order_value
+					.excluded_non_usd_orders} non-USD and {profile.recorded_order_value
+					.excluded_unknown_currency_orders} unknown-currency orders excluded.
+			</p>
 		</div>
 	</div>
 	<div class="stat-card">
-		<div class="stat-icon blue">
-			<IconCalendar size={24} />
-		</div>
-		<div class="stat-content">
-			<div class="stat-value">{formatDate(member.joined_at)}</div>
-			<div class="stat-label">Member Since</div>
+		<IconReceipt size={24} />
+		<div>
+			<div class="stat-value">{profile.member.active_subscriptions_count}</div>
+			<div class="stat-label">Current active membership records</div>
 		</div>
 	</div>
 	<div class="stat-card">
-		<div class={['stat-icon', engagementIconClass]}>
-			<IconChartBar size={24} />
+		<IconCalendar size={24} />
+		<div>
+			<div class="stat-value date">{recordedWallClock(profile.member.joined_at)}</div>
+			<div class="stat-label">Recorded join date</div>
 		</div>
-		<div class="stat-content">
-			<div class="stat-value">{engagementScore}%</div>
-			<div class={['stat-label', engagement.color]}>
-				{engagement.label}
-			</div>
+	</div>
+	<div class="stat-card">
+		<IconChartBar size={24} />
+		<div>
+			<div class="stat-value">Not measured</div>
+			<div class="stat-label">Engagement score</div>
+			<p>{profile.engagement.reason}</p>
 		</div>
 	</div>
 </div>
+<p class="coverage">{profile.recorded_order_value.limitations} {profile.billing_coverage}</p>
 
 <style>
 	.stats-grid {
 		display: grid;
-		grid-template-columns: repeat(4, 1fr);
+		grid-template-columns: repeat(4, minmax(0, 1fr));
 		gap: 1rem;
-		margin-bottom: 2rem;
 	}
-
 	.stat-card {
 		display: flex;
-		align-items: center;
+		align-items: flex-start;
 		gap: 1rem;
 		padding: 1.25rem;
 		background: var(--bg-elevated, #161b22);
 		border: 1px solid var(--border-muted, #21262d);
 		border-radius: 16px;
+		overflow-wrap: anywhere;
 	}
-
-	.stat-icon {
-		width: 48px;
-		height: 48px;
-		border-radius: 12px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-	}
-
-	.stat-icon.purple {
-		background: rgba(230, 184, 0, 0.15);
-		color: var(--primary-400);
-	}
-	.stat-icon.emerald {
-		background: rgba(63, 185, 80, 0.15);
-		color: var(--success-emphasis, #3fb950);
-	}
-	.stat-icon.blue {
-		background: rgba(88, 166, 255, 0.15);
-		color: var(--info-emphasis, #58a6ff);
-	}
-	.stat-icon.emerald-400 {
-		background: rgba(52, 211, 153, 0.15);
-		color: var(--success-emphasis, #3fb950);
-	}
-	.stat-icon.yellow-400 {
-		background: rgba(210, 153, 34, 0.15);
-		color: var(--warning-emphasis, #d29922);
-	}
-	.stat-icon.red-400 {
-		background: rgba(248, 113, 113, 0.15);
-		color: var(--error-emphasis, #f85149);
-	}
-
 	.stat-value {
 		font-size: 1.25rem;
 		font-weight: 700;
 		color: var(--text-primary, #f0f6fc);
 	}
-
 	.stat-label {
-		font-size: 0.75rem;
-		color: var(--text-tertiary, #6e7681);
 		text-transform: uppercase;
-		letter-spacing: 0.05em;
+		font-size: 0.75rem;
+		color: var(--text-secondary, #8b949e);
+		margin-top: 0.4rem;
 	}
-
-	@media (max-width: 1023.98px) {
+	.date {
+		font-size: 0.95rem;
+	}
+	.coverage,
+	p {
+		font-size: 0.8rem;
+		color: var(--text-secondary, #8b949e);
+		line-height: 1.6;
+	}
+	.coverage {
+		margin-bottom: 2rem;
+	}
+	@media (max-width: 1100px) {
 		.stats-grid {
-			grid-template-columns: repeat(2, 1fr);
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+	}
+	@media (max-width: 650px) {
+		.stats-grid {
+			grid-template-columns: 1fr;
 		}
 	}
 </style>

@@ -6,6 +6,8 @@ import type { PayPalNamespace } from '@paypal/paypal-js';
 import type { StripeConstructor } from '@stripe/stripe-js';
 import type { Square } from '@square/web-payments-sdk-types';
 import type { SEOInput } from '#lib/seo/types.js';
+import type { CrmContextBinding } from '#lib/server/crm-auth.js';
+import type { CrmCapabilities } from '#lib/crm/capabilities.js';
 
 export type SeoData = SEOInput;
 
@@ -42,6 +44,9 @@ declare global {
 	namespace App {
 		// interface Error {}
 		interface Locals {
+			/** Request-local current CRM grants; never serialized with the bearer binding. */
+			crmContext?: CrmContextBinding;
+			crmCapabilities?: CrmCapabilities;
 			/** User's consent state from cookie */
 			consent: ConsentState;
 			/** Whether the user has interacted with the consent banner */
@@ -70,6 +75,9 @@ declare global {
 			} | null>;
 		}
 		interface PageData {
+			crmCapabilities?: CrmCapabilities;
+			crmUserId?: string | null;
+			globalAdmin?: boolean;
 			seo?: SeoData;
 		}
 		// interface PageState {}
@@ -107,7 +115,12 @@ declare global {
 		razorpay_signature?: string;
 	}
 	interface RazorpayFailureResponse {
-		error?: { code?: string; description?: string; reason?: string; [key: string]: unknown };
+		error?: {
+			code?: string;
+			description?: string;
+			reason?: string;
+			[key: string]: unknown;
+		};
 	}
 	interface RazorpayInstance {
 		on(event: 'payment.failed', handler: (response: RazorpayFailureResponse) => void): void;

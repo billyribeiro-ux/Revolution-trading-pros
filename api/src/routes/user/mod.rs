@@ -39,7 +39,7 @@ mod avatar;
 mod dtos;
 mod memberships;
 mod payment_methods;
-mod profile;
+pub(crate) mod profile;
 
 // Re-export the DTOs the integration tests import directly. Keeping
 // `routes::user::{...}` resolvable preserves the module's public API
@@ -62,6 +62,7 @@ pub fn router() -> Router<AppState> {
         )
         .route("/profile", get(profile::get_profile))
         .route("/profile", axum::routing::put(profile::update_profile))
+        .route("/password", axum::routing::put(profile::change_password))
         .route("/avatar", post(avatar::upload_avatar))
         .route("/avatar", axum::routing::delete(avatar::delete_avatar))
         .route("/deactivate", post(account::deactivate_account))

@@ -16,6 +16,8 @@
 -->
 
 <script lang="ts">
+	import { useCrmAccess } from '#lib/crm/access.svelte.js';
+	const access = useCrmAccess();
 	import { goto } from '$app/navigation';
 	import { onMount, onDestroy } from 'svelte';
 	import IconArrowLeft from '@tabler/icons-svelte-runes/icons/arrow-left';
@@ -72,10 +74,10 @@
 	let { dealId }: { dealId: string } = $props();
 	let notePage = $state(1),
 		notePages = $state(1),
-		noteTotal = $state(0);
+		noteTotal = $state<number | null>(null);
 	let timelinePage = $state(1),
 		timelinePages = $state(1),
-		timelineTotal = $state(0);
+		timelineTotal = $state<number | null>(null);
 	let generation = 0;
 	type ActivityPage<T> = { data: T[]; meta: { total: number; last_page: number } };
 	let currentStage = $derived(pipeline?.stages?.find((s) => s.id === deal?.stage_id) || null);
@@ -92,27 +94,33 @@
 		try {
 			const [current, events, savedNotes] = await Promise.all([
 				crmAPI.getDeal(dealId),
-				apiClient.get<ActivityPage<TimelineEvent>>(`/admin/crm/deals/${dealId}/timeline`, {
-					cache: { enabled: false },
-					preserveEnvelope: true,
-					params: { page: timelinePage, per_page: 25 }
-				}),
-				apiClient.get<ActivityPage<DealNote>>(`/admin/crm/deals/${dealId}/notes`, {
-					cache: { enabled: false },
-					preserveEnvelope: true,
-					params: { page: notePage, per_page: 25 }
-				})
+				access.can('GET', '/deals/{id}/timeline')
+					? apiClient.get<ActivityPage<TimelineEvent>>(`/admin/crm/deals/${dealId}/timeline`, {
+							cache: { enabled: false },
+							preserveEnvelope: true,
+							params: { page: timelinePage, per_page: 25 }
+						})
+					: Promise.resolve(null),
+				access.can('GET', '/deals/{id}/notes')
+					? apiClient.get<ActivityPage<DealNote>>(`/admin/crm/deals/${dealId}/notes`, {
+							cache: { enabled: false },
+							preserveEnvelope: true,
+							params: { page: notePage, per_page: 25 }
+						})
+					: Promise.resolve(null)
 			]);
-			const selected = await crmAPI.getPipeline(current.pipeline_id);
+			const selected = access.can('GET', '/pipelines/{id}')
+				? await crmAPI.getPipeline(current.pipeline_id)
+				: null;
 			if (request !== generation) return;
 			deal = current;
 			pipeline = selected;
-			timeline = events.data;
-			notes = savedNotes.data;
-			timelineTotal = events.meta.total;
-			timelinePages = events.meta.last_page;
-			noteTotal = savedNotes.meta.total;
-			notePages = savedNotes.meta.last_page;
+			timeline = events?.data ?? [];
+			notes = savedNotes?.data ?? [];
+			timelineTotal = events?.meta.total ?? null;
+			timelinePages = events?.meta.last_page ?? 1;
+			noteTotal = savedNotes?.meta.total ?? null;
+			notePages = savedNotes?.meta.last_page ?? 1;
 		} catch (cause) {
 			if (request === generation) error = apiErrorMessage(cause, 'Unable to load deal activity');
 		} finally {
@@ -304,14 +312,14 @@
 				onclick={() => (activeTab = 'timeline')}
 			>
 				<IconHistory size={18} />
-				Timeline ({timelineTotal})
+				Timeline ({timelineTotal ?? 'Not permitted'})
 			</button>
 			<button
 				class={['tab-btn', { active: activeTab === 'notes' }]}
 				onclick={() => (activeTab = 'notes')}
 			>
 				<IconNotes size={18} />
-				Notes ({noteTotal})
+				Notes ({noteTotal ?? 'Not permitted'})
 			</button>
 		</nav>
 
@@ -328,7 +336,9 @@
 				class={['tab-panel', { active: activeTab === 'timeline' }]}
 				inert={activeTab !== 'timeline' ? true : undefined}
 			>
-				<TimelineTab {timeline} />
+				{#if access.can('GET', '/deals/{id}/timeline')}<TimelineTab {timeline} />{:else}<p>
+						Timeline read permission is required.
+					</p>{/if}
 				<nav aria-label="Timeline pages">
 					<button
 						disabled={loading || timelinePage <= 1}
@@ -344,7 +354,10 @@
 				class={['tab-panel', { active: activeTab === 'notes' }]}
 				inert={activeTab !== 'notes' ? true : undefined}
 			>
-				<NotesTab {notes} onOpenAdd={() => (showAddNoteModal = true)} />
+				{#if access.can('GET', '/deals/{id}/notes')}<NotesTab
+						{notes}
+						onOpenAdd={() => (showAddNoteModal = true)}
+					/>{:else}<p>Note read permission is required.</p>{/if}
 				<nav aria-label="Note pages">
 					<button disabled={loading || notePage <= 1} onclick={() => changeNotes(notePage - 1)}
 						>Previous</button

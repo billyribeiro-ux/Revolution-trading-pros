@@ -1,12 +1,13 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { browser } from '$app/env';
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { membersStore, emailStore } from '#lib/stores/members.svelte.js';
 	import SkeletonLoader from '#lib/components/SkeletonLoader.svelte';
 	import { SvelteSet } from 'svelte/reactivity';
-	import type { Member, MemberFilters, MemberFullDetails, MemberStats } from '#lib/api/members.js';
+	import type { Member, MemberFilters, MemberEditSeed } from '#lib/api/members.js';
+	import type { MemberProfileRecord } from '#lib/api/member-profile.js';
+	import { memberNumericIdentity } from '#lib/api/member-profile-actions.js';
 	// FIX-2026-04-26: alert() calls replaced with existing toastStore import below.
 	import {
 		IconUsers,
@@ -43,14 +44,6 @@
 	let members = $derived(membersStore.members);
 	let stats = $derived(membersStore.stats);
 
-	/** Layout-only stand-in while stats load; its values are masked by `.stats-slot.pending`. */
-	const EMPTY_STATS: MemberStats = {
-		overview: { total_members: 0, new_this_month: 0, new_last_month: 0, growth_rate: 0 },
-		subscriptions: { active: 0, trial: 0, churned: 0, churn_rate: 0 },
-		revenue: { mrr: 0, total: 0, avg_ltv: 0 },
-		top_services: [],
-		growth_trend: []
-	};
 	let services = $derived(membersStore.services);
 	let pagination = $derived(membersStore.pagination);
 	let loading = $derived(membersStore.loading);
@@ -59,6 +52,10 @@
 	let searchQuery = $state('');
 	let statusFilter = $state<string>('');
 	let serviceFilter = $state<number | ''>('');
+	let planSearch = $state('');
+	let servicesLoading = $derived(membersStore.state.servicesLoading);
+	let servicesError = $derived(membersStore.state.servicesError);
+	let servicesPagination = $derived(membersStore.state.servicesPagination);
 	let spendingFilter = $state('');
 	let showFilters = $state(false);
 	let selectedMembers = new SvelteSet<number>();
@@ -80,7 +77,7 @@
 	let showDetailDrawer = $state(false);
 	let showDeleteModal = $state(false);
 	let selectedMemberId = $state<number | null>(null);
-	let selectedMemberForEdit = $state<Member | null>(null);
+	let selectedMemberForEdit = $state<MemberEditSeed | null>(null);
 	let selectedMemberForDelete = $state<Member | null>(null);
 	let isDeleting = $state(false);
 	let exportFormat = $state<'csv' | 'xlsx' | 'pdf'>('csv');
@@ -103,7 +100,6 @@
 	// timer is cleared on destroy so a navigate-away mid-typing can't fire a
 	// store update on a destroyed component.
 	onMount(() => {
-		if (!browser) return;
 
 		const init = async () => {
 			initError = '';
@@ -165,12 +161,12 @@
 			}
 			searchQuery = initial.search || '';
 			statusFilter = initial.status || '';
-			serviceFilter = initial.product_id || '';
+			serviceFilter = initial.plan_id || '';
 			spendingFilter = initial.spending_tier || '';
 			const results = await Promise.allSettled([
 				membersStore.loadMembers(initial),
 				membersStore.loadStats(),
-				membersStore.loadServices(),
+				membersStore.loadServices({ selected_id: initial.plan_id, page: 1, search: '' }),
 				emailStore.loadTemplates()
 			]);
 
@@ -190,28 +186,40 @@
 		};
 	});
 
+	function syncDirectoryUrl() {
+		const url = new URL(page.url.href);
+		for (const key of ['segment','tag','search','status','product_id','plan_id','date_from','date_to','spending_tier','sort_by','sort_dir','page','per_page'] as const) {
+			const value = membersStore.state.filters[key];
+			if (value === undefined || value === '') url.searchParams.delete(key); else url.searchParams.set(key, String(value));
+		}
+		void goto(url, { shallow: true, replace: true, state: page.state });
+	}
+	async function setDirectoryFilters(filters: Partial<MemberFilters>) { selectedMembers.clear(); await membersStore.setFilters(filters); syncDirectoryUrl(); }
+	async function directoryPage(pageNumber: number) { selectedMembers.clear(); await membersStore.goToPage(pageNumber); syncDirectoryUrl(); }
+	async function loadPlanCatalog(pageNumber = 1) { await membersStore.loadServices({ search: planSearch, page: pageNumber, selected_id: serviceFilter || undefined }); }
+
 	// Handlers
 	async function handleSearch() {
-		await membersStore.setFilters({ search: searchQuery });
+		await setDirectoryFilters({ search: searchQuery });
 	}
 
 	async function handleStatusFilter(status: string) {
 		statusFilter = status;
-		await membersStore.setFilters({ status: status as MemberFilters['status'] });
+		await setDirectoryFilters({ status: status as MemberFilters['status'] });
 	}
 
 	async function handleServiceFilter(serviceId: number | '') {
 		serviceFilter = serviceId;
-		await membersStore.setFilters({ product_id: serviceId || undefined });
+		await setDirectoryFilters({ plan_id: serviceId || undefined });
 	}
 
 	async function handleSpendingFilter(tier: string) {
 		spendingFilter = tier;
-		await membersStore.setFilters({ spending_tier: tier as MemberFilters['spending_tier'] });
+		await setDirectoryFilters({ spending_tier: tier as MemberFilters['spending_tier'] });
 	}
 
 	async function handleRefresh() {
-		await Promise.all([membersStore.loadMembers(), membersStore.loadStats()]);
+		await Promise.all([membersStore.loadMembers(), membersStore.loadStats(), membersStore.loadServices({ selected_id: serviceFilter || undefined })]);
 	}
 
 	function toggleMemberSelection(id: number) {
@@ -318,8 +326,8 @@
 		showDetailDrawer = true;
 	}
 
-	function openEditMember(member: Member | MemberFullDetails['member']) {
-		selectedMemberForEdit = member as Member;
+	function openEditMember(member: Member | MemberProfileRecord) {
+		selectedMemberForEdit = member;
 		showEditModal = true;
 		showDetailDrawer = false;
 	}
@@ -467,14 +475,14 @@
 	}
 
 	function formatCurrency(amount: number | null | undefined): string {
-		if (amount === null || amount === undefined || isNaN(amount)) {
-			return '$0';
+		if (amount === null || amount === undefined || !Number.isFinite(amount)) {
+			return 'Unavailable';
 		}
 		return new Intl.NumberFormat('en-US', {
 			style: 'currency',
 			currency: 'USD',
-			minimumFractionDigits: 0,
-			maximumFractionDigits: 0
+			minimumFractionDigits: 2,
+			maximumFractionDigits: 2
 		}).format(amount);
 	}
 
@@ -532,23 +540,13 @@
 		<!-- Header - Centered Style -->
 		<PageHeader {exportFormat} {exporting} onAction={handleHeaderAction} />
 
-		<!-- Stats Grid -->
-		<!-- Always rendered; masked while loading so the toolbar and table never shift. -->
-		<div class={{ 'stats-slot': true, pending: !stats }} aria-busy={!stats}>
-			<StatsGrid
-				stats={stats ?? EMPTY_STATS}
-				{formatCurrency}
-				onRecoverChurned={() => goto('/admin/members/churned')}
-			/>
+		<!-- Statistics failures are independent of member-list and catalog failures. -->
+		<div class="stats-slot" aria-busy={membersStore.state.statsLoading}>
+			{#if membersStore.state.statsLoading}<p role="status">Loading member statistics…</p>
+			{:else if membersStore.state.statsError}<div role="alert"><p>{membersStore.state.statsError}</p><button onclick={() => void membersStore.loadStats()}>Retry member statistics</button></div>
+			{:else if stats}<StatsGrid {stats} {formatCurrency} onRecoverChurned={() => goto('/admin/members/churned')} />{/if}
 		</div>
-
-		<!-- Top Services -->
-		{#if stats?.top_services && stats.top_services.length > 0}
-			<TopServicesSection
-				services={stats.top_services}
-				onSelectService={(id) => goto(`/admin/members/service/${id}`)}
-			/>
-		{/if}
+		{#if stats}<TopServicesSection services={stats.top_services} onSelectService={(id) => goto(`/admin/members/service/${id}`)} />{/if}
 
 		<!-- Toolbar -->
 		<div class="toolbar">
@@ -610,7 +608,10 @@
 				</div>
 
 				<div class="filter-group">
-					<label for="service-filter">Service</label>
+					<label for="service-filter">Service (membership plan)</label>
+					<input aria-label="Search membership plans" type="search" bind:value={planSearch} placeholder="Search plans" onchange={() => void loadPlanCatalog()} />
+					{#if servicesError}<p role="alert">{servicesError}</p><button onclick={() => void loadPlanCatalog()}>Retry membership plans</button>{/if}
+					{#if servicesLoading}<p role="status">Loading membership plans…</p>{/if}
 					<select
 						id="service-filter"
 						bind:value={serviceFilter}
@@ -618,9 +619,10 @@
 					>
 						<option value="">All Services</option>
 						{#each services as service (service.id)}
-							<option value={service.id}>{service.name}</option>
+							<option value={service.id}>{service.name}{service.is_active === false ? ' (inactive)' : ''}</option>
 						{/each}
 					</select>
+					{#if servicesPagination}<div><button disabled={servicesLoading || servicesPagination.current_page <= 1} onclick={() => void loadPlanCatalog(servicesPagination.current_page - 1)}>Previous plans</button><span> Plan page {servicesPagination.current_page} of {servicesPagination.last_page} </span><button disabled={servicesLoading || servicesPagination.current_page >= servicesPagination.last_page} onclick={() => void loadPlanCatalog(servicesPagination.current_page + 1)}>Next plans</button></div>{/if}
 				</div>
 
 				<div class="filter-group">
@@ -645,9 +647,10 @@
 						serviceFilter = '';
 						spendingFilter = '';
 						searchQuery = '';
-						membersStore.setFilters({
+						setDirectoryFilters({
 							status: undefined,
 							product_id: undefined,
+							plan_id: undefined,
 							spending_tier: undefined,
 							search: undefined
 						});
@@ -752,7 +755,7 @@
 
 				<!-- Pagination -->
 				{#if pagination}
-					<MembersPagination {pagination} onGoToPage={(page) => membersStore.goToPage(page)} />
+					<MembersPagination {pagination} onGoToPage={directoryPage} />
 				{/if}
 			{/if}
 		</div>
@@ -799,8 +802,10 @@
 		}}
 		onEdit={openEditMember}
 		onEmail={(member) => {
+			let id: number;
+			try { id = memberNumericIdentity(member.id); } catch (cause) { toastStore.error(cause instanceof Error ? cause.message : 'Unsupported member identity'); return; }
 			selectedMembers.clear();
-			selectedMembers.add(member.id);
+			selectedMembers.add(id);
 			showDetailDrawer = false;
 			showEmailModal = true;
 		}}
@@ -885,18 +890,7 @@
 	}
 
 	/* Toolbar */
-	.stats-slot.pending {
-		pointer-events: none;
-	}
-
-	.stats-slot.pending :global(.stat-value),
-	.stats-slot.pending :global(.stat-change),
-	.stats-slot.pending :global(.stat-sparkline) {
-		color: transparent;
-		background: var(--bg-hover, #252b33);
-		border-radius: 4px;
-		width: fit-content;
-	}
+	.stats-slot { min-height: 10rem; }
 
 	.toolbar {
 		display: flex;

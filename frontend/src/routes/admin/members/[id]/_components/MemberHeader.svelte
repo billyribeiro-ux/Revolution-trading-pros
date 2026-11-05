@@ -1,254 +1,187 @@
 <script lang="ts">
 	import { IconArrowLeft, IconMail, IconX, IconPlus, IconFileText } from '#lib/icons/index.js';
-	import { goto } from '$app/navigation';
-	import type { Member } from '#lib/api/members.js';
-	import { getMemberInitials, getStatusColor } from './helpers';
-
-	interface Props {
-		member: Member;
-		tags: string[];
-		onRemoveTag: (tag: string) => void;
+	import type { MemberProfileRecord } from '#lib/api/member-profile.js';
+	import {
+		profileName,
+		profileInitials,
+		cohortLabel,
+		accountActivityLabel,
+		recordedInstant
+	} from './profile-display.js';
+	let {
+		member,
+		tagRecords,
+		tagsBusy = false,
+		tagsError = '',
+		onRemoveTag,
+		onOpenTagModal,
+		onOpenNoteModal,
+		onOpenEmailModal
+	}: {
+		member: MemberProfileRecord;
+		tagRecords: MemberProfileRecord['tag_records'];
+		tagsBusy?: boolean;
+		tagsError?: string;
+		onRemoveTag: (id: string) => void;
 		onOpenTagModal: () => void;
 		onOpenNoteModal: () => void;
 		onOpenEmailModal: () => void;
-	}
-
-	let { member, tags, onRemoveTag, onOpenTagModal, onOpenNoteModal, onOpenEmailModal }: Props =
-		$props();
+	} = $props();
+	const unmatchedTags = $derived(
+		member.tags.filter((name) => !tagRecords.some((tag) => tag.name === name))
+	);
 </script>
 
 <div class="page-header">
-	<button class="back-btn" onclick={() => goto('/admin/members')}>
-		<IconArrowLeft size={20} />
-		Back to Members
-	</button>
-
+	<a class="back-btn" href="/admin/members"><IconArrowLeft size={20} />Back to Members</a>
 	<div class="header-content">
 		<div class="member-profile">
-			<div class="member-avatar large">
-				{#if member.avatar}
-					<img src={member.avatar} alt={member.name} width="80" height="80" loading="lazy" />
-				{:else}
-					{getMemberInitials(member)}
-				{/if}
+			<div class="member-avatar">
+				{#if member.avatar}<img
+						src={member.avatar}
+						alt={profileName(member)}
+						width="80"
+						height="80"
+						loading="lazy"
+					/>{:else}{profileInitials(member)}{/if}
 			</div>
 			<div class="member-info">
-				<div class="member-name-row">
-					<h1>{member.name}</h1>
-					<span class={['status-badge', getStatusColor(member.status)]}>
-						{member.status_label}
-					</span>
+				<h1>{profileName(member)}</h1>
+				<p>{member.email}</p>
+				<div class="facts">
+					<span>Membership cohort: {cohortLabel(member.status)}</span><span
+						>{accountActivityLabel(member.account.is_active)}</span
+					><span>Global role: {member.role ?? 'Not recorded'}</span>
 				</div>
-				<p class="member-email">{member.email || ''}</p>
+				{#if member.account.recorded_restriction}<p>
+						Recorded account status: {member.account.recorded_restriction}
+					</p>{/if}{#if member.account.reason || member.account.ban_reason}<p>
+						{member.account.reason ?? member.account.ban_reason}
+					</p>{/if}{#if member.account.banned_until}<p>
+						Recorded restriction expiry: {recordedInstant(member.account.banned_until)}
+					</p>{/if}
 				<div class="member-tags">
-					{#each tags as tag (tag)}
-						<span class="tag">
-							{tag}
-							<button class="tag-remove" onclick={() => onRemoveTag(tag)}>
-								<IconX size={12} />
-							</button>
-						</span>
-					{/each}
-					<button class="tag-add" onclick={onOpenTagModal}>
-						<IconPlus size={14} />
-						Add Tag
-					</button>
+					{#each tagRecords as tag (tag.id)}<span class="tag"
+							>{tag.name}<button
+								class="tag-remove"
+								aria-label={`Remove tag ${tag.name}`}
+								disabled={tagsBusy}
+								onclick={() => onRemoveTag(tag.id)}><IconX size={12} /></button
+							></span
+						>{/each}{#each unmatchedTags as tag (tag)}<span
+							class="tag"
+							title="No saved tag identity was supplied">{tag}</span
+						>{/each}<button class="tag-add" disabled={tagsBusy} onclick={onOpenTagModal}
+						><IconPlus size={14} />Add Tag</button
+					>
 				</div>
+				{#if tagsError}<p role="alert">{tagsError}</p>{/if}
 			</div>
 		</div>
-
 		<div class="header-actions">
-			<button class="btn-secondary" onclick={onOpenNoteModal}>
-				<IconFileText size={18} />
-				Add Note
-			</button>
-			<button class="btn-primary" onclick={onOpenEmailModal}>
-				<IconMail size={18} />
-				Send Email
-			</button>
+			<button onclick={onOpenNoteModal}><IconFileText size={18} />Add Note</button><button
+				class="primary"
+				onclick={onOpenEmailModal}><IconMail size={18} />Send Email</button
+			>
 		</div>
 	</div>
 </div>
 
 <style>
-	.back-btn {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.5rem;
-		padding: 0.5rem 0;
-		color: var(--text-secondary, #8b949e);
-		background: none;
-		border: none;
-		cursor: pointer;
-		font-size: 0.875rem;
-		margin-bottom: 1rem;
-		transition: color 0.2s;
-	}
-
-	.back-btn:hover {
-		color: var(--primary-400);
-	}
-
-	.header-content {
-		display: flex;
-		justify-content: space-between;
-		align-items: flex-start;
+	.page-header {
 		margin-bottom: 2rem;
 	}
-
-	.member-profile {
-		display: flex;
-		gap: 1.5rem;
+	.back-btn {
+		display: inline-flex;
+		gap: 0.5rem;
+		align-items: center;
+		color: var(--text-secondary, #8b949e);
+		margin-bottom: 1rem;
+		text-decoration: none;
 	}
-
+	.header-content,
+	.member-profile,
+	.header-actions,
+	.member-tags,
+	.facts {
+		display: flex;
+		gap: 1rem;
+		flex-wrap: wrap;
+	}
+	.header-content {
+		justify-content: space-between;
+		align-items: flex-start;
+	}
+	.member-profile {
+		flex-wrap: nowrap;
+	}
 	.member-avatar {
 		width: 80px;
 		height: 80px;
+		flex-shrink: 0;
+		background: var(--primary-500, #e6b800);
+		color: #0d1117;
+		display: grid;
+		place-items: center;
 		border-radius: 50%;
-		background: var(--primary-500);
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		font-weight: 700;
-		font-size: 1.5rem;
-		color: var(--bg-base, #0d1117);
 		overflow: hidden;
+		font-size: 1.5rem;
+		font-weight: 700;
 	}
-
-	.member-avatar img {
-		width: 100%;
-		height: 100%;
+	img {
 		object-fit: cover;
 	}
-
-	.member-name-row {
-		display: flex;
-		align-items: center;
-		gap: 1rem;
-	}
-
-	.member-name-row h1 {
+	h1 {
 		font-size: 1.75rem;
-		font-weight: 700;
-		color: var(--text-primary, #f0f6fc);
 		margin: 0;
 	}
-
-	.member-email {
-		color: var(--text-tertiary, #6e7681);
-		margin: 0.25rem 0 0.75rem;
+	p {
+		color: var(--text-secondary, #8b949e);
+		overflow-wrap: anywhere;
 	}
-
+	.facts {
+		font-size: 0.85rem;
+	}
 	.member-tags {
-		display: flex;
-		flex-wrap: wrap;
+		align-items: center;
 		gap: 0.5rem;
+		margin-top: 0.75rem;
 	}
-
 	.tag {
 		display: inline-flex;
+		gap: 0.4rem;
 		align-items: center;
-		gap: 0.375rem;
-		padding: 0.25rem 0.75rem;
-		background: rgba(230, 184, 0, 0.15);
-		border: 1px solid rgba(230, 184, 0, 0.3);
-		border-radius: 9999px;
-		font-size: 0.75rem;
-		font-weight: 500;
-		color: var(--primary-400);
-	}
-
-	.tag-remove {
-		background: none;
-		border: none;
-		padding: 0;
-		cursor: pointer;
-		color: var(--text-secondary, #8b949e);
-		display: flex;
-		transition: color 0.2s;
-	}
-
-	.tag-remove:hover {
-		color: var(--error-emphasis, #f85149);
-	}
-
-	.tag-add {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.25rem;
-		padding: 0.25rem 0.75rem;
-		background: var(--bg-surface, #1c2128);
-		border: 1px dashed var(--border-default, #30363d);
-		border-radius: 9999px;
-		font-size: 0.75rem;
-		color: var(--text-secondary, #8b949e);
-		cursor: pointer;
-		transition: all 0.2s;
-	}
-
-	.tag-add:hover {
-		background: rgba(230, 184, 0, 0.1);
-		border-color: rgba(230, 184, 0, 0.3);
-		color: var(--primary-400);
-	}
-
-	.header-actions {
-		display: flex;
-		gap: 0.75rem;
-	}
-
-	.status-badge {
-		display: inline-flex;
-		padding: 0.25rem 0.75rem;
-		border-radius: 9999px;
-		font-size: 0.75rem;
-		font-weight: 600;
-		border: 1px solid;
-		text-transform: capitalize;
-	}
-
-	.btn-primary,
-	.btn-secondary {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.5rem;
-		padding: 0.75rem 1.25rem;
-		border-radius: 10px;
-		font-weight: 600;
-		cursor: pointer;
-		transition: all 0.2s;
-		border: none;
-		font-size: 0.875rem;
-	}
-
-	.btn-primary {
-		background: var(--primary-500);
-		color: var(--bg-base);
-	}
-
-	.btn-secondary {
-		background: var(--bg-surface, #1c2128);
-		color: var(--text-secondary, #8b949e);
 		border: 1px solid var(--border-default, #30363d);
+		padding: 0.25rem 0.5rem;
+		border-radius: 7px;
 	}
-
-	.btn-secondary:hover {
-		background: var(--bg-hover, #252b33);
+	.tag-remove {
+		border: 0;
+		padding: 0.2rem;
+	}
+	.header-actions {
+		gap: 0.5rem;
+	}
+	button {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.4rem;
+		background: var(--bg-surface, #1c2128);
 		color: var(--text-primary, #f0f6fc);
+		border: 1px solid var(--border-default, #30363d);
+		padding: 0.6rem 0.8rem;
+		border-radius: 9px;
+		cursor: pointer;
 	}
-
-	@media (max-width: 767.98px) {
-		.header-content {
-			flex-direction: column;
-			gap: 1.5rem;
-		}
-
-		.header-actions {
-			width: 100%;
-		}
-
-		.header-actions button {
-			flex: 1;
-		}
+	.primary {
+		background: var(--primary-500, #e6b800);
+		color: #0d1117;
+	}
+	button:disabled {
+		opacity: 0.5;
+		cursor: default;
+	}
+	[role='alert'] {
+		color: #f85149;
 	}
 </style>

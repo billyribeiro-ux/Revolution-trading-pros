@@ -230,8 +230,8 @@ async fn setup_db(
             UPDATE users 
             SET password_hash = $1,
                 role = 'super_admin',
-                email_verified_at = COALESCE(email_verified_at, NOW()),
-                updated_at = NOW()
+                email_verified_at = COALESCE(email_verified_at, NOW() AT TIME ZONE 'UTC'),
+                updated_at = NOW() AT TIME ZONE 'UTC'
             WHERE email = $2
             ",
         )
@@ -255,7 +255,7 @@ async fn setup_db(
             sqlx::query(
                 r"
                 INSERT INTO users (email, password_hash, name, role, email_verified_at, created_at, updated_at)
-                VALUES ($1, $2, $3, 'super_admin', NOW(), NOW(), NOW())
+                VALUES ($1, $2, $3, 'super_admin', NOW() AT TIME ZONE 'UTC', NOW() AT TIME ZONE 'UTC', NOW() AT TIME ZONE 'UTC')
                 ",
             )
             .bind(bootstrap_email)

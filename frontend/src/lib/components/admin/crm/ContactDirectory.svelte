@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { useCrmAccess } from '#lib/crm/access.svelte.js';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { crmAPI } from '#lib/api/crm.js';
@@ -9,6 +10,7 @@
 		type ContactPage
 	} from '#lib/crm/contact-types.js';
 	import { apiErrorMessage } from '#lib/utils/api-error-message.js';
+	const access = useCrmAccess();
 	let {
 		dashboard = false,
 		detailBase = '/admin/crm/contacts',
@@ -35,6 +37,8 @@
 		generation = 0,
 		statsGeneration = 0;
 	const modules = [
+		['Leads', '/admin/crm/leads'],
+		['CRM managers and roles', '/admin/crm/managers'],
 		['Contact segments', '/admin/crm/segments'],
 		['Deals', '/admin/crm/deals'],
 		['Companies', '/admin/crm/companies'],
@@ -60,6 +64,11 @@
 	}
 	async function loadStats() {
 		if (!dashboard) return;
+		if (!access.can('GET', '/stats')) {
+			stats = null;
+			statsError = 'CRM statistics are not included in your granted read bundle.';
+			return;
+		}
 		const current = ++statsGeneration;
 		statsError = '';
 		try {
@@ -113,6 +122,12 @@
 		}
 	}
 	async function load(page = 1, syncUrl = true) {
+		if (!access.can('GET', '/contacts')) {
+			result = null;
+			loading = false;
+			error = '';
+			return;
+		}
 		const applied = { search, status, lifecycle };
 		const current = ++generation;
 		loading = true;
@@ -184,13 +199,15 @@
 					void load(result?.meta.current_page ?? 1);
 					void loadStats();
 				}}>Refresh</button
-			><a class="button" href="/admin/crm/contacts/new">Add Contact</a>
+			>{#if access.page('/admin/crm/contacts/new')}<a class="button" href="/admin/crm/contacts/new"
+					>Add Contact</a
+				>{/if}
 		</div>
 	</header>
 	{#if dashboard}<nav class="modules" aria-label="CRM modules">
-			{#each modules as [label, href] (href)}<a {href}>{label}</a>{/each}<span
-				>Documentation: unavailable</span
-			>
+			{#each modules.filter(([, href]) => href === '/tutorials' || access.page(href)) as [label, href] (href)}<a
+					{href}>{label}</a
+				>{/each}<span>Documentation: unavailable</span>
 		</nav>
 		{#if statsError}<p role="alert">{statsError}</p>
 			<button onclick={() => void loadStats()}>Retry statistics</button>{:else if stats}<div
@@ -211,115 +228,125 @@
 					><span>Open deal value (USD only)</span>
 				</div>
 			</div>{/if}{/if}
-	<form
-		class="filters"
-		onsubmit={(event) => {
-			event.preventDefault();
-			void load();
-		}}
-	>
-		<label
-			>Search contacts<input name="search" placeholder="Name or email" bind:value={search} /></label
-		><label
-			>Contact status<select bind:value={status}
-				><option value="">All statuses</option>{#each contactStatuses as value (value)}<option
-						{value}>{value}</option
-					>{/each}</select
-			></label
-		><label
-			>Lifecycle stage<select bind:value={lifecycle}
-				><option value="">All lifecycle stages</option
-				>{#each lifecycleStages as value (value)}<option {value}>{value}</option>{/each}</select
-			></label
-		><button disabled={loading}>Apply filters</button>
-	</form>
-	{#if loading}<p role="status">Loading contacts…</p>{:else if error}<p role="alert">{error}</p>
-		<button onclick={() => void load(result?.meta.current_page ?? 1)}>Retry contacts</button
-		>{:else if result}<p>
-			{result.meta.total} contacts match the current filters. {selected.length} selected on this page.
-			{#if selected.length}<button
-					onclick={() => {
-						selected = [];
-					}}>Clear selection</button
-				>{/if}
-		</p>
-		<p>Health, risk and lifetime value are not measured by this directory.</p>
-		<div class="table">
-			<table>
-				<thead
-					><tr
-						><th
-							><input
-								type="checkbox"
-								aria-label="Select all contacts on this page"
-								checked={result.data.length > 0 && selected.length === result.data.length}
-								onchange={(event) => {
-									selected = event.currentTarget.checked
-										? (result?.data.map((row) => row.id) ?? [])
-										: [];
-								}}
-							/></th
-						><th>Contact</th><th>Company / job title</th><th>Status / lifecycle</th><th
-							>Lead score</th
-						><th>Tags / lists</th><th>Last recorded activity</th><th>Actions</th></tr
-					></thead
-				><tbody
-					>{#each result.data as contact (contact.id)}<tr
-							><td
+	{#if access.can('GET', '/contacts')}
+		<form
+			class="filters"
+			onsubmit={(event) => {
+				event.preventDefault();
+				void load();
+			}}
+		>
+			<label
+				>Search contacts<input
+					name="search"
+					placeholder="Name or email"
+					bind:value={search}
+				/></label
+			><label
+				>Contact status<select bind:value={status}
+					><option value="">All statuses</option>{#each contactStatuses as value (value)}<option
+							{value}>{value}</option
+						>{/each}</select
+				></label
+			><label
+				>Lifecycle stage<select bind:value={lifecycle}
+					><option value="">All lifecycle stages</option
+					>{#each lifecycleStages as value (value)}<option {value}>{value}</option>{/each}</select
+				></label
+			><button disabled={loading}>Apply filters</button>
+		</form>
+		{#if loading}<p role="status">Loading contacts…</p>{:else if error}<p role="alert">{error}</p>
+			<button onclick={() => void load(result?.meta.current_page ?? 1)}>Retry contacts</button
+			>{:else if result}<p>
+				{result.meta.total} contacts match the current filters. {selected.length} selected on this page.
+				{#if selected.length}<button
+						onclick={() => {
+							selected = [];
+						}}>Clear selection</button
+					>{/if}
+			</p>
+			<p>Health, risk and lifetime value are not measured by this directory.</p>
+			<div class="table">
+				<table>
+					<thead
+						><tr
+							><th
 								><input
 									type="checkbox"
-									aria-label={`Select ${contact.email}`}
-									checked={selected.includes(contact.id)}
-									onchange={(event) => toggle(contact.id, event.currentTarget.checked)}
-								/></td
-							><td
-								><a href={`${detailBase}/${contact.id}`}>{contact.full_name}</a><small
-									>{contact.email}</small
-								>{#if contact.phone}<a href={`tel:${contact.phone}`}>{contact.phone}</a>{/if}</td
-							><td>{contact.company || 'Unknown'}<small>{contact.job_title || 'Unknown'}</small></td
-							><td
-								>{contact.status ?? 'Unknown'}<small
-									>{contact.lifecycle_stage ?? 'Unknown lifecycle'}</small
-								></td
-							><td
-								>{contact.lead_score === null
-									? 'Not measured'
-									: `${contact.lead_score} / ${contact.scoring.max_score}`}<small
-									>{contact.scoring.status.replaceAll('_', ' ')}</small
-								></td
-							><td
-								>{contact.tags === null
-									? 'Tags unknown'
-									: contact.tags.length
-										? contact.tags.join(', ')
-										: 'No tags'}<small
-									><a href={`${detailBase}/${contact.id}`}>View list memberships</a></small
-								></td
-							><td>{date(contact.last_activity_at)}</td><td
-								><a href={`${detailBase}/${contact.id}`}>View</a>
-								<a href={`/admin/crm/contacts/${contact.id}/edit`}>Edit</a>
-								<details>
-									<summary>More</summary><a href={`${detailBase}/${contact.id}`}
-										>Notes, tags, lists and email</a
-									>
-								</details></td
-							></tr
-						>{/each}</tbody
+									aria-label="Select all contacts on this page"
+									checked={result.data.length > 0 && selected.length === result.data.length}
+									onchange={(event) => {
+										selected = event.currentTarget.checked
+											? (result?.data.map((row) => row.id) ?? [])
+											: [];
+									}}
+								/></th
+							><th>Contact</th><th>Company / job title</th><th>Status / lifecycle</th><th
+								>Lead score</th
+							><th>Tags / lists</th><th>Last recorded activity</th><th>Actions</th></tr
+						></thead
+					><tbody
+						>{#each result.data as contact (contact.id)}<tr
+								><td
+									><input
+										type="checkbox"
+										aria-label={`Select ${contact.email}`}
+										checked={selected.includes(contact.id)}
+										onchange={(event) => toggle(contact.id, event.currentTarget.checked)}
+									/></td
+								><td
+									><a href={`${detailBase}/${contact.id}`}>{contact.full_name}</a><small
+										>{contact.email}</small
+									>{#if contact.phone}<a href={`tel:${contact.phone}`}>{contact.phone}</a>{/if}</td
+								><td
+									>{contact.company || 'Unknown'}<small>{contact.job_title || 'Unknown'}</small></td
+								><td
+									>{contact.status ?? 'Unknown'}<small
+										>{contact.lifecycle_stage ?? 'Unknown lifecycle'}</small
+									></td
+								><td
+									>{contact.lead_score === null
+										? 'Not measured'
+										: `${contact.lead_score} / ${contact.scoring.max_score}`}<small
+										>{contact.scoring.status.replaceAll('_', ' ')}</small
+									></td
+								><td
+									>{contact.tags === null
+										? 'Tags unknown'
+										: contact.tags.length
+											? contact.tags.join(', ')
+											: 'No tags'}<small
+										><a href={`${detailBase}/${contact.id}`}>View list memberships</a></small
+									></td
+								><td>{date(contact.last_activity_at)}</td><td
+									><a href={`${detailBase}/${contact.id}`}>View</a>
+									<a href={`/admin/crm/contacts/${contact.id}/edit`}>Edit</a>
+									<details>
+										<summary>More</summary><a href={`${detailBase}/${contact.id}`}
+											>Notes, tags, lists and email</a
+										>
+									</details></td
+								></tr
+							>{/each}</tbody
+					>
+				</table>
+			</div>
+			{#if result.data.length === 0}<p>No contacts found on this page.</p>{/if}
+			<nav class="pagination" aria-label="Contact pages">
+				<button
+					disabled={result.meta.current_page <= 1}
+					onclick={() => void load((result?.meta.current_page ?? 1) - 1)}>Previous</button
+				><span
+					>Page {result.meta.current_page} of {result.meta.total_pages}; {result.meta.total} contacts</span
+				><button
+					disabled={result.meta.current_page >= result.meta.total_pages}
+					onclick={() => void load((result?.meta.current_page ?? 1) + 1)}>Next</button
 				>
-			</table>
-		</div>
-		{#if result.data.length === 0}<p>No contacts found on this page.</p>{/if}
-		<nav class="pagination" aria-label="Contact pages">
-			<button
-				disabled={result.meta.current_page <= 1}
-				onclick={() => void load((result?.meta.current_page ?? 1) - 1)}>Previous</button
-			><span
-				>Page {result.meta.current_page} of {result.meta.total_pages}; {result.meta.total} contacts</span
-			><button
-				disabled={result.meta.current_page >= result.meta.total_pages}
-				onclick={() => void load((result?.meta.current_page ?? 1) + 1)}>Next</button
-			>
-		</nav>{/if}
+			</nav>{/if}
+	{:else}<p>
+			Contact records require their contact and linked deal read permissions. Choose an available
+			CRM module above.
+		</p>{/if}
 </section>
 
 <style>

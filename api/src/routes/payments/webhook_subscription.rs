@@ -83,7 +83,7 @@ pub(super) async fn handle_subscription_updated(
             cancel_at_period_end = $4,
             cancelled_at = $5,
             plan_id = COALESCE((SELECT id FROM membership_plans WHERE stripe_price_id = $7 LIMIT 1), plan_id),
-            updated_at = NOW()
+            updated_at = (NOW() AT TIME ZONE 'UTC')
         WHERE stripe_subscription_id = $6",
     )
     .bind(status)
@@ -148,7 +148,7 @@ pub(super) async fn handle_subscription_deleted(
     })?;
 
     sqlx::query(
-        "UPDATE user_memberships SET status = 'cancelled', cancelled_at = NOW(), updated_at = NOW() WHERE stripe_subscription_id = $1"
+        "UPDATE user_memberships SET status = 'cancelled', cancelled_at = (NOW() AT TIME ZONE 'UTC'), updated_at = (NOW() AT TIME ZONE 'UTC') WHERE stripe_subscription_id = $1"
     )
     .bind(&subscription.id)
     .execute(&mut **tx)

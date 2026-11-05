@@ -24,6 +24,7 @@ use crate::AppState;
 
 mod helpers;
 mod login;
+mod mfa;
 mod password;
 mod refresh;
 mod register;
@@ -48,8 +49,16 @@ pub fn router() -> Router<AppState> {
     Router::new()
         .route("/register", post(register::register))
         .route("/login", post(login::login))
+        .route("/login/mfa", post(login::login_mfa))
+        .route("/me/mfa/enable", post(mfa::setup))
+        .route("/me/mfa/verify", post(mfa::verify))
+        .route("/me/mfa/disable", post(mfa::disable))
         .route("/refresh", post(refresh::refresh))
         .route("/me", get(session::me))
+        .route(
+            "/me/password",
+            axum::routing::put(crate::routes::user::profile::change_password),
+        )
         .route("/logout", post(session::logout))
         .route("/logout-all", post(session::logout_all)) // ICT L11+ Security: Force logout everywhere
         .route("/forgot-password", post(password::forgot_password))

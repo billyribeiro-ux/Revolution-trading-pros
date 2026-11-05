@@ -196,12 +196,12 @@ pub(super) async fn handle_checkout_completed(
                                 payment_provider, stripe_subscription_id, stripe_customer_id,
                                 current_period_start, current_period_end,
                                 cancel_at_period_end, created_at, updated_at
-                            ) VALUES ($1, $2, NOW(), 'active', 'stripe', $3, $4, $5, $6, false, NOW(), NOW())
+                            ) VALUES ($1, $2, (NOW() AT TIME ZONE 'UTC'), 'active', 'stripe', $3, $4, $5, $6, false, (NOW() AT TIME ZONE 'UTC'), (NOW() AT TIME ZONE 'UTC'))
                             ON CONFLICT (stripe_subscription_id) DO UPDATE SET
                                 status = 'active',
                                 current_period_start = EXCLUDED.current_period_start,
                                 current_period_end = EXCLUDED.current_period_end,
-                                updated_at = NOW()",
+                                updated_at = (NOW() AT TIME ZONE 'UTC')",
                         )
                         .bind(user_id)
                         .bind(plan_id)

@@ -1,32 +1,39 @@
 import type { RequestEvent } from '@sveltejs/kit';
 import { API_BASE_URL, BACKEND_URL } from '$app/env/private';
-import { requireAdmin } from './auth.js';
+import { requireCrmOperation } from './crm-auth.js';
+import { crmAccessFailure, crmPrivateHeaders } from './crm-context.js';
 
 /** Preserve the canonical DTO and provider receipts, including non-2xx outcomes. */
 export async function proxyCrmContacts(event: RequestEvent): Promise<Response> {
-	const { token } = requireAdmin(event),
-		rest = event.params.rest ?? '',
+	let token: string;
+	try {
+		({ token } = await requireCrmOperation(event));
+	} catch (error) {
+		return crmAccessFailure(error);
+	}
+	const rest = event.params.rest ?? '',
 		method = event.request.method;
-	const headers = new Headers({
-		'Cache-Control': 'private, no-store',
-		'X-Content-Type-Options': 'nosniff'
-	});
+	const headers = crmPrivateHeaders();
 	const fail = (status: number, error: string) => Response.json({ error }, { status, headers });
 	const id = '[1-9]\\d{0,18}';
+	const nativeTemplates = rest === 'native-templates';
 	const base = new RegExp(`^${id}$`).test(rest),
 		panel = new RegExp(`^${id}/(?:timeline|emails|notes|tags|lists)$`).test(rest),
 		action = new RegExp(`^${id}/(?:recalculate-score|send-email)$`).test(rest),
 		membership = new RegExp(`^${id}/(?:tags|lists)/${id}$`).test(rest);
 	if (
-		!(rest === ''
-			? ['GET', 'POST'].includes(method)
-			: base
-				? ['GET', 'PUT', 'DELETE'].includes(method)
-				: panel
-					? method === 'GET' || (method === 'POST' && /\/(?:notes|tags|lists)$/.test(rest))
-					: action
-						? method === 'POST'
-						: membership && method === 'DELETE')
+		!(nativeTemplates
+			? ['GET', 'HEAD'].includes(method)
+			: rest === ''
+				? ['GET', 'HEAD', 'POST'].includes(method)
+				: base
+					? ['GET', 'HEAD', 'PUT', 'DELETE'].includes(method)
+					: panel
+						? ['GET', 'HEAD'].includes(method) ||
+							(method === 'POST' && /\/(?:notes|tags|lists)$/.test(rest))
+						: action
+							? method === 'POST'
+							: membership && method === 'DELETE')
 	)
 		return fail(404, 'Contact endpoint not found');
 	let body: Uint8Array<ArrayBuffer> | undefined;

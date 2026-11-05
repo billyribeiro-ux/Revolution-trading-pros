@@ -2,7 +2,7 @@
 //!
 //! Extracted from `auth.rs` during R12-B as a pure structural move.
 
-use axum::{Json, extract::State, http::StatusCode};
+use axum::{Extension, Json, extract::State, http::StatusCode};
 use axum_extra::{
     TypedHeader,
     headers::{Authorization, authorization::Bearer},
@@ -10,7 +10,7 @@ use axum_extra::{
 use serde::Deserialize;
 use serde_json::json;
 
-use super::helpers::hash_token_for_blacklist;
+use crate::services::account_authority;
 use crate::{
     AppState,
     models::{MessageResponse, User, UserResponse},
@@ -23,16 +23,13 @@ pub(super) async fn me(State(state): State<AppState>, user: User) -> Json<UserRe
     Json(UserResponse::from_authenticated(user, &state.config))
 }
 
-fn revocation_error(error: anyhow::Error) -> (StatusCode, Json<serde_json::Value>) {
-    tracing::error!(%error, "Session revocation failed");
-    (
-        StatusCode::SERVICE_UNAVAILABLE,
-        Json(json!({"error":"Session revocation failed"})),
-    )
+fn revocation_error(error: account_authority::Failure) -> (StatusCode, Json<serde_json::Value>) {
+    (error.0, Json(json!({"error":error.1})))
 }
 
 /// Logout request with session ID and optional token
 #[derive(Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub(super) struct LogoutRequest {
     session_id: Option<String>,
     #[serde(default)]
@@ -49,35 +46,25 @@ pub(super) async fn logout(
     user: User,
     Json(input): Json<LogoutRequest>,
 ) -> Result<Json<MessageResponse>, (StatusCode, Json<serde_json::Value>)> {
-    let redis = state.services.redis.as_ref().ok_or_else(|| {
-        (
-            StatusCode::SERVICE_UNAVAILABLE,
-            Json(json!({"error":"Session revocation is unavailable"})),
-        )
-    })?;
-    let refresh = input
-        .refresh_token
-        .as_deref()
-        .map(|token| {
-            verify_jwt(token, &state.config.jwt_secret, "refresh")
-                .map_err(|_| {
-                    (
-                        StatusCode::BAD_REQUEST,
-                        Json(json!({"error":"Invalid refresh token"})),
-                    )
-                })
-                .and_then(|claims| {
-                    if claims.sub == user.id {
-                        Ok((token, claims.exp))
-                    } else {
-                        Err((
-                            StatusCode::FORBIDDEN,
-                            Json(json!({"error":"Refresh token belongs to another user"})),
-                        ))
-                    }
-                })
-        })
-        .transpose()?;
+    if input.session_id.as_ref().is_some_and(|v| v.len() > 256)
+        || input.token.as_ref().is_some_and(|v| v.len() > 8192)
+        || input.refresh_token.as_ref().is_some_and(|v| v.len() > 8192)
+    {
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(json!({"error":"Session credentials exceed their limits"})),
+        ));
+    }
+    if input
+        .token
+        .as_ref()
+        .is_some_and(|token| token != auth_header.token())
+    {
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(json!({"error":"Body access token must match the authenticated token"})),
+        ));
+    }
     let access =
         verify_jwt(auth_header.token(), &state.config.jwt_secret, "access").map_err(|_| {
             (
@@ -85,44 +72,44 @@ pub(super) async fn logout(
                 Json(json!({"error":"Invalid access token"})),
             )
         })?;
-    // Use each token's actual remaining validity; never report revocation
-    // success after a failed write to the authoritative blacklist.
-    let now = chrono::Utc::now().timestamp();
-    redis
-        .blacklist_token(
-            &hash_token_for_blacklist(auth_header.token()),
-            (access.exp - now).max(1) as u64,
-        )
+    let mut tokens = vec![access];
+    if let Some(raw) = input.refresh_token.as_deref() {
+        let refresh = verify_jwt(raw, &state.config.jwt_secret, "refresh").map_err(|_| {
+            (
+                StatusCode::BAD_REQUEST,
+                Json(json!({"error":"Invalid refresh token"})),
+            )
+        })?;
+        if refresh.sub != user.id {
+            return Err((
+                StatusCode::FORBIDDEN,
+                Json(json!({"error":"Refresh token belongs to another account"})),
+            ));
+        }
+        tokens.push(refresh);
+    }
+    account_authority::revoke_tokens(&state.db.pool, user.id, &tokens)
         .await
         .map_err(revocation_error)?;
-    if let Some((token, expiry)) = refresh {
-        redis
-            .blacklist_token(
-                &hash_token_for_blacklist(token),
-                (expiry - now).max(1) as u64,
-            )
-            .await
-            .map_err(revocation_error)?;
-    }
-    if let Some(session_id) = input.session_id
-        && let Some(session) = redis
-            .get_session(&session_id)
-            .await
-            .map_err(revocation_error)?
+    // Redis sessions are optional UI bookkeeping, not revocation authority.
+    if let (Some(redis), Some(session_id)) = (&state.services.redis, input.session_id)
+        && let Ok(Ok(Some(session))) = tokio::time::timeout(
+            std::time::Duration::from_secs(2),
+            redis.get_session(&session_id),
+        )
+        .await
         && session.user_id == user.id
+        && !matches!(
+            tokio::time::timeout(
+                std::time::Duration::from_secs(2),
+                redis.invalidate_session(&session_id)
+            )
+            .await,
+            Ok(Ok(()))
+        )
     {
-        redis
-            .invalidate_session(&session_id)
-            .await
-            .map_err(revocation_error)?;
+        tracing::warn!("Durably revoked tokens; optional Redis session cleanup was not confirmed");
     }
-
-    tracing::info!(
-        target: "security",
-        event = "logout",
-        user_id = %user.id,
-        "User logged out"
-    );
 
     Ok(Json(MessageResponse {
         message: "Logged out successfully".to_string(),
@@ -135,45 +122,34 @@ pub(super) async fn logout(
 pub(super) async fn logout_all(
     State(state): State<AppState>,
     user: User,
+    Extension(verified): Extension<account_authority::VerifiedAuthority>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    let auth_version = account_authority::revoke_all(&state.db.pool, &verified)
+        .await
+        .map_err(revocation_error)?;
     let count = if let Some(redis) = &state.services.redis {
-        // SECURITY (FULL_REPO_AUDIT_2026-05-17 P1-2): bump the token epoch
-        // ALONGSIDE the session sweep. Deleting `session:*` keys alone never
-        // touched the stateless access/refresh JWTs — that was the root bug:
-        // "log out all devices" left a stolen access token usable for its
-        // full TTL and a stolen refresh token usable until rotation. The
-        // bump strands every previously-issued token for this user the
-        // instant the extractor (and the refresh handler) re-checks the
-        // epoch. Best-effort like the session sweep: a Redis fault here is
-        // logged but does not 500 the logout — and the fail-closed read in
-        // the extractor still rejects on a Redis fault at validation time.
-        if let Err(e) = redis.bump_token_version(user.id).await {
-            tracing::error!(
-                target: "security_audit",
-                event = "logout_all_token_version_bump_failed",
-                user_id = %user.id,
-                error = %e,
-                "Could not bump token epoch on logout-all (sessions still swept; extractor fails closed on Redis error)"
-            );
-        }
-        redis
-            .invalidate_all_user_sessions(user.id)
-            .await
-            .unwrap_or(0)
+        tokio::time::timeout(
+            std::time::Duration::from_secs(2),
+            redis.invalidate_all_user_sessions(user.id),
+        )
+        .await
+        .ok()
+        .and_then(Result::ok)
     } else {
-        0
+        None
     };
 
     tracing::info!(
         target: "security",
         event = "logout_all",
         user_id = %user.id,
-        sessions_invalidated = %count,
+        sessions_invalidated = ?count,
         "User logged out from all devices"
     );
 
     Ok(Json(json!({
-        "message": format!("Logged out from {} device(s)", count),
+        "message": "All previously issued account tokens were revoked",
+        "auth_version":auth_version,
         "sessions_invalidated": count,
         "success": true
     })))

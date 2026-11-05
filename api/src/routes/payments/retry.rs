@@ -111,7 +111,7 @@ pub(super) async fn retry_payment(
     // failure, not a payment failure).
     if result.success {
         sqlx::query(
-            "UPDATE user_memberships SET status = 'active', payment_failure_count = 0, updated_at = NOW() WHERE id = $1"
+            "UPDATE user_memberships SET status = 'active', payment_failure_count = 0, updated_at = (NOW() AT TIME ZONE 'UTC') WHERE id = $1"
         )
         .bind(membership.id)
         .execute(&state.db.pool)

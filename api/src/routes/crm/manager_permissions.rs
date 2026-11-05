@@ -48,8 +48,10 @@ fn current_policy() -> Result<&'static policy::CompiledPolicy, ApiError> {
     policy::current().map_err(policy_error)
 }
 async fn current_user(pool: &PgPool, id: i64) -> Result<User, ApiError> {
-    sqlx::query_as("SELECT id,email,password_hash,name,role,is_active,email_verified_at,avatar_url,mfa_enabled,created_at,updated_at FROM users WHERE id=$1 AND deleted_at IS NULL AND COALESCE(is_active,true)")
-        .bind(id).fetch_optional(pool).await.map_err(db)?.ok_or_else(||forbidden("An active account is required for CRM access"))
+    crate::services::account_authority::current(pool, id)
+        .await
+        .map(|account| account.user)
+        .map_err(|(status, message)| ApiError::new(status, message))
 }
 fn global(state: &AppState, user: &User) -> bool {
     is_admin_role(user.role.as_deref())
@@ -706,7 +708,7 @@ async fn contact_templates(
     ))
 }
 
-macro_rules! manager_sql {($tail:literal)=>{concat!("SELECT jsonb_build_object('id',m.id::text,'user_id',m.user_id::text,'role_id',m.role_id::text,'name',u.name,'email',u.email,'avatar',u.avatar_url,'assigned_at',m.assigned_at,'version',m.version,'is_active',COALESCE(u.is_active,true) AND u.deleted_at IS NULL,'global_role',u.role,'role',jsonb_build_object('id',r.id::text,'name',r.name,'slug',r.slug,'description',r.description,'permissions',r.permissions,'users_count',(SELECT COUNT(*) FROM crm_managers others WHERE others.role_id=r.id),'is_default',r.is_default,'version',r.version,'created_at',r.created_at,'updated_at',r.updated_at)) FROM crm_managers m JOIN users u ON u.id=m.user_id JOIN crm_manager_roles r ON r.id=m.role_id ",$tail)}}
+macro_rules! manager_sql {($tail:literal)=>{concat!("SELECT jsonb_build_object('id',m.id::text,'user_id',m.user_id::text,'role_id',m.role_id::text,'name',u.name,'email',u.email,'avatar',u.avatar_url,'assigned_at',m.assigned_at,'version',m.version,'is_active',COALESCE(u.is_active,true) AND u.deleted_at IS NULL AND COALESCE(LOWER(u.role),'')<>'deleted','global_role',u.role,'role',jsonb_build_object('id',r.id::text,'name',r.name,'slug',r.slug,'description',r.description,'permissions',r.permissions,'users_count',(SELECT COUNT(*) FROM crm_managers others WHERE others.role_id=r.id),'is_default',r.is_default,'version',r.version,'created_at',r.created_at,'updated_at',r.updated_at)) FROM crm_managers m JOIN users u ON u.id=m.user_id JOIN crm_manager_roles r ON r.id=m.role_id ",$tail)}}
 async fn manager_on(connection: &mut sqlx::PgConnection, id: i64) -> Result<Value, ApiError> {
     sqlx::query_scalar(manager_sql!("WHERE m.id=$1"))
         .bind(id)
@@ -753,9 +755,9 @@ async fn users(
         .execute(&mut *tx)
         .await
         .map_err(db)?;
-    let total:i64=sqlx::query_scalar("SELECT COUNT(*) FROM users WHERE deleted_at IS NULL AND COALESCE(is_active,true) AND ($1::text IS NULL OR name ILIKE $1 OR email ILIKE $1)")
+    let total:i64=sqlx::query_scalar("SELECT COUNT(*) FROM users WHERE deleted_at IS NULL AND COALESCE(LOWER(role),'')<>'deleted' AND COALESCE(is_active,true) AND ($1::text IS NULL OR name ILIKE $1 OR email ILIKE $1)")
         .bind(&search).fetch_one(&mut *tx).await.map_err(db)?;
-    let rows=sqlx::query_scalar("SELECT jsonb_build_object('id',u.id::text,'name',u.name,'email',u.email,'avatar',u.avatar_url,'global_role',u.role,'manager_id',m.id::text,'role_id',m.role_id::text) FROM users u LEFT JOIN crm_managers m ON m.user_id=u.id WHERE u.deleted_at IS NULL AND COALESCE(u.is_active,true) AND ($1::text IS NULL OR u.name ILIKE $1 OR u.email ILIKE $1) ORDER BY u.id LIMIT $2 OFFSET $3")
+    let rows=sqlx::query_scalar("SELECT jsonb_build_object('id',u.id::text,'name',u.name,'email',u.email,'avatar',u.avatar_url,'global_role',u.role,'manager_id',m.id::text,'role_id',m.role_id::text) FROM users u LEFT JOIN crm_managers m ON m.user_id=u.id WHERE u.deleted_at IS NULL AND COALESCE(LOWER(u.role),'')<>'deleted' AND COALESCE(u.is_active,true) AND ($1::text IS NULL OR u.name ILIKE $1 OR u.email ILIKE $1) ORDER BY u.id LIMIT $2 OFFSET $3")
         .bind(search).bind(size).bind(offset).fetch_all(&mut *tx).await.map_err(db)?;
     tx.commit().await.map_err(db)?;
     Ok(envelope(rows, page, size, total))
@@ -795,7 +797,7 @@ async fn eligible(
     user: i64,
     role: i64,
 ) -> Result<(), ApiError> {
-    let user=sqlx::query_scalar::<_,i64>("SELECT id FROM users WHERE id=$1 AND deleted_at IS NULL AND COALESCE(is_active,true) FOR KEY SHARE").bind(user).fetch_optional(&mut **tx).await.map_err(db)?;
+    let user=sqlx::query_scalar::<_,i64>("SELECT id FROM users WHERE id=$1 AND deleted_at IS NULL AND COALESCE(LOWER(role),'')<>'deleted' AND COALESCE(is_active,true) FOR KEY SHARE").bind(user).fetch_optional(&mut **tx).await.map_err(db)?;
     if user.is_none() {
         return Err(ApiError::validation_error("Choose an active existing user"));
     }

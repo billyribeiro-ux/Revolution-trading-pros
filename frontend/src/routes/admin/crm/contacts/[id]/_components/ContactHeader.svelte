@@ -9,12 +9,15 @@
 	interface Props {
 		contact: Contact;
 		contactId: string;
+		canEdit: boolean;
+		canDelete: boolean;
+		canSend: boolean;
 		onRefresh: () => void;
 		onSendEmail: () => void;
 		onDelete: () => void;
 	}
 
-	let { contact, contactId, onRefresh, onSendEmail, onDelete }: Props = $props();
+	let { contact, contactId, canEdit, canDelete, canSend, onRefresh, onSendEmail, onDelete }: Props = $props();
 </script>
 
 <header class="contact-header">
@@ -50,15 +53,15 @@
 		<button class="btn-icon" onclick={onRefresh} title="Refresh">
 			<IconRefresh size={18} />
 		</button>
-		<button class="btn-secondary" onclick={onSendEmail}>
+		<button class="btn-secondary" onclick={onSendEmail} disabled={!canSend} title={canSend ? 'Send Email' : 'Contact manage permission is required'}>
 			<IconSend size={18} />
 			Send Email
 		</button>
-		<a href="/admin/crm/contacts/{contactId}/edit" class="btn-primary">
+		{#if canEdit}<a href="/admin/crm/contacts/{contactId}/edit" class="btn-primary">
 			<IconEdit size={18} />
 			Edit Contact
-		</a>
-		<button class="btn-icon danger" onclick={onDelete} title="Delete">
+		</a>{:else}<button class="btn-primary" disabled title="Contact edit permission is required"><IconEdit size={18} />Edit Contact</button>{/if}
+		<button class="btn-icon danger" onclick={onDelete} title="Delete" disabled={!canDelete}>
 			<IconTrash size={18} />
 		</button>
 	</div>

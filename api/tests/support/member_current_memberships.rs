@@ -131,8 +131,8 @@ pub async fn proof(api: &Router, pool: &PgPool, tokens: &[String]) {
                 .await
                 .unwrap();
         assert_eq!(
-            version, 2,
-            "Semantic migration invalidates only the prior status-rule baseline"
+            version, 4,
+            "099 current-cohort,115 operational-UTC and117 legacy-deleted-universe migrations each invalidate the prior status-rule baseline"
         );
     }
     let active = request(

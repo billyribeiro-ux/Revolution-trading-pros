@@ -12,6 +12,8 @@
 
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { useCrmAccess } from '#lib/crm/access.svelte.js';
+	const access = useCrmAccess();
 	import IconMail from '@tabler/icons-svelte-runes/icons/mail';
 	import IconMailCheck from '@tabler/icons-svelte-runes/icons/mail-check';
 	import IconUsers from '@tabler/icons-svelte-runes/icons/users';
@@ -73,6 +75,10 @@
 	}
 
 	async function saveDoubleOptIn() {
+		if (!access.can('POST', '/settings/double-optin')) {
+			error = 'Your role cannot update double opt-in settings.';
+			return;
+		}
 		isSaving = true;
 		error = '';
 		successMessage = '';
@@ -89,6 +95,10 @@
 	}
 
 	async function saveEmailPreferences() {
+		if (!access.can('POST', '/settings/email-preferences')) {
+			error = 'Your role cannot update email preference settings.';
+			return;
+		}
 		isSaving = true;
 		error = '';
 		successMessage = '';
@@ -104,7 +114,7 @@
 		}
 	}
 
-	const tabs = [
+	const allTabs = [
 		{ id: 'double-optin', name: 'Double Opt-In', icon: IconMailCheck },
 		{ id: 'email-preferences', name: 'Email Preferences', icon: IconMail },
 		{ id: 'managers', name: 'Managers', icon: IconUsers, href: '/admin/crm/managers' },
@@ -116,14 +126,11 @@
 		}
 	];
 
+	const tabs = $derived(allTabs.filter((tab) => !tab.href || access.page(tab.href)));
 	onMount(() => {
 		loadSettings();
 	});
 </script>
-
-<svelte:head>
-	<title>CRM Settings - FluentCRM Pro</title>
-</svelte:head>
 
 <div class="settings-page">
 	<!-- Header -->
@@ -205,7 +212,8 @@
 					{#if doubleOptIn.enabled}
 						<div class="form-group">
 							<label for="doi-subject">Confirmation Email Subject</label>
-							<input autocomplete="off"
+							<input
+								autocomplete="off"
 								type="text"
 								id="doi-subject"
 								name="doi-subject"
@@ -228,7 +236,8 @@
 
 						<div class="form-group">
 							<label for="doi-redirect">Redirect URL After Confirmation</label>
-							<input autocomplete="off"
+							<input
+								autocomplete="off"
 								type="text"
 								id="doi-redirect"
 								name="doi-redirect"
@@ -247,7 +256,11 @@
 					{/if}
 
 					<div class="form-actions">
-						<button class="btn-primary" onclick={saveDoubleOptIn} disabled={isSaving}>
+						<button
+							class="btn-primary"
+							onclick={saveDoubleOptIn}
+							disabled={isSaving || !access.can('POST', '/settings/double-optin')}
+						>
 							{#if isSaving}
 								<IconRefresh size={18} class="spinning" />
 							{:else}
@@ -284,7 +297,8 @@
 					{#if emailPreferences.enabled}
 						<div class="form-group">
 							<label for="ep-title">Page Title</label>
-							<input autocomplete="email"
+							<input
+								autocomplete="email"
 								type="text"
 								id="ep-title"
 								name="ep-title"
@@ -357,7 +371,8 @@
 
 						<div class="form-group">
 							<label for="ep-redirect">Redirect After Update</label>
-							<input autocomplete="off"
+							<input
+								autocomplete="off"
 								type="text"
 								id="ep-redirect"
 								name="ep-redirect"
@@ -368,7 +383,11 @@
 					{/if}
 
 					<div class="form-actions">
-						<button class="btn-primary" onclick={saveEmailPreferences} disabled={isSaving}>
+						<button
+							class="btn-primary"
+							onclick={saveEmailPreferences}
+							disabled={isSaving || !access.can('POST', '/settings/email-preferences')}
+						>
 							{#if isSaving}
 								<IconRefresh size={18} class="spinning" />
 							{:else}
@@ -620,7 +639,6 @@
 		cursor: pointer;
 		transition: all 0.2s;
 	}
-
 
 	.btn-primary:disabled {
 		opacity: 0.7;

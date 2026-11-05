@@ -1,19 +1,22 @@
 import type { RequestEvent } from '@sveltejs/kit';
 import { API_BASE_URL, BACKEND_URL } from '$app/env/private';
-import { requireAdmin } from './auth.js';
+import { requireCrmOperation } from './crm-auth.js';
+import { crmAccessFailure, crmPrivateHeaders } from './crm-context.js';
 
 /** Forward one bounded transfer request, preserving multipart boundaries and downloads. */
 export async function proxyCrmTransfers(
 	event: RequestEvent,
 	direction: 'imports' | 'exports'
 ): Promise<Response> {
-	const { token } = requireAdmin(event),
-		rest = event.params.rest ?? '',
+	let token: string;
+	try {
+		({ token } = await requireCrmOperation(event));
+	} catch (error) {
+		return crmAccessFailure(error);
+	}
+	const rest = event.params.rest ?? '',
 		method = event.request.method;
-	const headers = new Headers({
-		'Cache-Control': 'private, no-store',
-		'X-Content-Type-Options': 'nosniff'
-	});
+	const headers = crmPrivateHeaders();
 	const fail = (status: number, error: string) => Response.json({ error }, { status, headers });
 	const uuid = '[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}';
 	const record = new RegExp(`^${uuid}$`).test(rest);
@@ -27,9 +30,9 @@ export async function proxyCrmTransfers(
 	const options = direction === 'imports' && rest === 'options';
 	if (
 		!(rest === ''
-			? ['GET', 'POST'].includes(method)
+			? ['GET', 'HEAD', 'POST'].includes(method)
 			: record || read || fields || options
-				? method === 'GET'
+				? ['GET', 'HEAD'].includes(method)
 				: action && method === 'POST')
 	)
 		return fail(404, 'Transfer endpoint not found');

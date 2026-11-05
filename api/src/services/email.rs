@@ -376,6 +376,32 @@ impl EmailService {
         template_alias: &str,
         model: serde_json::Value,
     ) -> Result<()> {
+        self.send_transactional_for(pool, to, template_alias, model, None)
+            .await
+    }
+    pub(crate) async fn send_transactional_linked(
+        &self,
+        pool: &PgPool,
+        user: i64,
+        to: &str,
+        alias: &str,
+        model: serde_json::Value,
+    ) -> Result<()> {
+        let linked:bool=sqlx::query_scalar("SELECT EXISTS(SELECT 1 FROM users WHERE id=$1 AND email=$2 AND deleted_at IS NULL AND COALESCE(LOWER(role),'')<>'deleted')").bind(user).bind(to).fetch_one(pool).await?;
+        if !linked {
+            anyhow::bail!("The recorded recipient changed before this account message")
+        }
+        self.send_transactional_for(pool, to, alias, model, Some(user))
+            .await
+    }
+    async fn send_transactional_for(
+        &self,
+        pool: &PgPool,
+        to: &str,
+        template_alias: &str,
+        model: serde_json::Value,
+        linked_user: Option<i64>,
+    ) -> Result<()> {
         crate::utils::errors::validate_email(to)
             .map_err(|_| anyhow::anyhow!("Invalid recipient email"))?;
         if template_alias.is_empty()
@@ -390,8 +416,8 @@ impl EmailService {
             .map(Self::provider)
             .unwrap_or("configuration");
         let logged_model = redacted_model(&model);
-        let log_id:i64=sqlx::query_scalar("INSERT INTO email_logs(email,to_email,subject,template_type,template_alias,model,status,provider,queued_at,created_at) VALUES($1,$1,$2,LEFT($3,50),$3,$4,'queued',$5,NOW(),NOW()) RETURNING id")
-            .bind(to).bind(format!("[template:{template_alias}]")).bind(template_alias).bind(logged_model).bind(provider).fetch_one(pool).await?;
+        let log_id:i64=sqlx::query_scalar("INSERT INTO email_logs(email,to_email,subject,template_type,template_alias,model,status,provider,queued_at,created_at,user_id) VALUES($1,$1,$2,LEFT($3,50),$3,$4,'queued',$5,NOW(),NOW() AT TIME ZONE 'UTC',$6) RETURNING id")
+            .bind(to).bind(format!("[template:{template_alias}]")).bind(template_alias).bind(logged_model).bind(provider).bind(linked_user).fetch_one(pool).await?;
         let service = match resolved {
             Ok(service) => service,
             Err(error) => {

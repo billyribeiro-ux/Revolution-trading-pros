@@ -2,7 +2,8 @@
 import { afterEach, expect, it, vi } from 'vite-plus/test';
 vi.mock('$app/env/private', () => ({ API_BASE_URL: 'http://backend.test', BACKEND_URL: '' }));
 const auth = vi.hoisted(() => ({ admin: vi.fn(() => ({ token: 'fixture-token' })) }));
-vi.mock('../auth.js', () => ({ requireAdmin: auth.admin }));
+// Transport tests use an explicit successful operation boundary; current-actor authorization is covered by policy/context tests.
+vi.mock('../crm-auth.js', () => ({ requireCrmOperation: auth.admin }));
 import { proxyCrmContacts } from '../crm-contact-proxy.js';
 function event(method: string, rest = '', body?: string) {
 	const url = new URL('http://frontend.test/api/admin/crm/contacts?page=2&lifecycle_stage=mql');

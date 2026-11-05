@@ -149,6 +149,7 @@ fn member_subscription_and_order_money_fields_are_nullable() {
 #[test]
 fn create_member_request_accepts_minimal_and_full_payloads() {
     let min: CreateMemberRequest = serde_json::from_value(serde_json::json!({
+        "request_id": "8f0a6ee0-5dd0-49fb-a196-1002d749a161",
         "name": "Comp User",
         "email": "comp@example.com"
     }))
@@ -160,6 +161,7 @@ fn create_member_request_accepts_minimal_and_full_payloads() {
     assert!(min.send_welcome_email.is_none());
 
     let full: CreateMemberRequest = serde_json::from_value(serde_json::json!({
+        "request_id": "a9a395fb-fce6-4ecd-bd77-5d28588ca0f5",
         "name": "Jane Admin",
         "email": "jane@example.com",
         "password": "TempPass123!",
@@ -177,10 +179,21 @@ fn create_member_request_accepts_minimal_and_full_payloads() {
 /// to None on an empty body / empty querystring.
 #[test]
 fn admin_request_dtos_default_optional_fields_to_none() {
-    let upd: UpdateMemberRequest = serde_json::from_str("{}").expect("empty update body");
+    let upd: UpdateMemberRequest =
+        serde_json::from_str("{\"expected_version\":7}").expect("saved-version update body");
+    assert_eq!(upd.expected_version, 7);
+    assert!(serde_json::from_str::<UpdateMemberRequest>("{}").is_err());
+    assert!(serde_json::from_str::<BanMemberRequest>("{}").is_err());
+    assert!(
+        serde_json::from_value::<CreateMemberRequest>(
+            serde_json::json!({"name":"Missing intent","email":"fixture@example.test"})
+        )
+        .is_err()
+    );
     assert!(upd.name.is_none() && upd.email.is_none() && upd.password.is_none());
 
-    let ban: BanMemberRequest = serde_json::from_str("{}").expect("empty ban body");
+    let ban: BanMemberRequest =
+        serde_json::from_str("{\"expected_version\":7}").expect("saved-version ban body");
     assert!(ban.reason.is_none());
     assert!(ban.duration_days.is_none());
 

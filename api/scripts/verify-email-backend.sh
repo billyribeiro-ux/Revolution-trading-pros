@@ -11,7 +11,8 @@ logs for inspection. Default PostgreSQL port: 55439. The proof also owns local
 provider ports 19020, 19021, 19025 and 19026. All must be available.
 
 Requires PostgreSQL with pg_stat_statements and the pinned Rust toolchain and
-dependencies already installed. Cargo runs offline. No .env file is sourced.
+dependencies already installed. Cargo runs offline. No .env file is sourced. Account credential proofs require the owned Redis wrapper.
+Internal wrapper flags: --owned-redis-port PORT --owned-redis-token HEX32.
 USAGE
 }
 fail() {
@@ -21,6 +22,8 @@ fail() {
 
 pg_port=55439
 pg_bin=
+owned_redis_port=
+owned_redis_token=
 while (($#)); do
   case "$1" in
     --port)
@@ -31,6 +34,16 @@ while (($#)); do
     --pg-bin)
       (($# >= 2)) || fail '--pg-bin requires a directory'
       pg_bin=$2
+      shift 2
+      ;;
+    --owned-redis-port)
+      (($# >= 2)) || fail '--owned-redis-port requires a value'
+      owned_redis_port=$2
+      shift 2
+      ;;
+    --owned-redis-token)
+      (($# >= 2)) || fail '--owned-redis-token requires a value'
+      owned_redis_token=$2
       shift 2
       ;;
     --help|-h)
@@ -45,6 +58,13 @@ done
 case "$pg_port" in
   19020|19021|19025|19026) fail 'PostgreSQL cannot use a provider fixture port' ;;
 esac
+if [[ -n "$owned_redis_port" || -n "$owned_redis_token" ]]; then
+  [[ "$owned_redis_port" =~ ^[1-9][0-9]{3,4}$ ]] || fail 'Owned Redis needs an explicit local port'
+  ((owned_redis_port >= 1024 && owned_redis_port <= 65535)) || fail 'Invalid owned Redis port'
+  [[ "$owned_redis_port" != 16388 && "$owned_redis_port" != "$pg_port" ]] || fail 'Refuse the existing browser Redis or PostgreSQL port'
+  case "$owned_redis_port" in 19020|19021|19025|19026) fail 'Refuse provider fixture ports' ;; esac
+  [[ "$owned_redis_token" =~ ^[0-9a-f]{32}$ ]] || fail 'Use the generated owned Redis token'
+fi
 if [[ -n "$pg_bin" ]]; then
   [[ "$pg_bin" = /* && -d "$pg_bin" ]] || fail '--pg-bin must be an existing absolute directory'
   for tool in initdb pg_ctl createdb psql; do
@@ -121,6 +141,9 @@ cd -- "$api_dir"
   ENVIRONMENT=development \
   "DATABASE_URL=$database_url" "ADMIN_VERIFY_DATABASE_URL=$database_url" \
   ADMIN_VERIFY_PG_STAT_STATEMENTS=1 \
+  "ADMIN_VERIFY_FIXTURE_DIR=$fixture_dir" \
+  "ADMIN_VERIFY_OWNED_REDIS_URL=${owned_redis_port:+redis://127.0.0.1:$owned_redis_port/0}" \
+  "ADMIN_VERIFY_OWNED_REDIS_TOKEN=$owned_redis_token" \
   APP_URL=http://127.0.0.1:5274 \
   JWT_SECRET=only-a-disposable-jwt-fixture-secret-at-least-32-chars \
   MEMBER_INDICATOR_SECRET=only-a-disposable-indicator-fixture-secret \

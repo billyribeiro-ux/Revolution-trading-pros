@@ -33,6 +33,7 @@
 	import Seo from '#lib/seo/Seo.svelte';
 	import Breadcrumbs from '#lib/components/seo/Breadcrumbs.svelte';
 	import { resolveSEO } from '#lib/seo/resolve.js';
+	import { provideCrmAccess } from '#lib/crm/access.svelte.js';
 	import { createPageSeoContext } from '#lib/seo/page-seo-context.svelte.js';
 	import type { SEOInput, RouteSEOContext, SEODefaults } from '#lib/seo/types.js';
 	import MarketingFooter from '#lib/components/sections/MarketingFooter.svelte';
@@ -64,6 +65,20 @@
 		};
 	}
 	let props: Props = $props();
+	const crmAccess = provideCrmAccess(
+		() => page.data.crmCapabilities,
+		() => page.data.crmUserId,
+		() => page.data.globalAdmin === true,
+		() => page.data
+	);
+	onMount(() => {
+		const denied = () => {
+			crmAccess.clear();
+			void crmAccess.refresh().catch(() => undefined);
+		};
+		window.addEventListener('crm-access-denied', denied);
+		return () => window.removeEventListener('crm-access-denied', denied);
+	});
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// DERIVED - Svelte 5 $derived() Pattern (replaces $: reactive statements)

@@ -1,781 +1,263 @@
-<!--
-	/admin/crm/managers - Manager Permissions & Roles
-	Apple Principal Engineer ICT 7 Grade - January 2026
-	
-	Features:
-	- Manager user management with roles
-	- Role CRUD with permission configuration
-	- Tab-based navigation (Managers/Roles)
-	- Permission badges and counts
-	- Full Svelte 5 $state/$derived reactivity
--->
-
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import IconUsers from '@tabler/icons-svelte-runes/icons/users';
-	import IconPlus from '@tabler/icons-svelte-runes/icons/plus';
-	import IconEdit from '@tabler/icons-svelte-runes/icons/edit';
-	import IconTrash from '@tabler/icons-svelte-runes/icons/trash';
-	import IconRefresh from '@tabler/icons-svelte-runes/icons/refresh';
-	import IconShieldLock from '@tabler/icons-svelte-runes/icons/shield-lock';
-	import IconUser from '@tabler/icons-svelte-runes/icons/user';
-	import IconSettings from '@tabler/icons-svelte-runes/icons/settings';
-	import { crmAPI } from '#lib/api/crm.js';
-	import type { ManagerRole, ManagerUser } from '#lib/crm/types.js';
+	import { page } from '$app/state';
+	import {
+		managerAPI,
+		type ManagerRecord,
+		type ManagerRoleRecord,
+		type ManagerPage
+	} from '#lib/api/crm-managers.js';
+	import { useCrmAccess } from '#lib/crm/access.svelte.js';
 	import ConfirmationModal from '#lib/components/admin/ConfirmationModal.svelte';
-
-	let roles = $state<ManagerRole[]>([]);
-	let managers = $state<ManagerUser[]>([]);
-	let isLoading = $state(true);
-	let error = $state('');
-	let activeTab = $state<'managers' | 'roles'>('managers');
-
-	// Delete confirmation modal state
-	let showDeleteRoleModal = $state(false);
-	let showRemoveManagerModal = $state(false);
-	let pendingDeleteRoleId = $state<string | null>(null);
-	let pendingRemoveManagerId = $state<string | null>(null);
-
-	let stats = $state({
-		totalManagers: 0,
-		totalRoles: 0
-	});
-
-	async function loadData() {
-		isLoading = true;
+	const access = useCrmAccess();
+	let tab = $state<'managers' | 'roles'>('managers'),
+		search = $state(''),
+		currentPage = $state(1),
+		managers = $state<ManagerPage<ManagerRecord> | null>(null),
+		roles = $state<ManagerPage<ManagerRoleRecord> | null>(null),
+		loading = $state(true),
+		busy = $state(false),
+		error = $state(''),
+		notice = $state('');
+	let generation = 0,
+		disposed = false;
+	let pending = $state<{
+		kind: 'managers' | 'manager-roles';
+		id: string;
+		version: number;
+		label: string;
+	} | null>(null);
+	const meta = $derived(tab === 'managers' ? managers?.meta : roles?.meta);
+	async function load() {
+		const request = ++generation;
+		loading = true;
 		error = '';
-
 		try {
-			const [rolesResponse, managersResponse] = await Promise.all([
-				crmAPI.getManagerRoles(),
-				crmAPI.getManagerUsers()
-			]);
-
-			roles = rolesResponse.data || [];
-			managers = managersResponse.data || [];
-
-			stats = {
-				totalManagers: managers.length,
-				totalRoles: roles.length
-			};
-		} catch (err) {
-			error = err instanceof Error ? err.message : 'Failed to load data';
+			if (tab === 'managers') {
+				if (!access.can('GET', '/managers'))
+					throw new Error('CRM assignment records are not permitted');
+				const result = await managerAPI.managers(currentPage, search);
+				if (!disposed && request === generation) managers = result;
+			} else {
+				if (!access.can('GET', '/manager-roles'))
+					throw new Error('CRM role records are not permitted');
+				const result = await managerAPI.roles(currentPage, search);
+				if (!disposed && request === generation) roles = result;
+			}
+		} catch (cause) {
+			if (request === generation) {
+				managers = null;
+				roles = null;
+				error =
+					cause instanceof Error ? cause.message : 'Unable to load current CRM security records';
+			}
 		} finally {
-			isLoading = false;
+			if (request === generation) loading = false;
 		}
 	}
-
-	function deleteRole(id: string) {
-		pendingDeleteRoleId = id;
-		showDeleteRoleModal = true;
+	function changeTab(next: 'managers' | 'roles') {
+		tab = next;
+		currentPage = 1;
+		search = '';
+		void load();
 	}
-
-	async function confirmDeleteRole() {
-		if (!pendingDeleteRoleId) return;
-		showDeleteRoleModal = false;
-		const id = pendingDeleteRoleId;
-		pendingDeleteRoleId = null;
+	async function remove() {
+		const target = pending;
+		if (!target || busy) return;
+		pending = null;
+		busy = true;
+		error = '';
+		notice = '';
 		try {
-			await crmAPI.deleteManagerRole(id);
-			await loadData();
-		} catch (err) {
-			error = err instanceof Error ? err.message : 'Failed to delete role';
+			if (
+				!access.can('DELETE', target.kind === 'managers' ? '/managers/{id}' : '/manager-roles/{id}')
+			)
+				throw new Error('A global administrator must change CRM security');
+			await managerAPI.remove(target.kind, target.id, target.version);
+			notice =
+				target.kind === 'managers'
+					? 'CRM assignment removed. The global account role is unchanged.'
+					: 'CRM role deleted.';
+			await load();
+		} catch (cause) {
+			error =
+				cause instanceof Error
+					? cause.message
+					: 'Deletion was not confirmed. Reload before retrying.';
+		} finally {
+			busy = false;
 		}
 	}
-
-	function removeManager(id: string) {
-		pendingRemoveManagerId = id;
-		showRemoveManagerModal = true;
-	}
-
-	async function confirmRemoveManager() {
-		if (!pendingRemoveManagerId) return;
-		showRemoveManagerModal = false;
-		const id = pendingRemoveManagerId;
-		pendingRemoveManagerId = null;
-		try {
-			await crmAPI.removeManager(id);
-			await loadData();
-		} catch (err) {
-			error = err instanceof Error ? err.message : 'Failed to remove manager';
-		}
-	}
-
-	function formatDate(dateString: string): string {
-		return new Date(dateString).toLocaleDateString();
-	}
-
-	function tabClass(tab: typeof activeTab) {
-		return {
-			tab: true,
-			active: activeTab === tab
-		};
-	}
-
-	// Audit P2 #10: was a bare `$effect(() => loadData())`. Migrated to
-	// `onMount` so the lifecycle init isn't on the reactive graph.
 	onMount(() => {
-		loadData();
+		tab = page.url.searchParams.get('tab') === 'roles' ? 'roles' : 'managers';
+		void load();
+		return () => {
+			disposed = true;
+			generation++;
+		};
 	});
 </script>
 
-<svelte:head>
-	<title>Manager Permissions - FluentCRM Pro</title>
-</svelte:head>
-
-<div class="managers-page">
-	<!-- Header -->
-	<div class="page-header">
-		<div>
-			<h1>Manager Permissions</h1>
-			<p class="page-description">Control access and permissions for CRM managers</p>
-		</div>
-		<div class="header-actions">
-			<button class="btn-refresh" onclick={() => loadData()} disabled={isLoading}>
-				<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
-			</button>
-			{#if activeTab === 'managers'}
-				<a href="/admin/crm/managers/add" class="btn-primary">
-					<IconPlus size={18} />
-					Add Manager
-				</a>
-			{:else}
-				<a href="/admin/crm/managers/roles/new" class="btn-primary">
-					<IconPlus size={18} />
-					New Role
-				</a>
-			{/if}
-		</div>
-	</div>
-
-	<!-- Stats Cards -->
-	<div class="stats-grid">
-		<div class="stat-card">
-			<div class="stat-icon blue">
-				<IconUsers size={24} />
-			</div>
-			<div class="stat-content">
-				<span class="stat-value">{stats.totalManagers}</span>
-				<span class="stat-label">Managers</span>
-			</div>
-		</div>
-		<div class="stat-card">
-			<div class="stat-icon purple">
-				<IconShieldLock size={24} />
-			</div>
-			<div class="stat-content">
-				<span class="stat-value">{stats.totalRoles}</span>
-				<span class="stat-label">Roles</span>
-			</div>
-		</div>
-	</div>
-
-	<!-- Tabs -->
-	<div class="tabs">
-		<button class={tabClass('managers')} onclick={() => (activeTab = 'managers')}>
-			<IconUsers size={18} />
-			Managers
-		</button>
-		<button class={tabClass('roles')} onclick={() => (activeTab = 'roles')}>
-			<IconShieldLock size={18} />
-			Roles
-		</button>
-	</div>
-
-	<!-- Content -->
-	{#if isLoading}
-		<div class="loading-state">
-			<div class="spinner"></div>
-			<p>Loading...</p>
-		</div>
-	{:else if error}
-		<div class="error-state">
-			<p>{error}</p>
-			<button onclick={() => loadData()}>Try Again</button>
-		</div>
-	{:else if activeTab === 'managers'}
-		<!-- Managers List -->
-		{#if managers.length === 0}
-			<div class="empty-state">
-				<IconUsers size={48} />
-				<h3>No managers added</h3>
-				<p>Add users as CRM managers to give them access to specific features</p>
-				<a href="/admin/crm/managers/add" class="btn-primary">
-					<IconPlus size={18} />
-					Add Manager
-				</a>
-			</div>
-		{:else}
-			<div class="managers-list">
-				{#each managers as manager (manager.id)}
-					<div class="manager-card">
-						<div class="manager-avatar">
-							{#if manager.avatar}
-								<img
-									src={manager.avatar}
-									alt={manager.name}
-									width="48"
-									height="48"
-									loading="lazy"
-								/>
-							{:else}
-								<IconUser size={24} />
-							{/if}
-						</div>
-						<div class="manager-info">
-							<h3>{manager.name}</h3>
-							<p class="manager-email">{manager.email || ''}</p>
-						</div>
-						<div class="manager-role">
-							<span class="role-badge">
-								<IconShieldLock size={14} />
-								{manager.role?.name || 'No Role'}
-							</span>
-						</div>
-						<div class="manager-meta">
-							<span>Added {formatDate(manager.assigned_at)}</span>
-						</div>
-						<div class="manager-actions">
-							<a href="/admin/crm/managers/{manager.id}/edit" class="btn-icon" title="Edit">
-								<IconEdit size={16} />
-							</a>
-							<button
-								class="btn-icon danger"
-								title="Remove"
-								onclick={() => removeManager(manager.id)}
-							>
-								<IconTrash size={16} />
-							</button>
-						</div>
-					</div>
-				{/each}
-			</div>
-		{/if}
-	{:else}
-		<!-- Roles List -->
-		{#if roles.length === 0}
-			<div class="empty-state">
-				<IconShieldLock size={48} />
-				<h3>No roles defined</h3>
-				<p>Create roles to define different permission levels for managers</p>
-				<a href="/admin/crm/managers/roles/new" class="btn-primary">
-					<IconPlus size={18} />
-					Create Role
-				</a>
-			</div>
-		{:else}
-			<div class="roles-grid">
-				{#each roles as role (role.id)}
-					<div class="role-card">
-						<div class="role-header">
-							<div class="role-icon">
-								<IconShieldLock size={24} />
-							</div>
-							<div class="role-info">
-								<h3>{role.name}</h3>
-								{#if role.description}
-									<p>{role.description}</p>
-								{/if}
-							</div>
-							{#if role.is_default}
-								<span class="default-badge">Default</span>
-							{/if}
-						</div>
-						<div class="role-stats">
-							<div class="stat">
-								<IconUsers size={16} />
-								<span>{role.users_count} users</span>
-							</div>
-							<div class="stat">
-								<IconSettings size={16} />
-								<span>{role.permissions.filter((p) => p.allowed).length} permissions</span>
-							</div>
-						</div>
-						<div class="role-permissions">
-							<span class="permissions-label">Permissions:</span>
-							<div class="permissions-tags">
-								{#each role.permissions.filter((p) => p.allowed).slice(0, 4) as perm, i (i)}
-									<span class="permission-tag">{perm.module} ({perm.action})</span>
-								{/each}
-								{#if role.permissions.filter((p) => p.allowed).length > 4}
-									<span class="permission-more"
-										>+{role.permissions.filter((p) => p.allowed).length - 4} more</span
-									>
-								{/if}
-							</div>
-						</div>
-						<div class="role-actions">
-							<a href="/admin/crm/managers/roles/{role.id}/edit" class="btn-secondary">
-								<IconEdit size={16} />
-								Edit
-							</a>
-							{#if !role.is_default}
-								<button class="btn-icon danger" onclick={() => deleteRole(role.id)}>
-									<IconTrash size={16} />
-								</button>
-							{/if}
-						</div>
-					</div>
-				{/each}
-			</div>
-		{/if}
-	{/if}
-</div>
-
+<section>
+	<h1>CRM managers and roles</h1>
+	<p>
+		Manage explicit CRM delegation. Security mutations and the active user roster require a global
+		administrator; no default role is assigned automatically.
+	</p>
+	<nav aria-label="CRM security sections">
+		<button onclick={() => changeTab('managers')} aria-pressed={tab === 'managers'}>Managers</button
+		><button onclick={() => changeTab('roles')} aria-pressed={tab === 'roles'}>Roles</button><button
+			disabled={loading || busy}
+			onclick={() => void load()}>Refresh</button
+		>{#if access.page('/admin/crm/managers/new')}<a href="/admin/crm/managers/new">Add Manager</a
+			>{/if}{#if access.page('/admin/crm/managers/roles/new')}<a
+				href="/admin/crm/managers/roles/new">Create Role</a
+			>{/if}
+	</nav>
+	<form
+		onsubmit={(event) => {
+			event.preventDefault();
+			currentPage = 1;
+			void load();
+		}}
+	>
+		<label>Search {tab}<input bind:value={search} maxlength="500" /></label><button disabled={busy}
+			>Search</button
+		>
+	</form>
+	{#if error}<p role="alert">{error}</p>{/if}{#if notice}<p role="status">
+			{notice}
+		</p>{/if}{#if loading}<p role="status">Loading current {tab}…</p>{:else if !error}<p>
+			{meta?.total ?? 0} recorded {tab} · Page {meta?.current_page ?? 1} of {meta?.last_page ?? 1}.
+		</p>
+		{#if tab === 'managers'}<table>
+				<thead
+					><tr
+						><th>Actual account</th><th>CRM role</th><th>Global role</th><th>Assignment</th><th
+							>Actions</th
+						></tr
+					></thead
+				><tbody
+					>{#each managers?.data ?? [] as manager (manager.id)}<tr
+							><td>{manager.email}<br />{manager.name ?? 'Name not recorded'}</td><td
+								>{manager.role.name}</td
+							><td>{manager.global_role ?? 'Not recorded'}</td><td
+								>Version {manager.version} · {manager.is_active
+									? 'Active account'
+									: 'Inactive account'}</td
+							><td
+								>{#if access.page(`/admin/crm/managers/${manager.id}/edit`)}<a
+										href="/admin/crm/managers/{manager.id}/edit">Edit assignment</a
+									>{/if}<button
+									disabled={busy || !access.can('DELETE', '/managers/{id}')}
+									onclick={() => {
+										pending = {
+											kind: 'managers',
+											id: manager.id,
+											version: manager.version,
+											label: manager.email
+										};
+									}}>Remove assignment</button
+								></td
+							></tr
+						>{/each}</tbody
+				>
+			</table>{:else}<table>
+				<thead
+					><tr
+						><th>Role</th><th>Assignments</th><th>Selection</th><th>Version</th><th>Actions</th></tr
+					></thead
+				><tbody
+					>{#each roles?.data ?? [] as role (role.id)}<tr
+							><td>{role.name}<br />{role.description ?? 'No description'}</td><td
+								>{role.users_count}</td
+							><td>{role.is_default ? 'Default selection' : 'Optional selection'}</td><td
+								>{role.version}</td
+							><td
+								>{#if access.page(`/admin/crm/managers/roles/${role.id}/edit`)}<a
+										href="/admin/crm/managers/roles/{role.id}/edit">Edit role</a
+									>{/if}<button
+									disabled={busy || !access.can('DELETE', '/manager-roles/{id}')}
+									onclick={() => {
+										pending = {
+											kind: 'manager-roles',
+											id: role.id,
+											version: role.version,
+											label: role.name
+										};
+									}}>Delete role</button
+								></td
+							></tr
+						>{/each}</tbody
+				>
+			</table>{/if}
+		<nav aria-label="CRM security pages">
+			<button
+				disabled={busy || currentPage <= 1}
+				onclick={() => {
+					currentPage--;
+					void load();
+				}}>Previous page</button
+			><button
+				disabled={busy || currentPage >= (meta?.last_page ?? 1)}
+				onclick={() => {
+					currentPage++;
+					void load();
+				}}>Next page</button
+			>
+		</nav>{/if}
+</section>
 <ConfirmationModal
-	isOpen={showDeleteRoleModal}
-	title="Delete Role"
-	message="Are you sure you want to delete this role? Users with this role will lose access."
-	confirmText="Delete"
+	isOpen={pending !== null}
+	title={pending?.kind === 'managers' ? 'Remove CRM assignment' : 'Delete CRM role'}
+	message={`Confirm ${pending?.label ?? 'this record'} using saved version ${pending?.version ?? ''}. Assigned or default roles cannot be deleted.`}
+	confirmText="Confirm security change"
 	variant="danger"
-	onConfirm={confirmDeleteRole}
+	onConfirm={() => void remove()}
 	onCancel={() => {
-		showDeleteRoleModal = false;
-		pendingDeleteRoleId = null;
-	}}
-/>
-
-<ConfirmationModal
-	isOpen={showRemoveManagerModal}
-	title="Remove Manager"
-	message="Are you sure you want to remove this manager?"
-	confirmText="Remove"
-	variant="danger"
-	onConfirm={confirmRemoveManager}
-	onCancel={() => {
-		showRemoveManagerModal = false;
-		pendingRemoveManagerId = null;
+		pending = null;
 	}}
 />
 
 <style>
-	.managers-page {
-		max-width: 1200px;
+	section {
+		padding: 2rem;
+		color: #e2e8f0;
 	}
-
-	.page-header {
+	nav {
 		display: flex;
-		justify-content: space-between;
-		align-items: flex-start;
-		margin-bottom: 2rem;
+		gap: 1rem;
 		flex-wrap: wrap;
+		margin: 1rem 0;
+	}
+	form,
+	label {
+		display: flex;
 		gap: 1rem;
-	}
-
-	.page-header h1 {
-		font-size: 1.75rem;
-		font-weight: 700;
-		color: var(--text-primary, #f0f6fc);
-		margin: 0 0 0.25rem 0;
-	}
-
-	.page-description {
-		color: var(--text-tertiary, #6e7681);
-		margin: 0;
-	}
-
-	.header-actions {
-		display: flex;
-		gap: 0.75rem;
-	}
-
-	.btn-refresh {
-		width: 42px;
-		height: 42px;
-		display: flex;
 		align-items: center;
-		justify-content: center;
-		background: var(--bg-elevated, #161b22);
-		border: 1px solid rgba(230, 184, 0, 0.2);
-		border-radius: 10px;
-		color: var(--text-secondary, #8b949e);
-		cursor: pointer;
-		transition: all 0.2s;
 	}
-
-	.btn-refresh:hover {
-		background: rgba(230, 184, 0, 0.2);
-		color: var(--primary-500);
+	input,
+	button {
+		padding: 0.65rem;
+		background: #0f172a;
+		color: inherit;
+		border: 1px solid #64748b;
+		border-radius: 0.4rem;
 	}
-
-	.btn-refresh :global(.spinning) {
-		animation: spin 1s linear infinite;
-	}
-
-	@keyframes spin {
-		from {
-			transform: rotate(0deg);
-		}
-		to {
-			transform: rotate(360deg);
-		}
-	}
-
-	.btn-primary {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-		padding: 0.75rem 1.25rem;
-		background: var(--primary-500);
-		color: var(--bg-base, #0d1117);
-		border: none;
-		border-radius: 10px;
-		font-weight: 600;
-		cursor: pointer;
-		transition: all 0.2s;
-		text-decoration: none;
-	}
-
-
-	.btn-secondary {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-		padding: 0.5rem 1rem;
-		background: rgba(230, 184, 0, 0.1);
-		border: 1px solid rgba(230, 184, 0, 0.2);
-		color: var(--primary-500);
-		border-radius: 8px;
-		font-weight: 600;
-		cursor: pointer;
-		transition: all 0.2s;
-		text-decoration: none;
-		font-size: 0.85rem;
-	}
-
-	.btn-secondary:hover {
-		background: rgba(230, 184, 0, 0.2);
-	}
-
-	.stats-grid {
-		display: grid;
-		grid-template-columns: repeat(2, 1fr);
-		gap: 1rem;
-		margin-bottom: 2rem;
-		max-width: 500px;
-	}
-
-	.stat-card {
-		display: flex;
-		align-items: center;
-		gap: 1rem;
-		padding: 1.25rem;
-		background: var(--bg-elevated, #161b22);
-		border: 1px solid rgba(230, 184, 0, 0.1);
-		border-radius: 14px;
-	}
-
-	.stat-icon {
-		width: 52px;
-		height: 52px;
-		border-radius: 12px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-	}
-
-	.stat-icon.blue {
-		background: rgba(88, 166, 255, 0.15);
-		color: var(--info-emphasis, #58a6ff);
-	}
-	.stat-icon.purple {
-		background: rgba(230, 184, 0, 0.15);
-		color: var(--primary-500);
-	}
-
-	.stat-content {
-		display: flex;
-		flex-direction: column;
-		gap: 0.25rem;
-	}
-
-	.stat-value {
-		font-size: 1.5rem;
-		font-weight: 700;
-		color: var(--text-primary, #f0f6fc);
-	}
-
-	.stat-label {
-		font-size: 0.8rem;
-		color: var(--text-tertiary, #6e7681);
-	}
-
-	.tabs {
-		display: flex;
-		gap: 0.5rem;
-		margin-bottom: 2rem;
-		border-bottom: 1px solid rgba(230, 184, 0, 0.1);
-		padding-bottom: 1rem;
-	}
-
-	.tab {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-		padding: 0.75rem 1.5rem;
-		background: transparent;
-		border: 1px solid transparent;
-		border-radius: 10px;
-		color: var(--text-tertiary, #6e7681);
-		font-weight: 600;
-		cursor: pointer;
-		transition: all 0.2s;
-	}
-
-	.tab:hover {
-		color: var(--primary-500);
-	}
-
-	.tab.active {
-		background: rgba(230, 184, 0, 0.1);
-		border-color: rgba(230, 184, 0, 0.3);
-		color: var(--primary-500);
-	}
-
-	.managers-list {
-		display: flex;
-		flex-direction: column;
-		gap: 1rem;
-	}
-
-	.manager-card {
-		display: flex;
-		align-items: center;
-		gap: 1rem;
-		padding: 1.25rem;
-		background: var(--bg-base, #0d1117);
-		border: 1px solid rgba(230, 184, 0, 0.1);
-		border-radius: 14px;
-	}
-
-	.manager-avatar {
-		width: 48px;
-		height: 48px;
-		border-radius: 50%;
-		background: rgba(230, 184, 0, 0.2);
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		color: var(--primary-500);
-		overflow: hidden;
-	}
-
-	.manager-avatar img {
+	table {
 		width: 100%;
-		height: 100%;
-		object-fit: cover;
+		border-collapse: collapse;
 	}
-
-	.manager-info {
-		flex: 1;
+	td,
+	th {
+		text-align: left;
+		padding: 1rem;
+		border-bottom: 1px solid #475569;
 	}
-
-	.manager-info h3 {
-		font-size: 1rem;
-		font-weight: 600;
-		color: var(--text-primary, #f0f6fc);
-		margin: 0 0 0.25rem 0;
+	a {
+		color: #7dd3fc;
 	}
-
-	.manager-email {
-		font-size: 0.85rem;
-		color: var(--text-tertiary, #6e7681);
-		margin: 0;
-	}
-
-	.role-badge {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.5rem;
-		padding: 0.35rem 0.75rem;
-		background: rgba(230, 184, 0, 0.15);
-		border-radius: 9999px;
-		font-size: 0.8rem;
-		font-weight: 600;
-		color: var(--primary-500);
-	}
-
-	.manager-meta {
-		font-size: 0.8rem;
-		color: var(--text-tertiary, #6e7681);
-	}
-
-	.manager-actions {
-		display: flex;
-		gap: 0.5rem;
-	}
-
-	.btn-icon {
-		width: 36px;
-		height: 36px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		background: transparent;
-		border: 1px solid rgba(230, 184, 0, 0.2);
-		border-radius: 8px;
-		color: var(--text-secondary, #8b949e);
-		cursor: pointer;
-		transition: all 0.2s;
-		text-decoration: none;
-	}
-
-	.btn-icon:hover {
-		background: rgba(230, 184, 0, 0.1);
-		color: var(--primary-500);
-	}
-
-	.btn-icon.danger:hover {
-		background: rgba(248, 81, 73, 0.1);
-		color: var(--error-emphasis, #f85149);
-		border-color: rgba(248, 81, 73, 0.3);
-	}
-
-	.roles-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-		gap: 1.5rem;
-	}
-
-	.role-card {
-		background: var(--bg-base, #0d1117);
-		border: 1px solid rgba(230, 184, 0, 0.1);
-		border-radius: 14px;
-		padding: 1.5rem;
-		display: flex;
-		flex-direction: column;
-		gap: 1rem;
-	}
-
-	.role-header {
-		display: flex;
-		align-items: flex-start;
-		gap: 1rem;
-	}
-
-	.role-icon {
-		width: 44px;
-		height: 44px;
-		border-radius: 10px;
-		background: rgba(230, 184, 0, 0.15);
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		color: var(--primary-500);
-		flex-shrink: 0;
-	}
-
-	.role-info {
-		flex: 1;
-	}
-
-	.role-info h3 {
-		font-size: 1.1rem;
-		font-weight: 600;
-		color: var(--text-primary, #f0f6fc);
-		margin: 0 0 0.25rem 0;
-	}
-
-	.role-info p {
-		font-size: 0.85rem;
-		color: var(--text-tertiary, #6e7681);
-		margin: 0;
-	}
-
-	.default-badge {
-		padding: 0.25rem 0.5rem;
-		background: rgba(63, 185, 80, 0.15);
-		border-radius: 4px;
-		font-size: 0.7rem;
-		font-weight: 600;
-		color: var(--success-emphasis, #3fb950);
-	}
-
-	.role-stats {
-		display: flex;
-		gap: 1.5rem;
-		padding: 0.75rem 0;
-		border-top: 1px solid rgba(230, 184, 0, 0.1);
-		border-bottom: 1px solid rgba(230, 184, 0, 0.1);
-	}
-
-	.role-stats .stat {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-		font-size: 0.85rem;
-		color: var(--text-secondary, #8b949e);
-	}
-
-	.role-permissions {
-		display: flex;
-		flex-direction: column;
-		gap: 0.5rem;
-	}
-
-	.permissions-label {
-		font-size: 0.8rem;
-		color: var(--text-tertiary, #6e7681);
-	}
-
-	.permissions-tags {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.5rem;
-	}
-
-	.permission-tag {
-		padding: 0.25rem 0.5rem;
-		background: rgba(230, 184, 0, 0.1);
-		border-radius: 4px;
-		font-size: 0.7rem;
-		color: var(--primary-500);
-	}
-
-	.permission-more {
-		font-size: 0.75rem;
-		color: var(--text-tertiary, #6e7681);
-	}
-
-	.role-actions {
-		display: flex;
-		gap: 0.75rem;
-		margin-top: auto;
-	}
-
-	.loading-state,
-	.error-state,
-	.empty-state {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		padding: 4rem 2rem;
-		text-align: center;
-		color: var(--text-tertiary, #6e7681);
-	}
-
-	.empty-state :global(svg) {
-		color: var(--text-tertiary, #6e7681);
-		margin-bottom: 1rem;
-	}
-
-	.empty-state h3 {
-		color: var(--text-primary, #f0f6fc);
-		margin: 0 0 0.5rem 0;
-	}
-
-	.empty-state p {
-		margin: 0 0 1.5rem 0;
-	}
-
-	.spinner {
-		width: 40px;
-		height: 40px;
-		border: 3px solid rgba(230, 184, 0, 0.2);
-		border-top-color: var(--primary-500);
-		border-radius: 50%;
-		animation: spin 1s linear infinite;
-		margin-bottom: 1rem;
+	[role='alert'] {
+		color: #fca5a5;
 	}
 </style>

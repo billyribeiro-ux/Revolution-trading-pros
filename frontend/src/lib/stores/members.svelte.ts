@@ -1,3 +1,4 @@
+import type { MemberProfile } from '#lib/api/member-profile.js';
 /**
  * Enterprise Members Store (Svelte 5 Runes)
  * Revolution Trading Pros - L8+ Google Enterprise Grade
@@ -17,24 +18,32 @@ import {
 	type EmailTemplate
 } from '#lib/api/members.js';
 
+import type {
+	ServiceCatalogFilters,
+	ServiceMemberFilters,
+	ServiceMembers
+} from '#lib/api/member-statistics.js';
+
 // State interfaces
 interface MembersState {
 	members: Member[];
 	stats: MemberStats | null;
 	services: Service[];
+	statsLoading: boolean;
+	statsError: string | null;
+	servicesLoading: boolean;
+	servicesError: string | null;
+	servicesPagination: PaginationInfo | null;
+	servicesFilters: ServiceCatalogFilters;
 	pagination: PaginationInfo | null;
 	filters: MemberFilters;
 	loading: boolean;
 	error: string | null;
-	selectedMember: Member | null;
-	selectedMemberEngagement: number;
-	selectedMemberTimeline: Array<{
-		type: string;
-		title: string;
-		date: string;
-		icon: string;
-		meta?: Record<string, unknown>;
-	}>;
+	selectedMember: MemberProfile['member'] | null;
+	selectedMemberEngagement: null;
+	selectedMemberTimeline: MemberProfile['timeline'] | null;
+	selectedMemberLoading: boolean;
+	selectedMemberError: string | null;
 }
 
 interface ChurnedState {
@@ -47,16 +56,12 @@ interface ChurnedState {
 }
 
 interface ServiceMembersState {
-	service: { id: number; name: string; type: string } | null;
-	stats: {
-		total_members: number;
-		active_members: number;
-		trial_members: number;
-		churned_members: number;
-		total_revenue: number;
-	} | null;
-	members: Member[];
+	service: ServiceMembers['service'] | null;
+	stats: ServiceMembers['stats'] | null;
+	members: ServiceMembers['members'];
 	pagination: PaginationInfo | null;
+	serviceId: number | null;
+	filters: ServiceMemberFilters;
 	loading: boolean;
 	error: string | null;
 }
@@ -74,6 +79,12 @@ const initialMembersState: MembersState = {
 	members: [],
 	stats: null,
 	services: [],
+	statsLoading: false,
+	statsError: null,
+	servicesLoading: false,
+	servicesError: null,
+	servicesPagination: null,
+	servicesFilters: {},
 	pagination: null,
 	filters: {
 		per_page: 25,
@@ -84,8 +95,10 @@ const initialMembersState: MembersState = {
 	loading: false,
 	error: null,
 	selectedMember: null,
-	selectedMemberEngagement: 0,
-	selectedMemberTimeline: []
+	selectedMemberEngagement: null,
+	selectedMemberTimeline: null,
+	selectedMemberLoading: false,
+	selectedMemberError: null
 };
 
 const initialChurnedState: ChurnedState = {
@@ -101,6 +114,8 @@ const initialChurnedState: ChurnedState = {
 };
 
 const initialServiceMembersState: ServiceMembersState = {
+	serviceId: null,
+	filters: { page: 1, per_page: 25 },
 	service: null,
 	stats: null,
 	members: [],
@@ -122,6 +137,9 @@ const initialEmailState: MemberEmailState = {
 // ═══════════════════════════════════════════════════════════════════════════
 
 let memberLoadGeneration = 0;
+let statsLoadGeneration = 0;
+let catalogLoadGeneration = 0;
+let serviceLoadGeneration = 0;
 let membersState = $state<MembersState>({ ...initialMembersState });
 let churnedState = $state<ChurnedState>({ ...initialChurnedState });
 let serviceMembersState = $state<ServiceMembersState>({ ...initialServiceMembersState });
@@ -130,6 +148,8 @@ let memberEmailState = $state<MemberEmailState>({ ...initialEmailState });
 // ═══════════════════════════════════════════════════════════════════════════
 // Members Store
 // ═══════════════════════════════════════════════════════════════════════════
+
+let memberDetailGeneration = 0;
 
 export const membersStore = {
 	get error() {
@@ -151,6 +171,12 @@ export const membersStore = {
 		return membersState.loading;
 	},
 
+	get selectedMemberLoading() {
+		return membersState.selectedMemberLoading;
+	},
+	get selectedMemberError() {
+		return membersState.selectedMemberError;
+	},
 	get selectedMember() {
 		return membersState.selectedMember;
 	},
@@ -202,46 +228,87 @@ export const membersStore = {
 	 * Load member statistics
 	 */
 	async loadStats() {
+		const generation = ++statsLoadGeneration;
+		membersState = { ...membersState, stats: null, statsLoading: true, statsError: null };
 		try {
 			const stats = await membersApi.getStats();
-			membersState = { ...membersState, stats };
+			if (generation !== statsLoadGeneration) return;
+			membersState = { ...membersState, stats, statsLoading: false };
 		} catch (error) {
-			console.error('Failed to load member stats:', error);
+			if (generation !== statsLoadGeneration) return;
+			membersState = {
+				...membersState,
+				statsLoading: false,
+				statsError: error instanceof Error ? error.message : 'Failed to load member statistics'
+			};
 		}
 	},
 
-	/**
-	 * Load available services
-	 */
-	async loadServices() {
+	async loadServices(filters?: ServiceCatalogFilters) {
+		const generation = ++catalogLoadGeneration;
+		const selected = { ...membersState.servicesFilters, ...filters };
+		membersState = {
+			...membersState,
+			servicesLoading: true,
+			servicesError: null,
+			servicesFilters: selected
+		};
 		try {
-			const response = await membersApi.getServices();
-			membersState = { ...membersState, services: response.services };
+			const response = await membersApi.getServices(selected);
+			if (generation !== catalogLoadGeneration) return;
+			const services =
+				response.selected &&
+				!response.services.some((service) => service.id === response.selected?.id)
+					? [response.selected, ...response.services]
+					: response.services;
+			membersState = {
+				...membersState,
+				services,
+				servicesPagination: response.pagination,
+				servicesLoading: false
+			};
 		} catch (error) {
-			console.error('Failed to load services:', error);
+			if (generation !== catalogLoadGeneration) return;
+			membersState = {
+				...membersState,
+				services: [],
+				servicesPagination: null,
+				servicesLoading: false,
+				servicesError: error instanceof Error ? error.message : 'Failed to load membership plans'
+			};
 		}
 	},
 
 	/**
 	 * Load single member details
 	 */
-	async loadMember(id: number) {
-		membersState = { ...membersState, loading: true, error: null };
-
+	async loadMember(id: string | number) {
+		const generation = ++memberDetailGeneration;
+		membersState = {
+			...membersState,
+			selectedMember: null,
+			selectedMemberTimeline: null,
+			selectedMemberEngagement: null,
+			selectedMemberLoading: true,
+			selectedMemberError: null
+		};
 		try {
 			const response = await membersApi.getMember(id);
+			if (generation !== memberDetailGeneration) return;
 			membersState = {
 				...membersState,
 				selectedMember: response.member,
-				selectedMemberEngagement: response.engagement_score,
+				selectedMemberEngagement: response.engagement.score,
 				selectedMemberTimeline: response.timeline,
-				loading: false
+				selectedMemberLoading: false
 			};
 		} catch (error) {
+			if (generation !== memberDetailGeneration) return;
 			membersState = {
 				...membersState,
-				error: error instanceof Error ? error.message : 'Failed to load member',
-				loading: false
+				selectedMemberError:
+					error instanceof Error ? error.message : 'Failed to load recorded member profile',
+				selectedMemberLoading: false
 			};
 		}
 	},
@@ -265,11 +332,14 @@ export const membersStore = {
 	 * Clear selected member
 	 */
 	clearSelectedMember() {
+		++memberDetailGeneration;
 		membersState = {
 			...membersState,
 			selectedMember: null,
-			selectedMemberEngagement: 0,
-			selectedMemberTimeline: []
+			selectedMemberEngagement: null,
+			selectedMemberTimeline: null,
+			selectedMemberLoading: false,
+			selectedMemberError: null
 		};
 	},
 
@@ -277,6 +347,10 @@ export const membersStore = {
 	 * Reset store
 	 */
 	reset() {
+		++memberDetailGeneration;
+		++memberLoadGeneration;
+		++statsLoadGeneration;
+		++catalogLoadGeneration;
 		membersState = { ...initialMembersState };
 	}
 };
@@ -392,14 +466,28 @@ export const serviceMembersStore = {
 	/**
 	 * Load members for a specific service
 	 */
-	async loadServiceMembers(
-		serviceId: number,
-		filters?: { status?: string; search?: string; per_page?: number; page?: number }
-	) {
-		serviceMembersState = { ...serviceMembersState, loading: true, error: null };
-
+	async loadServiceMembers(serviceId: number, filters?: ServiceMemberFilters) {
+		const generation = ++serviceLoadGeneration;
+		const nextFilters = {
+			...(serviceMembersState.serviceId === serviceId
+				? serviceMembersState.filters
+				: initialServiceMembersState.filters),
+			...filters
+		};
+		serviceMembersState = {
+			...serviceMembersState,
+			service: null,
+			stats: null,
+			members: [],
+			pagination: null,
+			serviceId,
+			filters: nextFilters,
+			loading: true,
+			error: null
+		};
 		try {
-			const response = await membersApi.getMembersByService(serviceId, filters);
+			const response = await membersApi.getMembersByService(serviceId, nextFilters);
+			if (generation !== serviceLoadGeneration) return;
 			serviceMembersState = {
 				...serviceMembersState,
 				service: response.service,
@@ -409,6 +497,7 @@ export const serviceMembersStore = {
 				loading: false
 			};
 		} catch (error) {
+			if (generation !== serviceLoadGeneration) return;
 			serviceMembersState = {
 				...serviceMembersState,
 				error: error instanceof Error ? error.message : 'Failed to load service members',
@@ -421,6 +510,7 @@ export const serviceMembersStore = {
 	 * Reset store
 	 */
 	reset() {
+		++serviceLoadGeneration;
 		serviceMembersState = { ...initialServiceMembersState };
 	}
 };
@@ -536,18 +626,19 @@ export const emailStore = {
 // Getter Functions (Svelte 5 - cannot export $derived from modules)
 // ═══════════════════════════════════════════════════════════════════════════
 
-export function getActiveMembersCount(): number {
-	return membersState.stats?.subscriptions?.active ?? 0;
+export function getActiveMembersCount(): number | null {
+	return membersState.stats?.subscriptions.active ?? null;
 }
 
-export function getTotalMembersCount(): number {
-	return membersState.stats?.overview?.total_members ?? 0;
+export function getTotalMembersCount(): number | null {
+	return membersState.stats?.overview.total_members ?? null;
 }
 
-export function getMonthlyRecurringRevenue(): number {
-	return membersState.stats?.revenue?.mrr ?? 0;
+export function getMonthlyRecurringRevenue(): number | null {
+	const cents = membersState.stats?.revenue.mrr_cents ?? null;
+	return cents === null ? null : cents / 100;
 }
 
-export function getChurnRate(): number {
-	return membersState.stats?.subscriptions?.churn_rate ?? 0;
+export function getChurnRate(): number | null {
+	return membersState.stats?.subscriptions.churn_rate ?? null;
 }

@@ -1,3 +1,5 @@
+import { assertCrmClientRequest, isCrmRequestUrl } from '#lib/crm/request-gate.js';
+import { notifyCrmDenial } from '#lib/crm/denial.js';
 /**
  * API Configuration
  * Central configuration for API endpoints and base URLs
@@ -375,8 +377,12 @@ export async function apiFetch<T = unknown>(
 		headers['Authorization'] = `Bearer ${token}`;
 	}
 
+	assertCrmClientRequest(url, options.method ?? 'GET');
 	// Setup retry logic
-	const maxRetries = options.retries ?? REQUEST_CONFIG.retries;
+	const maxRetries =
+		isCrmRequestUrl(url) && !['GET', 'HEAD'].includes(options.method ?? 'GET')
+			? 1
+			: (options.retries ?? REQUEST_CONFIG.retries);
 	const retryDelay = options.retryDelay ?? REQUEST_CONFIG.retryDelay;
 	let lastError: Error | null = null;
 
@@ -394,6 +400,11 @@ export async function apiFetch<T = unknown>(
 			});
 
 			clearTimeout(timeoutId);
+			notifyCrmDenial(
+				new URL(url, 'http://localhost').pathname.startsWith('/api/admin/crm/')
+					? response.status
+					: 200
+			);
 
 			// Handle error responses
 			if (!response.ok) {

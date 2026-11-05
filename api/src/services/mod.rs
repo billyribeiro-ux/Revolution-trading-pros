@@ -2,6 +2,9 @@
 //! Apple ICT 7+ Principal Engineer - January 2026
 //! ICT 7+: Redis required in production for security (rate limiting, session management)
 
+pub mod account_authority;
+pub mod account_links;
+pub mod account_mfa;
 pub mod analytics; // ICT 7+ Phase 4: Analytics Dashboard Service
 pub mod bunny;
 pub mod campaign_delivery;

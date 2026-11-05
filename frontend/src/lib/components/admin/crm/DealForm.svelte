@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { useCrmAccess } from '#lib/crm/access.svelte.js';
+	const access = useCrmAccess();
 	import type { ContactRecord } from '#lib/crm/contact-types.js';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
@@ -92,6 +94,10 @@
 		probability = stage?.probability ?? 50;
 	}
 	async function search(kind: 'contact' | 'company') {
+		if (!access.can('GET', kind === 'contact' ? '/contacts' : '/companies')) {
+			error = 'Your role cannot search that linked record catalog.';
+			return;
+		}
 		if (searching) return;
 		searching = kind;
 		searchError = '';
@@ -113,6 +119,11 @@
 	}
 
 	async function save(event: SubmitEvent) {
+		if (!access.can(id ? 'PUT' : 'POST', id ? '/deals/{id}' : '/deals')) {
+			event.preventDefault();
+			error = 'Your role cannot save this deal and its linked read bundle.';
+			return;
+		}
 		event.preventDefault();
 		if (saving || !loaded) return;
 		saving = true;

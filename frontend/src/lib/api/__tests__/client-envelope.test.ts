@@ -54,3 +54,39 @@ describe('API response contracts', () => {
 		expect(await Promise.all([first, second])).toEqual([{ id: 'first' }, { id: 'second' }]);
 	});
 });
+
+describe('current CRM request boundaries', () => {
+	it('checks current access before serving an earlier response and never caches CRM reads', async () => {
+		const { authorizedCrmRequestFixture } = await import('#lib/crm/__tests__/request-fixture.js');
+		const release = authorizedCrmRequestFixture();
+		try {
+			fetchMock
+				.mockResolvedValueOnce(Response.json({ id: 'first' }))
+				.mockResolvedValueOnce(Response.json({ id: 'second' }));
+			expect(await apiClient.get('/admin/crm/contacts')).toEqual({ id: 'first' });
+			expect(await apiClient.get('/admin/crm/contacts')).toEqual({ id: 'second' });
+			expect(fetchMock).toHaveBeenCalledTimes(2);
+		} finally {
+			release();
+		}
+		await expect(apiClient.get('/admin/crm/contacts')).rejects.toThrow('context is unavailable');
+		expect(fetchMock).toHaveBeenCalledTimes(2);
+	});
+	it('makes one attempt for an uncertain CRM write even when retry options ask for more', async () => {
+		const { authorizedCrmRequestFixture } = await import('#lib/crm/__tests__/request-fixture.js');
+		const release = authorizedCrmRequestFixture();
+		try {
+			fetchMock.mockRejectedValue(new Error('Controlled disconnect after write'));
+			await expect(
+				apiClient.post(
+					'/admin/crm/contacts',
+					{ email: 'fixture@example.test' },
+					{ retry: { attempts: 3 } }
+				)
+			).rejects.toBeDefined();
+			expect(fetchMock).toHaveBeenCalledOnce();
+		} finally {
+			release();
+		}
+	});
+});

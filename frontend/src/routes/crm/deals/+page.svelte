@@ -3,6 +3,8 @@
 -->
 
 <script lang="ts">
+	import { useCrmAccess } from '#lib/crm/access.svelte.js';
+	const access = useCrmAccess();
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { crmAPI } from '#lib/api/crm.js';
@@ -28,7 +30,7 @@
 		crmStore.setLoading(true);
 		crmStore.clearError();
 		try {
-			const pls = await crmAPI.getPipelines();
+			const pls = access.can('GET', '/pipelines') ? await crmAPI.getPipelines() : [];
 			crmStore.setPipelines(pls);
 			if (pls.length && !crmStore.selectedPipeline) {
 				crmStore.selectPipeline(pls[0]);
@@ -43,11 +45,11 @@
 	}
 
 	async function loadDeals() {
-		if (!crmStore.selectedPipeline) return;
+		if (!access.can('GET', '/deals')) return;
 		try {
 			crmStore.setLoading(true);
 			const response = await crmAPI.getDeals({
-				pipeline_id: crmStore.selectedPipeline.id,
+				pipeline_id: crmStore.selectedPipeline?.id,
 				per_page: 500
 			});
 			crmStore.setDeals(response.data);
@@ -60,6 +62,10 @@
 	}
 
 	async function loadForecast() {
+		if (!access.can('GET', '/deals/forecast')) {
+			forecast = null;
+			return;
+		}
 		try {
 			forecast = await crmAPI.getDealForecast(forecastPeriod);
 		} catch (e) {

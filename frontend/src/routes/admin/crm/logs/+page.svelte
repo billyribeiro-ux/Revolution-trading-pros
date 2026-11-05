@@ -1,5 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import {useCrmAccess} from '#lib/crm/access.svelte.js';
+	const access=useCrmAccess();
 	import IconActivityHeartbeat from '@tabler/icons-svelte-runes/icons/activity-heartbeat';
 	import IconSearch from '@tabler/icons-svelte-runes/icons/search';
 	import IconRefresh from '@tabler/icons-svelte-runes/icons/refresh';
@@ -33,11 +35,7 @@
 	// Clear logs confirmation modal state
 	let showClearLogsModal = $state(false);
 
-	let stats = $state({
-		total: 0,
-		by_level: {} as Record<string, number>,
-		by_category: {} as Record<string, number>
-	});
+	let stats=$state<Awaited<ReturnType<typeof crmAPI.getLogStats>>|null>(null);
 
 	async function loadLogs() {
 		const version = ++requestVersion;
@@ -63,7 +61,7 @@
 			stats = statsResponse;
 		} catch (err) {
 			if (version === requestVersion)
-				error = err instanceof Error ? err.message : 'Failed to load logs';
+				{logs=[];stats=null;error = err instanceof Error ? err.message : 'Failed to load logs';}
 		} finally {
 			if (version === requestVersion) isLoading = false;
 		}
@@ -82,6 +80,7 @@
 	}
 
 	async function confirmClearLogs() {
+		if(!access.can('POST','/logs/clear')){showClearLogsModal=false;error='Your role cannot clear system logs.';return;}
 		showClearLogsModal = false;
 
 		try {
@@ -158,10 +157,6 @@
 	});
 </script>
 
-<svelte:head>
-	<title>System Logs - FluentCRM Pro</title>
-</svelte:head>
-
 <div class="logs-page">
 	<!-- Header -->
 	<div class="page-header">
@@ -173,7 +168,7 @@
 			<button class="btn-refresh" onclick={() => loadLogs()} disabled={isLoading}>
 				<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
 			</button>
-			<button class="btn-danger" onclick={clearLogs}>
+			<button class="btn-danger" onclick={clearLogs} disabled={!access.can('POST','/logs/clear')}>
 				<IconTrash size={18} />
 				Clear Logs
 			</button>
@@ -187,7 +182,7 @@
 				<IconActivityHeartbeat size={24} />
 			</div>
 			<div class="stat-content">
-				<span class="stat-value">{stats.total.toLocaleString()}</span>
+				<span class="stat-value">{stats?.total.toLocaleString() ?? 'Not loaded'}</span>
 				<span class="stat-label">Total Logs</span>
 			</div>
 		</div>
@@ -196,7 +191,7 @@
 				<IconAlertCircle size={24} />
 			</div>
 			<div class="stat-content">
-				<span class="stat-value">{(stats.by_level?.error || 0).toLocaleString()}</span>
+				<span class="stat-value">{stats?.by_level?.error?.toLocaleString() ?? 'Not recorded'}</span>
 				<span class="stat-label">Errors</span>
 			</div>
 		</div>
@@ -205,7 +200,7 @@
 				<IconAlertTriangle size={24} />
 			</div>
 			<div class="stat-content">
-				<span class="stat-value">{(stats.by_level?.warning || 0).toLocaleString()}</span>
+				<span class="stat-value">{stats?.by_level?.warning?.toLocaleString() ?? 'Not recorded'}</span>
 				<span class="stat-label">Warnings</span>
 			</div>
 		</div>
@@ -214,7 +209,7 @@
 				<IconExclamationCircle size={24} />
 			</div>
 			<div class="stat-content">
-				<span class="stat-value">{(stats.by_level?.critical || 0).toLocaleString()}</span>
+				<span class="stat-value">{stats?.by_level?.critical?.toLocaleString() ?? 'Not recorded'}</span>
 				<span class="stat-label">Critical</span>
 			</div>
 		</div>

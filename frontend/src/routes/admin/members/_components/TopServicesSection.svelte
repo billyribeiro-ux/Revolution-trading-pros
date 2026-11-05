@@ -17,7 +17,7 @@
 </script>
 
 <div class="top-services-section">
-	<h3>Top Services by Members</h3>
+	<h3>Top Services by Current Members</h3>
 	<div class="services-grid">
 		{#each services as service (service.id)}
 			<button class="service-card" onclick={() => onSelectService(service.id)}>
@@ -26,11 +26,12 @@
 				</div>
 				<div class="service-info">
 					<div class="service-name">{service.name}</div>
-					<div class="service-type">{service.type}</div>
+					<div class="service-type">Current active or trial members</div>
 				</div>
 				<div class="service-count">{service.members_count}</div>
 			</button>
 		{/each}
+		{#if services.length === 0}<p>No current active or trial memberships are recorded.</p>{/if}
 	</div>
 </div>
 

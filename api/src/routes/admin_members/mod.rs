@@ -112,4 +112,28 @@ pub fn router() -> Router<AppState> {
             get(notes_emails::get_member_notes).post(notes_emails::create_member_note),
         )
         .route("/{id}/emails", get(notes_emails::get_member_emails))
+        .route(
+            "/{id}/orders/export",
+            get(crate::routes::admin_member_management::order_export::download),
+        )
+        .route(
+            "/{id}/notes/{note_id}",
+            delete(crate::routes::admin_member_management::read_handlers::remove_note),
+        )
+        .route(
+            "/{id}/activity",
+            get(crate::routes::admin_member_management::read_handlers::activity),
+        )
+        .route(
+            "/{id}/memberships",
+            get(crate::routes::admin_member_management::read_handlers::memberships),
+        )
+        .route(
+            "/{id}/orders",
+            get(crate::routes::admin_member_management::read_handlers::orders),
+        )
+        .route(
+            "/{id}/timeline",
+            get(crate::routes::admin_member_management::read_handlers::timeline),
+        )
 }

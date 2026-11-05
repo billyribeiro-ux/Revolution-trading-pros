@@ -1,67 +1,85 @@
 <script lang="ts">
 	import { IconReceipt, IconDownload, IconExternalLink } from '#lib/icons/index.js';
-	import type { Order } from '#lib/api/members.js';
-	import { formatCurrency, formatDate } from './helpers';
-
-	interface Props {
-		orders: Order[] | undefined;
-	}
-
-	let { orders }: Props = $props();
+	import type { MemberProfile, MemberOrderRecord } from '#lib/api/member-profile.js';
+	import { recordedWallClock, recordedUnits } from './profile-display.js';
+	import HistoryControls from './HistoryControls.svelte';
+	let {
+		result,
+		loading,
+		error,
+		busy = false,
+		onPage,
+		onPerPage,
+		onRefresh,
+		onView,
+		onExport
+	}: {
+		result: MemberProfile['orders'] | null;
+		loading: boolean;
+		error: string;
+		busy?: boolean;
+		onPage: (page: number) => void;
+		onPerPage: (size: number) => void;
+		onRefresh: () => void;
+		onView: (order: MemberOrderRecord) => void;
+		onExport: () => void;
+	} = $props();
 </script>
 
-<div class="panel">
+<section class="panel" aria-label="Recorded order history">
 	<div class="panel-header">
 		<h3>Order History</h3>
-		<button class="btn-secondary small">
-			<IconDownload size={16} />
-			Export
-		</button>
+		<button onclick={onExport} disabled={busy || loading || !result || !!error}
+			><IconDownload size={16} />Export</button
+		>
 	</div>
-	{#if !orders || orders.length === 0}
-		<div class="empty-state">
-			<IconReceipt size={48} stroke={1} />
-			<h4>No Orders</h4>
-			<p>This member has no order history</p>
-		</div>
-	{:else}
-		<table class="orders-table">
-			<thead>
-				<tr>
-					<th>Order #</th>
-					<th>Date</th>
-					<th>Status</th>
-					<th>Total</th>
-					<th>Actions</th>
-				</tr>
-			</thead>
-			<tbody>
-				{#each orders as order (order.id)}
-					<tr>
-						<td class="order-number">{order.number}</td>
-						<td>{formatDate(order.created_at)}</td>
-						<td>
-							<span
-								class={[
-									'status-badge',
-									order.status === 'completed' ? 'status-completed' : 'status-pending'
-								]}
-							>
-								{order.status}
-							</span>
-						</td>
-						<td class="order-total">{formatCurrency(order.total)}</td>
-						<td>
-							<button class="btn-icon small">
-								<IconExternalLink size={16} />
-							</button>
-						</td>
-					</tr>
-				{/each}
-			</tbody>
-		</table>
-	{/if}
-</div>
+	<div class="content">
+		<p class="hint">
+			Recorded order and refund amounts retain their own currency. Net recorded value does not
+			establish provider settlement or lifetime value.
+		</p>
+		{#if result && !loading && !error}{#if result.orders.length === 0}<div class="empty-state">
+					<IconReceipt size={48} />
+					<h4>No recorded orders on this page</h4>
+				</div>{:else}<div class="table-scroll">
+					<table>
+						<thead
+							><tr
+								><th>Order</th><th>Recorded date</th><th>Status</th><th>Recorded total</th><th
+									>Recorded refund</th
+								><th>Net recorded amount</th><th>Actions</th></tr
+							></thead
+						><tbody
+							>{#each result.orders as order (order.id)}<tr
+									><td>{order.order_number ?? `Order #${order.id}`}</td><td
+										>{recordedWallClock(order.created_at)}</td
+									><td>{order.status ?? 'Not recorded'}</td><td
+										>{recordedUnits(order.total_units, order.currency)}</td
+									><td>{recordedUnits(order.refund_units, order.currency)}</td><td
+										>{recordedUnits(order.net_recorded_units, order.currency)}</td
+									><td
+										><button
+											aria-label={`View order ${order.order_number ?? order.id}`}
+											onclick={() => onView(order)}
+											disabled={busy}><IconExternalLink size={16} /></button
+										></td
+									></tr
+								>{/each}</tbody
+						>
+					</table>
+				</div>{/if}{/if}
+	</div>
+	<HistoryControls
+		label="orders"
+		pagination={result?.pagination ?? null}
+		{loading}
+		{error}
+		{busy}
+		{onPage}
+		{onPerPage}
+		{onRefresh}
+	/>
+</section>
 
 <style>
 	.panel {
@@ -70,144 +88,67 @@
 		border-radius: 16px;
 		overflow: hidden;
 	}
-
 	.panel-header {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
+		gap: 1rem;
 		padding: 1.25rem 1.5rem;
 		border-bottom: 1px solid var(--border-muted, #21262d);
 	}
-
-	.panel-header h3 {
+	h3 {
 		font-size: 1rem;
-		font-weight: 600;
-		color: var(--text-primary, #f0f6fc);
 		margin: 0;
+		color: var(--text-primary, #f0f6fc);
 	}
-
-	.empty-state {
-		display: flex;
-		flex-direction: column;
+	button {
+		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		padding: 4rem 2rem;
-		color: var(--text-tertiary, #6e7681);
+		gap: 0.5rem;
+		padding: 0.6rem 0.9rem;
+		border: 1px solid var(--border-default, #30363d);
+		border-radius: 9px;
+		cursor: pointer;
+		background: var(--bg-surface, #1c2128);
+		color: var(--text-primary, #f0f6fc);
+	}
+	button:disabled {
+		opacity: 0.5;
+		cursor: default;
+	}
+	.content {
+		padding: 1.25rem 1.5rem;
+	}
+	.hint,
+	.empty-state {
+		color: var(--text-secondary, #8b949e);
+		line-height: 1.6;
+	}
+	.empty-state {
+		padding: 2rem;
 		text-align: center;
 	}
-
-	.empty-state h4 {
+	h4 {
 		color: var(--text-primary, #f0f6fc);
-		margin: 1rem 0 0.5rem;
 	}
-
-	.orders-table {
+	.table-scroll {
+		overflow-x: auto;
+	}
+	table {
 		width: 100%;
 		border-collapse: collapse;
 	}
-
-	.orders-table thead {
-		background: var(--bg-base, #0d1117);
-	}
-
-	.orders-table th {
-		padding: 1rem 1.5rem;
+	th,
+	td {
+		padding: 1rem;
 		text-align: left;
+		border-bottom: 1px solid var(--border-muted, #21262d);
+		vertical-align: top;
+		overflow-wrap: anywhere;
+	}
+	th {
 		font-size: 0.75rem;
-		font-weight: 600;
 		color: var(--text-secondary, #8b949e);
-		text-transform: uppercase;
-		letter-spacing: 0.05em;
-	}
-
-	.orders-table tbody tr {
-		border-top: 1px solid var(--border-muted, #21262d);
-	}
-
-	.orders-table td {
-		padding: 1rem 1.5rem;
-		color: var(--text-secondary, #8b949e);
-	}
-
-	.order-number {
-		font-weight: 600;
-		color: var(--primary-400);
-	}
-
-	.order-total {
-		font-weight: 600;
-		color: var(--success-emphasis, #3fb950);
-	}
-
-	.status-badge {
-		display: inline-flex;
-		padding: 0.25rem 0.75rem;
-		border-radius: 9999px;
-		font-size: 0.75rem;
-		font-weight: 600;
-		border: 1px solid;
-		text-transform: capitalize;
-	}
-
-	.status-completed {
-		background: rgba(63, 185, 80, 0.2);
-		color: var(--success-emphasis, #3fb950);
-		border-color: rgba(63, 185, 80, 0.35);
-	}
-
-	.status-pending {
-		background: rgba(210, 153, 34, 0.2);
-		color: var(--warning-emphasis, #d29922);
-		border-color: rgba(210, 153, 34, 0.35);
-	}
-
-	.btn-secondary {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.5rem;
-		padding: 0.75rem 1.25rem;
-		border-radius: 10px;
-		font-weight: 600;
-		cursor: pointer;
-		transition: all 0.2s;
-		background: var(--bg-surface, #1c2128);
-		color: var(--text-secondary, #8b949e);
-		border: 1px solid var(--border-default, #30363d);
-		font-size: 0.875rem;
-	}
-
-	.btn-secondary:hover {
-		background: var(--bg-hover, #252b33);
-		color: var(--text-primary, #f0f6fc);
-	}
-
-	.btn-secondary.small {
-		padding: 0.5rem 0.875rem;
-		font-size: 0.8125rem;
-	}
-
-	.btn-icon {
-		width: 36px;
-		height: 36px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		background: var(--bg-surface, #1c2128);
-		border: 1px solid var(--border-default, #30363d);
-		border-radius: 8px;
-		color: var(--text-secondary, #8b949e);
-		cursor: pointer;
-		transition: all 0.2s;
-	}
-
-	.btn-icon:hover {
-		background: rgba(230, 184, 0, 0.15);
-		border-color: rgba(230, 184, 0, 0.3);
-		color: var(--primary-400);
-	}
-
-	.btn-icon.small {
-		width: 28px;
-		height: 28px;
 	}
 </style>

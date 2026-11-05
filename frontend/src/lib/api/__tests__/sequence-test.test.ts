@@ -1,3 +1,10 @@
+import { beforeEach } from 'vite-plus/test';
+import { authorizedCrmRequestFixture } from '#lib/crm/__tests__/request-fixture.js';
+let releaseCrmFixture: () => void = () => undefined;
+beforeEach(() => {
+	releaseCrmFixture = authorizedCrmRequestFixture();
+});
+afterEach(() => releaseCrmFixture());
 import { afterEach, expect, it, vi } from 'vite-plus/test';
 import { sequenceTestEnvelope, sequenceTestHistory, sendSequenceTest } from '../sequence-test.js';
 const intent = {

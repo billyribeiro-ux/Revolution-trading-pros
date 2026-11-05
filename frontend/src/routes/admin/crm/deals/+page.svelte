@@ -12,6 +12,8 @@
 -->
 
 <script lang="ts">
+	import { useCrmAccess } from '#lib/crm/access.svelte.js';
+	const access = useCrmAccess();
 	/**
 	 * CRM Deals - FluentCRM Pro Pipeline Management
 	 *
@@ -126,7 +128,8 @@
 		try {
 			if (!/^[A-Z]{3}$/.test(currency))
 				throw new Error('Currency must be a three-letter uppercase code.');
-			const available = await crmAPI.getPipelines();
+			const available = access.can('GET', '/pipelines') ? await crmAPI.getPipelines() : [];
+			if (!access.can('GET', '/pipelines')) viewMode = 'list';
 			if (generation !== requestGeneration) return;
 			pipelines = available;
 			selectedPipeline =
@@ -397,6 +400,7 @@
 				<div class="view-toggle">
 					<button
 						class={['toggle-btn', { active: viewMode === 'kanban' }]}
+						disabled={!access.can('GET', '/pipelines')}
 						onclick={() => (viewMode = 'kanban')}
 					>
 						<IconLayoutKanban size={18} />

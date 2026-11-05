@@ -10,6 +10,9 @@
 
 	interface Props {
 		open: boolean;
+		canUseTemplates: boolean;
+		canSend: boolean;
+		canRefreshReceipt: boolean;
 		locked: boolean;
 		error: string;
 		templateError: string;
@@ -36,6 +39,7 @@
 
 	let {
 		open,
+		canUseTemplates, canSend, canRefreshReceipt,
 		locked,
 		error,
 		templateError,
@@ -107,10 +111,11 @@
 									</p>{/if}{/each}{/if}{#each recovered as activity (activity.id)}<p>
 								Recorded outcome: {activity.status}; provider {activity.provider ?? 'Unknown'};
 								accepted {activity.accepted_at ?? 'Not recorded'}. {activity.error ?? ''}
-							</p>{/each}<button onclick={onRefreshReceipt} disabled={sending}
+							</p>{/each}<button onclick={onRefreshReceipt} disabled={sending || !canRefreshReceipt}
 							>Refresh message outcome</button
 						><button onclick={onNewMessage} disabled={sending}>Compose new message</button>
 					</section>{/if}
+				{#if canUseTemplates}
 				<form
 					onsubmit={(event) => {
 						event.preventDefault();
@@ -159,6 +164,9 @@
 					{/if}
 				</div>
 
+				{:else}<p class="form-hint">Native template picker access is not permitted. You can compose a custom message below.</p>{#if selectedTemplateId !== null && !locked}<button onclick={() => onTemplateChange(null)}>Use custom message without native template reference</button>{/if}{/if}
+				{#if !canSend}<p role="alert">Current CRM permissions do not allow submitting this message intent.</p>{/if}
+
 				<!-- Subject Line -->
 				<div class="form-group">
 					<label for="email-subject" class="form-label required">
@@ -202,7 +210,7 @@
 				<button
 					class="btn-primary send-btn"
 					onclick={onSend}
-					disabled={sending ||
+					disabled={!canSend || sending ||
 						!subject.trim() ||
 						!body.trim() ||
 						receipt?.submissions.some((item) => item.status === 'accepted') ||

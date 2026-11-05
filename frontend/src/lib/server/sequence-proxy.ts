@@ -1,16 +1,31 @@
 import type { RequestEvent } from '@sveltejs/kit';
 import { API_BASE_URL, BACKEND_URL } from '$app/env/private';
 import { requireAdmin } from './auth.js';
+import { requireCrmOperation } from './crm-auth.js';
+import { crmAccessFailure, crmPrivateHeaders } from './crm-context.js';
 
 /** Sequence authoring and delivery actions never retry an unconfirmed write. */
 export async function proxySequences(event: RequestEvent): Promise<Response> {
-	const { token } = requireAdmin(event);
+	const nativePrefix = '/api/admin/email/sequences';
+	const canonicalPrefix = '/api/admin/crm/sequences';
+	const actual = event.url.pathname;
+	let token: string;
+	if (actual === canonicalPrefix || actual.startsWith(canonicalPrefix + '/')) {
+		try {
+			({ token } = await requireCrmOperation(event));
+		} catch (error) {
+			return crmAccessFailure(error);
+		}
+	} else if (actual === nativePrefix || actual.startsWith(nativePrefix + '/'))
+		({ token } = requireAdmin(event));
+	else
+		return Response.json(
+			{ error: 'Sequence endpoint not found' },
+			{ status: 404, headers: crmPrivateHeaders() }
+		);
 	const rest = event.params.rest ?? '';
 	const method = event.request.method;
-	const headers = new Headers({
-		'Cache-Control': 'private, no-store',
-		'X-Content-Type-Options': 'nosniff'
-	});
+	const headers = crmPrivateHeaders();
 	const fail = (status: number, error: string) => Response.json({ error }, { status, headers });
 	const id = '[1-9]\\d{0,18}';
 	const uuid = '[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}';
@@ -25,15 +40,15 @@ export async function proxySequences(event: RequestEvent): Promise<Response> {
 		!(rest === 'events'
 			? method === 'POST'
 			: rest === ''
-				? ['GET', 'POST'].includes(method)
+				? ['GET', 'HEAD', 'POST'].includes(method)
 				: record
-					? ['GET', 'PUT', 'DELETE'].includes(method)
+					? ['GET', 'HEAD', 'PUT', 'DELETE'].includes(method)
 					: emails
-						? ['GET', 'POST'].includes(method)
+						? ['GET', 'HEAD', 'POST'].includes(method)
 						: mail
 							? ['PUT', 'DELETE'].includes(method)
 							: read
-								? method === 'GET'
+								? ['GET', 'HEAD'].includes(method)
 								: action && method === 'POST')
 	)
 		return fail(404, 'Sequence endpoint not found');

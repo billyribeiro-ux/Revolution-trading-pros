@@ -1,3 +1,10 @@
+import { beforeEach } from 'vite-plus/test';
+import { authorizedCrmRequestFixture } from '#lib/crm/__tests__/request-fixture.js';
+let releaseCrmFixture: () => void = () => undefined;
+beforeEach(() => {
+	releaseCrmFixture = authorizedCrmRequestFixture();
+});
+afterEach(() => releaseCrmFixture());
 import { afterEach, expect, it, vi } from 'vite-plus/test';
 vi.mock('../client.svelte', () => ({ apiClient: { get: vi.fn(), post: vi.fn() } }));
 import { CrmAPI } from '../crm.js';

@@ -64,7 +64,7 @@ pub async fn log_response_headers(
     request: Request<Body>,
     next: Next,
 ) -> Result<Response<Body>, StatusCode> {
-    let uri = request.uri().clone();
+    let path = crate::middleware::request_trace::diagnostic_path(&request).to_owned();
     let method = request.method().clone();
 
     let response = next.run(request).await;
@@ -85,7 +85,7 @@ pub async fn log_response_headers(
 
         tracing::debug!(
             method = %method,
-            uri = %uri,
+            path = %path,
             content_type = %content_type,
             cors_origin = %cors_origin,
             "Response headers"

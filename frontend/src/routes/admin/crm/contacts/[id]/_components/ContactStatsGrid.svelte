@@ -3,8 +3,9 @@
 	let {
 		contact,
 		recalculating = false,
+		canRecalculate,
 		onRecalculate
-	}: { contact: ContactRecord; recalculating?: boolean; onRecalculate: () => void } = $props();
+	}: { contact: ContactRecord; recalculating?: boolean; canRecalculate: boolean; onRecalculate: () => void } = $props();
 </script>
 
 <section aria-label="Recorded contact measurements">
@@ -34,7 +35,7 @@
 		Scoring: {contact.scoring.status.replaceAll('_', ' ')}. {contact.scoring.reason ??
 			'Calculated from the configured contact rules.'}
 	</p>
-	<button onclick={onRecalculate} disabled={recalculating}
+	<button onclick={onRecalculate} disabled={recalculating || !canRecalculate}
 		>{recalculating ? 'Recalculating…' : 'Recalculate lead score'}</button
 	>
 	<details>

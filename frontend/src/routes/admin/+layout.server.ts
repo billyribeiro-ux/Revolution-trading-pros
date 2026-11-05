@@ -22,21 +22,25 @@
  */
 
 import { redirect } from '@sveltejs/kit';
+import { crmRequestContext, crmPagePath } from '#lib/server/crm-auth.js';
 import { isAdminRole } from '#lib/server/auth.js';
 import type { LayoutServerLoad } from './$types';
 
-export const load: LayoutServerLoad = async ({ locals, url }) => {
+export const load: LayoutServerLoad = async (event) => {
+	const { locals, url } = event;
 	const user = locals.user;
 
 	if (!user) {
 		redirect(303, `/login?redirect=${encodeURIComponent(url.pathname)}`);
 	}
 
-	if (!isAdminRole(user.role)) {
+	if (locals.crmCapabilities) {
+		await crmRequestContext(event).requirePage(crmPagePath(event));
+	} else if (!isAdminRole(user.role)) {
 		redirect(303, '/?error=admin_required');
 	}
 
 	// Hand the verified admin to the client for hydration (house pattern,
 	// matches dashboard/+layout.server.ts).
-	return { user };
+	return { user, ...(locals.crmCapabilities ? { crmCapabilities: locals.crmCapabilities } : {}) };
 };

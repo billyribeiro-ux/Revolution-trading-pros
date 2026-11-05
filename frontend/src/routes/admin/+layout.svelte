@@ -9,9 +9,8 @@
 
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
-	import { browser } from '$app/env';
-	import { isAuthenticated, user, isInitializing } from '#lib/stores/auth.svelte.js';
-	import { isAdmin as checkIsAdmin } from '#lib/config/roles.js';
+	import { isAuthenticated, isInitializing } from '#lib/stores/auth.svelte.js';
+	import { useCrmAccess } from '#lib/crm/access.svelte.js';
 	import { getUnreadCount } from '#lib/stores/notifications.svelte.js';
 	import { keyboard } from '#lib/stores/keyboard.svelte.js';
 
@@ -40,6 +39,7 @@
 		children: Snippet;
 	}
 	let props: Props = $props();
+	const access = useCrmAccess();
 
 	// Local derived from getters
 	const unreadCount = $derived(getUnreadCount());
@@ -57,7 +57,7 @@
 	// onMount shifted the whole shell (sidebar + content) for every user who collapsed it.
 	// The admin area is ssr = false, so localStorage is available at init.
 	function readCollapsedPreference(): boolean {
-		if (!browser) return false;
+		if (typeof localStorage === 'undefined') return false;
 		try {
 			return localStorage.getItem(SIDEBAR_COLLAPSED_KEY) === '1';
 		} catch {
@@ -110,8 +110,6 @@
 	// for auth initialization to complete so we don't bounce a real admin whose
 	// session is still being hydrated from the cookie.
 	onMount(() => {
-		if (!browser) return;
-
 		// If auth is still initializing, defer the role check; subscribe once and
 		// re-evaluate when initialization settles. The subscribe call here is a
 		// one-shot guard — it runs outside any reactive scope (onMount, not
@@ -122,7 +120,7 @@
 				goto('/login?redirect=/admin');
 				return true;
 			}
-			if (!checkIsAdmin(user.current)) {
+			if (!access.global && !access.page(page.url.pathname)) {
 				// Not an admin → kick out. Use replaceState so back button doesn't
 				// trap the user in a redirect loop on /admin.
 				goto('/?error=admin_required', { replace: true });
@@ -160,10 +158,10 @@
 	// 		search: () => (isCommandPaletteOpen = true),
 	// 		'search-alt': () => (isCommandPaletteOpen = true),
 	// 		help: () => (isKeyboardHelpOpen = true),
-	// 		'goto-dashboard': () => goto('/admin'),
-	// 		'goto-analytics': () => goto('/admin/analytics'),
-	// 		'goto-blog': () => goto('/admin/blog'),
-	// 		'goto-settings': () => goto('/admin/settings'),
+	// 		'goto-dashboard': () => goto(access.global ? '/admin' : '/admin/crm'),
+	// 		'goto-analytics': () => { if (access.page('/admin/analytics')) void goto('/admin/analytics'); },
+	// 		'goto-blog': () => { if (access.page('/admin/blog')) void goto('/admin/blog'); },
+	// 		'goto-settings': () => { if (access.page('/admin/settings')) void goto('/admin/settings'); },
 	// 		escape: () => {
 	// 			isCommandPaletteOpen = false;
 	// 			isNotificationCenterOpen = false;
@@ -174,16 +172,20 @@
 	// 	return () => keyboard.destroy();
 	// });
 	onMount(() => {
-		if (!browser) return;
-
 		keyboard.init({
 			search: () => (isCommandPaletteOpen = true),
 			'search-alt': () => (isCommandPaletteOpen = true),
 			help: () => (isKeyboardHelpOpen = true),
-			'goto-dashboard': () => goto('/admin'),
-			'goto-analytics': () => goto('/admin/analytics'),
-			'goto-blog': () => goto('/admin/blog'),
-			'goto-settings': () => goto('/admin/settings'),
+			'goto-dashboard': () => goto(access.global ? '/admin' : '/admin/crm'),
+			'goto-analytics': () => {
+				if (access.page('/admin/analytics')) void goto('/admin/analytics');
+			},
+			'goto-blog': () => {
+				if (access.page('/admin/blog')) void goto('/admin/blog');
+			},
+			'goto-settings': () => {
+				if (access.page('/admin/settings')) void goto('/admin/settings');
+			},
 			escape: () => {
 				isCommandPaletteOpen = false;
 				isNotificationCenterOpen = false;
@@ -244,10 +246,6 @@
 	}
 </script>
 
-<svelte:head>
-	<title>{formatPageTitle(page.url.pathname)} · Admin · Revolution Trading Pros</title>
-</svelte:head>
-
 <div class={{ 'admin-layout': true, admin: true, 'sidebar-collapsed': isSidebarCollapsed }}>
 	<!-- Sidebar -->
 	<AdminSidebar
@@ -291,57 +289,67 @@
 
 				<!-- Icon-only utility cluster (notifications · connection · rate · shortcuts).
 				     Grouped together visually so the row reads as one toolbar, not 5 stand-alone buttons. -->
-				<div class="header-utility-group" role="group" aria-label="Admin utilities">
-					<!-- Notifications -->
-					<button
-						type="button"
-						class="icon-btn notification-btn"
-						onclick={() => (isNotificationCenterOpen = true)}
-						title="Notifications"
-						aria-label="Open notifications"
+				{#if access.global}<div
+						class="header-utility-group"
+						role="group"
+						aria-label="Admin utilities"
 					>
-						<IconBell size={18} aria-hidden="true" />
-						{#if unreadCount > 0}
-							<span class="notification-badge">{unreadCount > 9 ? '9+' : unreadCount}</span>
-						{/if}
-					</button>
+						<!-- Notifications -->
+						<button
+							type="button"
+							class="icon-btn notification-btn"
+							onclick={() => (isNotificationCenterOpen = true)}
+							title="Notifications"
+							aria-label="Open notifications"
+						>
+							<IconBell size={18} aria-hidden="true" />
+							{#if unreadCount > 0}
+								<span class="notification-badge">{unreadCount > 9 ? '9+' : unreadCount}</span>
+							{/if}
+						</button>
 
-					<!-- Connection Health -->
-					<button
-						type="button"
-						class="icon-btn"
-						onclick={() => (isConnectionHealthOpen = true)}
-						title="API Connection Status"
-						aria-label="View API connection status"
-					>
-						<IconPlugConnected size={18} aria-hidden="true" />
-					</button>
+						<!-- Connection Health -->
+						<button
+							type="button"
+							class="icon-btn"
+							onclick={() => (isConnectionHealthOpen = true)}
+							title="API Connection Status"
+							aria-label="View API connection status"
+						>
+							<IconPlugConnected size={18} aria-hidden="true" />
+						</button>
 
-					<!-- Rate Limit -->
-					<RateLimitIndicator />
+						<!-- Rate Limit -->
+						<RateLimitIndicator />
 
-					<!-- Keyboard Shortcuts -->
-					<button
-						type="button"
-						class="icon-btn desktop-only"
-						onclick={() => (isKeyboardHelpOpen = true)}
-						title="Keyboard Shortcuts (?)"
-						aria-label="View keyboard shortcuts"
-					>
-						<IconCommand size={18} aria-hidden="true" />
-					</button>
-				</div>
+						<!-- Keyboard Shortcuts -->
+						<button
+							type="button"
+							class="icon-btn desktop-only"
+							onclick={() => (isKeyboardHelpOpen = true)}
+							title="Keyboard Shortcuts (?)"
+							aria-label="View keyboard shortcuts"
+						>
+							<IconCommand size={18} aria-hidden="true" />
+						</button>
+					</div>{/if}
 
 				<a href="/" class="view-site-btn" title="View main website" aria-label="View Site">
-						<IconWorld size={18} aria-hidden="true" class="view-site-icon" />
-						<span class="view-site-label">View Site</span>
-					</a>
+					<IconWorld size={18} aria-hidden="true" class="view-site-icon" />
+					<span class="view-site-label">View Site</span>
+				</a>
 			</div>
 		</header>
 
 		<!-- Content -->
 		<main id="main-content" class="admin-content">
-			{@render props.children()}
+			{#if access.error}<p role="alert">{access.error}</p>
+				<button onclick={() => void access.refresh().catch(() => undefined)}
+					>Refresh CRM permissions</button
+				>{/if}
+			{#if access.page(page.url.pathname)}{@render props.children()}{:else}<p role="alert">
+					Your current CRM access does not include this page.
+				</p>{/if}
 		</main>
 	</div>
 </div>
@@ -351,8 +359,8 @@
 <div class="admin-tokens">
 	<Toast />
 	<CommandPalette bind:isOpen={isCommandPaletteOpen} />
-	<NotificationCenter bind:isOpen={isNotificationCenterOpen} />
-	<KeyboardShortcutsHelp bind:isOpen={isKeyboardHelpOpen} />
-	<ConnectionHealthPanel bind:isOpen={isConnectionHealthOpen} />
+	{#if access.global}<NotificationCenter bind:isOpen={isNotificationCenterOpen} />
+		<KeyboardShortcutsHelp bind:isOpen={isKeyboardHelpOpen} />
+		<ConnectionHealthPanel bind:isOpen={isConnectionHealthOpen} />{/if}
 	<OfflineIndicator />
 </div>

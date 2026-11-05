@@ -4,8 +4,25 @@
  */
 
 import { apiClient } from './client.svelte';
+import {
+	memberProfileApi,
+	type MemberProfile,
+	type MemberProfileRecord,
+	type MemberHistoryQuery
+} from './member-profile.js';
 import { getAuthToken } from '#lib/stores/auth.svelte.js';
 import { downloadMemberExport } from './member-export';
+import {
+	readMemberFacts,
+	parseMemberStats,
+	parseServiceCatalog,
+	parseServiceMembers,
+	memberFactsQuery,
+	type ServiceCatalogFilters,
+	type ServiceMemberFilters
+} from './member-statistics';
+export type { MemberStats, Service } from './member-statistics';
+import type { MemberStats } from './member-statistics';
 
 // Types
 export interface Member {
@@ -15,6 +32,7 @@ export interface Member {
 	last_name: string | null;
 	email: string;
 	avatar: string | null;
+	role?: string | null;
 	status: 'active' | 'trial' | 'churned' | 'never_subscribed';
 	status_label: string;
 	joined_at: string;
@@ -56,46 +74,6 @@ export interface Order {
 	total: number;
 	status: string;
 	created_at: string;
-}
-
-export interface Service {
-	id: number;
-	name: string;
-	type: string;
-	price: number;
-	is_active: boolean;
-	members_count: number;
-}
-
-export interface MemberStats {
-	overview: {
-		total_members: number;
-		new_this_month: number;
-		new_last_month: number;
-		growth_rate: number;
-	};
-	subscriptions: {
-		active: number;
-		trial: number;
-		churned: number;
-		churn_rate: number;
-	};
-	revenue: {
-		mrr: number;
-		total: number;
-		avg_ltv: number;
-	};
-	top_services: {
-		id: number;
-		name: string;
-		type: string;
-		members_count: number;
-	}[];
-	growth_trend: {
-		month: string;
-		members: number;
-		new: number;
-	}[];
 }
 
 export interface ChurnedStats {
@@ -192,52 +170,30 @@ export const membersApi = {
 		}
 		const queryString = params.toString();
 		const endpoint = `/admin/members${queryString ? `?${queryString}` : ''}`;
-		return apiClient.get(endpoint, { cache: { ttl: 60000 } });
+		return apiClient.get(endpoint, { cache: { enabled: false } });
 	},
 
 	/**
 	 * Get member statistics
 	 */
 	async getStats(): Promise<MemberStats> {
-		return apiClient.get('/admin/members/stats', { cache: { ttl: 300000 } });
+		return readMemberFacts('/api/admin/members/stats', parseMemberStats);
 	},
 
-	/**
-	 * Get all services for filtering
-	 */
-	async getServices(): Promise<{ services: Service[] }> {
-		return apiClient.get('/admin/members/services', { cache: { ttl: 300000 } });
+	/** Membership-plan identities, independently searched and paged. */
+	async getServices(filters?: ServiceCatalogFilters) {
+		const query = memberFactsQuery(filters);
+		return readMemberFacts(`/api/admin/members/services${query ? `?${query}` : ''}`, (value) =>
+			parseServiceCatalog(value, filters?.selected_id)
+		);
 	},
 
-	/**
-	 * Get members by service/product
-	 */
-	async getMembersByService(
-		serviceId: number,
-		filters?: { status?: string; search?: string; per_page?: number; page?: number }
-	): Promise<{
-		service: { id: number; name: string; type: string };
-		stats: {
-			total_members: number;
-			active_members: number;
-			trial_members: number;
-			churned_members: number;
-			total_revenue: number;
-		};
-		members: Member[];
-		pagination: PaginationInfo;
-	}> {
-		const params = new URLSearchParams();
-		if (filters) {
-			Object.entries(filters).forEach(([key, value]) => {
-				if (value !== undefined && value !== null && value !== '') {
-					params.append(key, String(value));
-				}
-			});
-		}
-		const queryString = params.toString();
-		return apiClient.get(
-			`/admin/members/service/${serviceId}${queryString ? `?${queryString}` : ''}`
+	/** One plan-local membership cohort; global member status remains separate. */
+	async getMembersByService(serviceId: number, filters?: ServiceMemberFilters) {
+		const query = memberFactsQuery(filters);
+		return readMemberFacts(
+			`/api/admin/members/service/${serviceId}${query ? `?${query}` : ''}`,
+			(value) => parseServiceMembers(value, serviceId)
 		);
 	},
 
@@ -262,18 +218,8 @@ export const membersApi = {
 	/**
 	 * Get single member details
 	 */
-	async getMember(id: number): Promise<{
-		member: Member;
-		engagement_score: number;
-		timeline: {
-			type: string;
-			title: string;
-			date: string;
-			icon: string;
-			meta?: Record<string, unknown>;
-		}[];
-	}> {
-		return apiClient.get(`/admin/members/${id}`);
+	async getMember(id: string | number): Promise<MemberProfile> {
+		return memberProfileApi.get(id, { family: 'members' });
 	},
 
 	/**
@@ -336,8 +282,8 @@ export const membersApi = {
 	/**
 	 * Get member full details (including subscriptions, orders, activity, notes)
 	 */
-	async getMemberFull(id: number): Promise<MemberFullDetails> {
-		return apiClient.get(`/admin/member-management/${id}`);
+	async getMemberFull(id: string | number): Promise<MemberProfile> {
+		return memberProfileApi.get(id);
 	},
 
 	/**
@@ -353,7 +299,7 @@ export const membersApi = {
 	 * Update member
 	 */
 	async updateMember(
-		id: number,
+		id: string | number,
 		data: UpdateMemberRequest
 	): Promise<{ message: string; member: Member }> {
 		return apiClient.put(`/admin/member-management/${id}`, data);
@@ -396,45 +342,17 @@ export const membersApi = {
 	/**
 	 * Get member notes
 	 */
-	async getMemberNotes(id: number): Promise<MemberNote[]> {
-		return apiClient.get(`/admin/member-management/${id}/notes`);
+	async getMemberNotes(id: string | number, filters: MemberHistoryQuery = {}) {
+		return memberProfileApi.notes(id, filters);
 	},
-
-	/**
-	 * Create member note
-	 */
-	async createMemberNote(
-		id: number,
-		content: string
-	): Promise<{ message: string; note: MemberNote }> {
-		return apiClient.post(`/admin/member-management/${id}/notes`, { content });
+	async createMemberNote(id: string | number, content: string) {
+		return memberProfileApi.addNote(id, content);
 	},
-
-	/**
-	 * Delete member note
-	 */
-	async deleteMemberNote(memberId: number, noteId: number): Promise<{ message: string }> {
-		return apiClient.delete(`/admin/member-management/${memberId}/notes/${noteId}`);
+	async deleteMemberNote(memberId: string | number, noteId: string | number) {
+		return memberProfileApi.removeNote(memberId, noteId);
 	},
-
-	/**
-	 * Get member activity log
-	 */
-	async getMemberActivity(
-		id: number,
-		params?: { page?: number; per_page?: number; action?: string }
-	): Promise<{
-		activity: MemberActivity[];
-		pagination: PaginationInfo;
-	}> {
-		const searchParams = new URLSearchParams();
-		if (params?.page) searchParams.append('page', String(params.page));
-		if (params?.per_page) searchParams.append('per_page', String(params.per_page));
-		if (params?.action) searchParams.append('action', params.action);
-		const queryString = searchParams.toString();
-		return apiClient.get(
-			`/admin/member-management/${id}/activity${queryString ? `?${queryString}` : ''}`
-		);
+	async getMemberActivity(id: string | number, filters: MemberHistoryQuery = {}) {
+		return memberProfileApi.activity(id, filters);
 	},
 
 	/**
@@ -457,56 +375,19 @@ export const membersApi = {
 // ADDITIONAL TYPES
 // ═══════════════════════════════════════════════════════════════════════════
 
-export interface MemberFullDetailsMember {
-	id: number;
-	name: string;
-	first_name: string | null;
-	last_name: string | null;
+/** Narrow edit seed: preserve recorded editable values without inventing financial facts. */
+export interface MemberEditSeed {
+	id: string | number;
+	name: string | null;
 	email: string;
-	avatar: string | null;
-	status:
-		| 'active'
-		| 'trial'
-		| 'churned'
-		| 'never_subscribed'
-		| 'banned'
-		| 'suspended'
-		| 'restricted';
-	status_label: string;
-	joined_at: string;
-	total_spent: number;
-	active_subscriptions_count: number;
-	current_plan: string | null;
-	current_product: string | null;
-	subscriptions?: Subscription[];
-	orders?: Order[];
-	email_verified?: boolean;
-	last_login?: string | null;
-	churned_at?: string;
-	last_product?: string;
-	last_plan?: string;
-	churn_reason?: string | null;
-	days_since_churn?: number | null;
-	tags: string[];
-	banned_until?: string | null;
-	ban_reason?: string | null;
+	first_name?: string | null;
+	last_name?: string | null;
+	role?: string | null;
+	avatar?: string | null;
+	tags?: string[];
 }
-
-export interface MemberFullDetails {
-	member: MemberFullDetailsMember;
-	subscriptions: MemberSubscriptionDetail[];
-	orders: MemberOrderDetail[];
-	activity: MemberActivity[];
-	notes: MemberNote[];
-	stats: {
-		total_spent: number;
-		active_subscriptions: number;
-		total_orders: number;
-		member_since_days: number;
-	};
-	engagement_score: number;
-	timeline: TimelineEvent[];
-}
+export type MemberFullDetailsMember = MemberProfileRecord;
+export type MemberFullDetails = MemberProfile;
 
 export interface MemberSubscriptionDetail {
 	id: number;

@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { useCrmAccess } from '#lib/crm/access.svelte.js';
+	const access = useCrmAccess();
 	import { onMount } from 'svelte';
 	import { crmAPI } from '#lib/api/crm.js';
 	import { apiErrorMessage } from '#lib/utils/api-error-message.js';
@@ -45,6 +47,12 @@
 	let currentPage = $state(1),
 		dirty = $state(false);
 	async function loadPreview() {
+		if (!access.can('GET', '/campaigns/{id}/recipients')) {
+			preview = null;
+			loading = false;
+			error = 'Audience preview requires its campaign and contact read permissions.';
+			return;
+		}
 		loading = true;
 		error = '';
 		try {
@@ -56,6 +64,15 @@
 		}
 	}
 	async function search(kind: 'lists' | 'tags' | 'segments') {
+		if (
+			!access.can(
+				'GET',
+				kind === 'lists' ? '/lists' : kind === 'tags' ? '/contact-tags' : '/segments'
+			)
+		) {
+			searchError = 'Your role cannot search these audience references.';
+			return;
+		}
 		if (searching) return;
 		searching = kind;
 		searchError = '';
@@ -97,6 +114,10 @@
 	async function save(event: SubmitEvent) {
 		event.preventDefault();
 		if (saving) return;
+		if (!access.can('PUT', '/campaigns/{id}')) {
+			error = 'Your role cannot edit this audience.';
+			return;
+		}
 		saving = true;
 		error = '';
 		try {
@@ -144,7 +165,7 @@
 	</p>
 	{#if error}<p role="alert">{error}</p>
 		<button type="button" onclick={() => void loadPreview()}>Retry preview</button>{/if}
-	{#if editable}
+	{#if editable && access.can('PUT', '/campaigns/{id}')}
 		<form onsubmit={(event) => void save(event)}>
 			<label for="audience-source">Recipient source</label>
 			<select
@@ -330,7 +351,9 @@
 			{/if}
 			<button type="submit" disabled={saving}>{saving ? 'Saving…' : 'Save Audience'}</button>
 		</form>{/if}
-	{#if loading}<p role="status">Loading recipient preview…</p>{:else if preview}
+	{#if loading}<p role="status">
+			Loading recipient preview…
+		</p>{:else if preview && access.can('GET', '/campaigns/{id}/recipients')}
 		<p>
 			{preview.audience.eligible_recipients} eligible recipients from {preview.audience
 				.matching_contacts} matching {preview.audience.source === 'newsletter'

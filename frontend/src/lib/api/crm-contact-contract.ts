@@ -1,3 +1,5 @@
+import { assertCrmClientRequest } from '#lib/crm/request-gate.js';
+import { notifyCrmDenial } from '#lib/crm/denial.js';
 import type { JsonValue } from './_types.js';
 import type { ContactEmailActivity } from '#lib/crm/contact-types.js';
 import type { ContactFormFields, ContactWrite } from '#lib/crm/contact-types.js';
@@ -506,6 +508,7 @@ export async function contactRequest(
 		signal: AbortSignal.timeout(30000)
 	};
 	if (method !== 'GET' && body !== undefined) init.body = JSON.stringify(body);
+	assertCrmClientRequest(`/api/admin/crm/contacts${path}`, method);
 	let response: Response;
 	try {
 		response = await fetch(`/api/admin/crm/contacts${path}`, init);
@@ -514,6 +517,7 @@ export async function contactRequest(
 			'The contact service could not confirm the request. Refresh saved state before retrying.'
 		);
 	}
+	notifyCrmDenial(response.status);
 	let value: unknown;
 	try {
 		value = await response.json();

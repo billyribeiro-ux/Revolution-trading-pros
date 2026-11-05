@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { useCrmAccess } from '#lib/crm/access.svelte.js';
+	const access = useCrmAccess();
 	import { onMount } from 'svelte';
 	import { crmAPI } from '#lib/api/crm.js';
 	import type { Campaign, CampaignDelivery } from '#lib/crm/types.js';
@@ -17,6 +19,11 @@
 	let scheduled = $state(''),
 		confirmation = $state<'send' | 'schedule' | 'resume' | null>(null);
 	async function load() {
+		if (!access.can('GET', '/campaigns/{id}/deliveries')) {
+			rows = [];
+			error = 'Delivery history requires its campaign and contact read permissions.';
+			return;
+		}
 		if (loading) return;
 		loading = true;
 		error = '';
@@ -36,6 +43,10 @@
 		}
 	}
 	async function mutate(action: 'send' | 'schedule' | 'pause' | 'resume') {
+		if (!access.can('POST', `/campaigns/{id}/${action}`)) {
+			error = 'Your role cannot change campaign execution.';
+			return;
+		}
 		if (busy) return;
 		busy = true;
 		error = '';
@@ -108,37 +119,41 @@
 			A submission outcome is unknown. Sending is paused until authenticated provider events
 			reconcile the receipt. Unknown submissions are never automatically retried.
 		</p>{/if}
-	<div class="controls">
-		{#if campaign.status === 'draft'}
-			<button
-				disabled={busy}
-				onclick={() => {
-					confirmation = 'send';
-				}}>Send Now</button
-			>
-			<label for="campaign-schedule">Schedule in your local time</label><input
-				id="campaign-schedule"
-				type="datetime-local"
-				bind:value={scheduled}
-			/>
-			<button
-				disabled={busy || !scheduled}
-				onclick={() => {
-					confirmation = 'schedule';
-				}}>Schedule Campaign</button
-			>
-		{:else if ['scheduled', 'sending'].includes(campaign.status)}
-			<button disabled={busy} onclick={() => void mutate('pause')}>Pause Campaign</button>
-		{:else if ['paused', 'failed'].includes(campaign.status) && campaign.pause_reason !== 'uncertain_submission'}
-			<button
-				disabled={busy}
-				onclick={() => {
-					confirmation = 'resume';
-				}}>Resume Campaign</button
-			>
-		{/if}
-		<button disabled={busy || loading} onclick={() => void load()}>Refresh Receipts</button>
-	</div>
+	{#if access.can('POST', '/campaigns/{id}/send') || access.can('POST', '/campaigns/{id}/schedule') || access.can('POST', '/campaigns/{id}/pause') || access.can('POST', '/campaigns/{id}/resume')}
+		<div class="controls">
+			{#if campaign.status === 'draft'}
+				<button
+					disabled={busy || !access.can('POST', '/campaigns/{id}/send')}
+					onclick={() => {
+						confirmation = 'send';
+					}}>Send Now</button
+				>
+				<label for="campaign-schedule">Schedule in your local time</label><input
+					id="campaign-schedule"
+					type="datetime-local"
+					bind:value={scheduled}
+				/>
+				<button
+					disabled={busy || !scheduled || !access.can('POST', '/campaigns/{id}/schedule')}
+					onclick={() => {
+						confirmation = 'schedule';
+					}}>Schedule Campaign</button
+				>
+			{:else if ['scheduled', 'sending'].includes(campaign.status)}
+				<button
+					disabled={busy || !access.can('POST', '/campaigns/{id}/pause')}
+					onclick={() => void mutate('pause')}>Pause Campaign</button
+				>
+			{:else if ['paused', 'failed'].includes(campaign.status) && campaign.pause_reason !== 'uncertain_submission'}
+				<button
+					disabled={busy || !access.can('POST', '/campaigns/{id}/resume')}
+					onclick={() => {
+						confirmation = 'resume';
+					}}>Resume Campaign</button
+				>
+			{/if}
+		</div>
+	{/if}
 	<dl class="delivery-counts">
 		{#each ['queued', 'processing', 'accepted', 'delivered', 'failed', 'unknown', 'skipped', 'unsubscribed'] as metric (metric)}<div
 			>
@@ -148,45 +163,48 @@
 				</dd>
 			</div>{/each}
 	</dl>
-	<label for="delivery-status">Delivery status</label><select
-		id="delivery-status"
-		bind:value={filter}
-		onchange={() => void changePage(1)}
-		><option value="">All statuses</option
-		>{#each ['queued', 'processing', 'accepted', 'failed', 'unknown', 'skipped'] as status (status)}<option
-				value={status}>{status}</option
-			>{/each}</select
-	>
-	{#if loading}<p role="status">Loading delivery receipts…</p>{/if}
-	{#if rows.length}<div class="table-scroll">
-			<table>
-				<thead
-					><tr
-						><th>Recipient</th><th>State</th><th>Attempts</th><th>Provider acceptance</th><th
-							>Delivery</th
-						><th>Details</th></tr
-					></thead
-				><tbody
-					>{#each rows as receipt (receipt.id)}<tr
-							><td>{receipt.display_name}<br />{receipt.email}</td><td>{receipt.status}</td><td
-								>{receipt.attempt_count}</td
-							><td>{date(receipt.accepted_at)}</td><td>{date(receipt.delivered_at)}</td><td
-								>{receipt.last_error ?? receipt.provider_message_id ?? 'No provider receipt'}</td
-							></tr
-						>{/each}</tbody
-				>
-			</table>
-		</div>{:else if !loading && !error}<p>
-			No delivery receipts match this filter. Draft campaigns have no frozen recipients.
-		</p>{/if}
-	<p>{total} receipts · Page {page} of {Math.max(1, pages)}</p>
-	<div class="controls">
-		<button disabled={loading || page <= 1} onclick={() => void changePage(page - 1)}
-			>Previous Receipts</button
-		><button disabled={loading || page >= pages} onclick={() => void changePage(page + 1)}
-			>Next Receipts</button
+	{#if access.can('GET', '/campaigns/{id}/deliveries')}
+		<button disabled={busy || loading} onclick={() => void load()}>Refresh Receipts</button>
+		<label for="delivery-status">Delivery status</label><select
+			id="delivery-status"
+			bind:value={filter}
+			onchange={() => void changePage(1)}
+			><option value="">All statuses</option
+			>{#each ['queued', 'processing', 'accepted', 'failed', 'unknown', 'skipped'] as status (status)}<option
+					value={status}>{status}</option
+				>{/each}</select
 		>
-	</div>
+		{#if loading}<p role="status">Loading delivery receipts…</p>{/if}
+		{#if rows.length}<div class="table-scroll">
+				<table>
+					<thead
+						><tr
+							><th>Recipient</th><th>State</th><th>Attempts</th><th>Provider acceptance</th><th
+								>Delivery</th
+							><th>Details</th></tr
+						></thead
+					><tbody
+						>{#each rows as receipt (receipt.id)}<tr
+								><td>{receipt.display_name}<br />{receipt.email}</td><td>{receipt.status}</td><td
+									>{receipt.attempt_count}</td
+								><td>{date(receipt.accepted_at)}</td><td>{date(receipt.delivered_at)}</td><td
+									>{receipt.last_error ?? receipt.provider_message_id ?? 'No provider receipt'}</td
+								></tr
+							>{/each}</tbody
+					>
+				</table>
+			</div>{:else if !loading && !error}<p>
+				No delivery receipts match this filter. Draft campaigns have no frozen recipients.
+			</p>{/if}
+		<p>{total} receipts · Page {page} of {Math.max(1, pages)}</p>
+		<div class="controls">
+			<button disabled={loading || page <= 1} onclick={() => void changePage(page - 1)}
+				>Previous Receipts</button
+			><button disabled={loading || page >= pages} onclick={() => void changePage(page + 1)}
+				>Next Receipts</button
+			>
+		</div>
+	{:else}<p>Delivery history requires campaign and contact read permissions.</p>{/if}
 </section>
 <ConfirmationModal
 	isOpen={confirmation !== null}

@@ -2,21 +2,24 @@
 //!
 //! Extracted from `auth.rs` during R12-B as a pure structural move.
 
+use crate::services::{account_authority, account_mfa};
 use axum::{
     Json,
     extract::State,
     http::{HeaderMap, StatusCode},
 };
+use serde::{Deserialize, Serialize};
 use serde_json::json;
+use validator::Validate;
 
-use super::helpers::{ClientAddr, client_ip, current_token_version, enforce_ip_rate_limit_strict};
+use super::helpers::{ClientAddr, client_ip, enforce_ip_rate_limit_strict};
 use crate::{
     AppState,
     // FIX-2026-04-26 (Priority 2): pull in ValidatedJson extractor for hot-path handlers.
     middleware::validated_json::ValidatedJson,
-    models::{AuthResponse, LoginUser, User},
+    models::{AuthResponse, LoginUser},
     utils::{
-        create_jwt_versioned, create_refresh_token_versioned, generate_session_id,
+        create_jwt_authenticated, create_refresh_token_authenticated, generate_session_id,
         hash_dummy_password, hash_password_async, verify_password_async,
     },
 };
@@ -27,15 +30,100 @@ use crate::{
 // FIX-2026-04-26 (Priority 2): migrated Json<LoginUser> -> ValidatedJson<LoginUser>.
 // FIX-2026-04-26 (Priority 4): added per-IP rate limit (10 / 15min) ALONGSIDE existing
 // per-email rate limit. Per-email alone is bypassable by an attacker rotating emails;
-// per-IP catches that pattern. Login keeps fail-OPEN behavior (per audit) — only the
-// per-IP additional check uses fail-OPEN here for availability of the auth surface.
+// per-IP catches that pattern. Both rate gates fail closed when Redis is unavailable.
 // Original signature: async fn login(State(state): State<AppState>, Json(input): Json<LoginUser>)
+#[derive(Serialize)]
+#[serde(untagged)]
+pub(super) enum LoginOutcome {
+    Authenticated(Box<AuthResponse>),
+    MfaRequired {
+        mfa_required: bool,
+        message: &'static str,
+    },
+}
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+pub(super) struct MfaLoginInput {
+    email: String,
+    password: String,
+    mfa_code: Option<String>,
+    backup_code: Option<String>,
+    remember: Option<bool>,
+    device_name: Option<String>,
+    device_fingerprint: Option<String>,
+}
+enum OwnedProof {
+    Totp(String),
+    Backup(String),
+}
 pub(super) async fn login(
+    state: State<AppState>,
+    peer: ClientAddr,
+    headers: HeaderMap,
+    input: ValidatedJson<LoginUser>,
+) -> Result<Json<LoginOutcome>, (StatusCode, Json<serde_json::Value>)> {
+    run(state, peer, headers, input, None).await
+}
+pub(super) async fn login_mfa(
+    state: State<AppState>,
+    peer: ClientAddr,
+    headers: HeaderMap,
+    Json(input): Json<MfaLoginInput>,
+) -> Result<Json<LoginOutcome>, (StatusCode, Json<serde_json::Value>)> {
+    if peer.0.is_none() {
+        return Err((
+            StatusCode::SERVICE_UNAVAILABLE,
+            Json(json!({"error":"The client address is unavailable for this security operation"})),
+        ));
+    }
+    if input.device_name.as_ref().is_some_and(|v| v.len() > 200)
+        || input
+            .device_fingerprint
+            .as_ref()
+            .is_some_and(|v| v.len() > 128)
+    {
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(json!({"error":"Device information exceeds its limit"})),
+        ));
+    }
+    let proof = match (input.mfa_code, input.backup_code) {
+        (Some(code), None) if code.len() == 6 && code.bytes().all(|b| b.is_ascii_digit()) => {
+            OwnedProof::Totp(code)
+        }
+        (None, Some(code)) if code.len() <= 80 && !code.trim().is_empty() => {
+            OwnedProof::Backup(code)
+        }
+        _ => {
+            return Err((
+                StatusCode::BAD_REQUEST,
+                Json(json!({"error":"Provide exactly one bounded authenticator or recovery code"})),
+            ));
+        }
+    };
+    let login = LoginUser {
+        email: input.email,
+        password: input.password,
+        remember: input.remember,
+        device_name: input.device_name,
+        device_fingerprint: input.device_fingerprint,
+    };
+    login.validate().map_err(|_| {
+        (
+            StatusCode::BAD_REQUEST,
+            Json(json!({"error":"Provide valid bounded login credentials"})),
+        )
+    })?;
+    run(state, peer, headers, ValidatedJson(login), Some(proof)).await
+}
+
+async fn run(
     State(state): State<AppState>,
     peer: ClientAddr,
     headers: HeaderMap,
     ValidatedJson(input): ValidatedJson<LoginUser>,
-) -> Result<Json<AuthResponse>, (StatusCode, Json<serde_json::Value>)> {
+    proof: Option<OwnedProof>,
+) -> Result<Json<LoginOutcome>, (StatusCode, Json<serde_json::Value>)> {
     // Security audit logging
     tracing::info!(
         target: "security",
@@ -62,7 +150,18 @@ pub(super) async fn login(
         ));
     };
 
-    match redis.check_login_rate_limit(&input.email).await {
+    let email_limit = tokio::time::timeout(
+        std::time::Duration::from_secs(3),
+        redis.check_login_rate_limit(&input.email),
+    )
+    .await
+    .map_err(|_| {
+        (
+            StatusCode::SERVICE_UNAVAILABLE,
+            Json(json!({"error":"Service temporarily unavailable, please try again"})),
+        )
+    })?;
+    match email_limit {
         Ok(rate_limit) if !rate_limit.allowed => {
             let error_msg = if rate_limit.locked {
                 "Account temporarily locked due to too many failed attempts"
@@ -94,8 +193,8 @@ pub(super) async fn login(
     }
 
     // Find user
-    let user_result: Option<User> = sqlx::query_as(
-        "SELECT id, email, password_hash, name, role, is_active, email_verified_at, avatar_url, mfa_enabled, created_at, updated_at FROM users WHERE email = $1"
+    let user_result: Option<serde_json::Value> = sqlx::query_scalar(
+        "SELECT to_jsonb(account) FROM (SELECT id, email, password_hash, name, role, is_active, email_verified_at, avatar_url, mfa_enabled, created_at, updated_at FROM users WHERE email = $1 AND deleted_at IS NULL AND COALESCE(LOWER(role),'')<>'deleted') account"
     )
         .bind(&input.email)
         .fetch_optional(&state.db.pool)
@@ -111,8 +210,9 @@ pub(super) async fn login(
     // ICT L11+ Security: Timing attack prevention
     // Always perform password hashing even if user doesn't exist
     // This prevents timing-based user enumeration
-    let user = match user_result {
-        Some(u) => u,
+    let mut user = match user_result {
+        Some(value) => crate::services::account_authority::checked_user(value)
+            .map_err(|(status, message)| (status, Json(json!({"error":message}))))?,
         None => {
             // Hash dummy password to match timing of real verification
             hash_dummy_password().await;
@@ -185,45 +285,22 @@ pub(super) async fn login(
     // Best-effort: a failure here logs but does not fail the login; the
     // user keeps a bcrypt hash and we'll try again on their next login.
     if user.password_hash.starts_with("$2") {
-        match hash_password_async(&input.password).await {
-            Ok(new_hash) => {
-                match sqlx::query(
-                    "UPDATE users SET password_hash = $1, updated_at = NOW() WHERE id = $2",
-                )
-                .bind(&new_hash)
-                .bind(user.id)
-                .execute(&state.db.pool)
-                .await
-                {
-                    Err(e) => {
-                        tracing::error!(
-                            target: "security_audit",
-                            event = "bcrypt_rehash_write_failed",
-                            user_id = %user.id,
-                            error = %e,
-                            "Could not migrate bcrypt hash to argon2id"
-                        );
-                    }
-                    _ => {
-                        tracing::info!(
-                            target: "security_audit",
-                            event = "bcrypt_rehashed_to_argon2id",
-                            user_id = %user.id,
-                            "Migrated user from bcrypt to argon2id on successful login"
-                        );
-                    }
-                }
-            }
-            Err(e) => {
-                tracing::error!(
-                    target: "security_audit",
-                    event = "bcrypt_rehash_compute_failed",
-                    user_id = %user.id,
-                    error = %e,
-                    "argon2 hash computation failed during bcrypt migration"
-                );
-            }
+        let new_hash = hash_password_async(&input.password).await.map_err(|_| {
+            (
+                StatusCode::SERVICE_UNAVAILABLE,
+                Json(json!({"error":"Password migration is unavailable"})),
+            )
+        })?;
+        let saved=sqlx::query("UPDATE users SET password_hash=$1,updated_at=NOW() AT TIME ZONE 'UTC' WHERE id=$2 AND password_hash=$3 AND deleted_at IS NULL")
+            .bind(&new_hash).bind(user.id).bind(&user.password_hash).execute(&state.db.pool).await
+            .map_err(|_|(StatusCode::SERVICE_UNAVAILABLE,Json(json!({"error":"Password migration is unavailable"}))))?.rows_affected();
+        if saved != 1 {
+            return Err((
+                StatusCode::UNAUTHORIZED,
+                Json(json!({"error":"Account credentials changed; authenticate again"})),
+            ));
         }
+        user.password_hash = new_hash;
     }
 
     // FIX-2026-04-27 (C-1): Block banned/deactivated accounts at login.
@@ -350,20 +427,71 @@ pub(super) async fn login(
     // unreachable under the hardened invariant and has been removed. The
     // single `privileged_login` audit above is the accurate, reachable event.
 
-    // SECURITY (FULL_REPO_AUDIT_2026-05-17 P1-2): mint both tokens with the
-    // user's CURRENT token epoch so they survive the extractor's stale-token
-    // check until the next logout-all/password-reset/ban bump. If Redis is
-    // configured but errors here we fail closed (do not mint a token we
-    // cannot later validate); if Redis is absent the epoch is 0 (matches the
-    // extractor's "Redis absent -> skip the epoch check" branch).
-    let token_version = current_token_version(&state, user.id).await?;
+    // Mint against the current PostgreSQL account epoch, never an optional Redis snapshot.
+    let mut account = crate::services::account_authority::current(&state.db.pool, user.id)
+        .await
+        .map_err(|(status, message)| (status, Json(json!({"error":message}))))?;
+    if account.user.password_hash != user.password_hash || account.user.email_verified_at.is_none()
+    {
+        return Err((
+            StatusCode::UNAUTHORIZED,
+            Json(json!({"error":"Account credentials changed; authenticate again"})),
+        ));
+    }
+    let mfa_required = account_authority::require_mfa_state(&account)
+        .map_err(|(status, message)| (status, Json(json!({"error":message}))))?;
+    let mfa_assured = if mfa_required {
+        let Some(proof) = proof else {
+            return Ok(Json(LoginOutcome::MfaRequired {
+                mfa_required: true,
+                message: "An authenticator or recovery code is required; no access tokens were issued",
+            }));
+        };
+        let proof = match &proof {
+            OwnedProof::Totp(code) => account_mfa::Proof::Totp(code),
+            OwnedProof::Backup(code) => account_mfa::Proof::Backup(code),
+        };
+        let observed = ip.parse().map_err(|_| {
+            (
+                StatusCode::SERVICE_UNAVAILABLE,
+                Json(json!({"error":"The client address is unavailable"})),
+            )
+        })?;
+        account = account_mfa::verify_login(
+            &state,
+            account.user.id,
+            account.version,
+            proof,
+            Some(observed),
+        )
+        .await
+        .map_err(|error| {
+            (
+                StatusCode::from_bytes(error.status.as_bytes())
+                    .unwrap_or(StatusCode::INTERNAL_SERVER_ERROR),
+                Json(json!({"error":error.message})),
+            )
+        })?;
+        true
+    } else {
+        if proof.is_some() {
+            return Err((
+                StatusCode::BAD_REQUEST,
+                Json(json!({"error":"MFA is not enabled; use normal password sign-in"})),
+            ));
+        }
+        false
+    };
+    let token_version = account.version;
+    let user = account.user;
 
     // Create access token
-    let token = create_jwt_versioned(
+    let token = create_jwt_authenticated(
         user.id,
         &state.config.jwt_secret,
         state.config.jwt_expires_in,
         token_version,
+        mfa_assured,
     )
     .map_err(|e| {
         tracing::error!("JWT creation error: {}", e);
@@ -374,16 +502,19 @@ pub(super) async fn login(
     })?;
 
     // Create refresh token
-    let refresh_token =
-        create_refresh_token_versioned(user.id, &state.config.jwt_secret, token_version).map_err(
-            |e| {
-                tracing::error!("Refresh token creation error: {}", e);
-                (
-                    StatusCode::INTERNAL_SERVER_ERROR,
-                    Json(json!({"error": "Refresh token creation failed"})),
-                )
-            },
-        )?;
+    let refresh_token = create_refresh_token_authenticated(
+        user.id,
+        &state.config.jwt_secret,
+        token_version,
+        mfa_assured,
+    )
+    .map_err(|e| {
+        tracing::error!("Refresh token creation error: {}", e);
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": "Refresh token creation failed"})),
+        )
+    })?;
 
     // Generate session ID and store in Redis
     let session_id = generate_session_id();
@@ -406,12 +537,12 @@ pub(super) async fn login(
         "Login successful"
     );
 
-    Ok(Json(AuthResponse {
+    Ok(Json(LoginOutcome::Authenticated(Box::new(AuthResponse {
         token: token.clone(),
         access_token: token, // Frontend prefers access_token
         refresh_token,
         session_id,
         user: crate::models::UserResponse::from_authenticated(user, &state.config),
         expires_in: state.config.jwt_expires_in * 3600, // Convert hours to seconds
-    }))
+    }))))
 }

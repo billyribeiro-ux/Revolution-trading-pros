@@ -18,6 +18,7 @@
  */
 import type { RequestHandler, Cookies } from '@sveltejs/kit';
 import { API_BASE_URL, BACKEND_URL } from '$app/env/private';
+import { proxyCrmCanonical } from '#lib/server/crm-proxy.js';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Configuration
@@ -319,27 +320,19 @@ async function proxyRequest(
 	);
 }
 
-export const GET: RequestHandler = async ({ params, url, cookies, fetch, request }) => {
-	const path = params.path || '';
-	return proxyRequest(request, path, url, cookies, fetch);
+const forward: RequestHandler = async (event) => {
+	if (event.url.pathname === '/api/admin/crm' || event.url.pathname.startsWith('/api/admin/crm/'))
+		return proxyCrmCanonical(event);
+	return proxyRequest(
+		event.request,
+		event.params.path || '',
+		event.url,
+		event.cookies,
+		event.fetch
+	);
 };
-
-export const POST: RequestHandler = async ({ params, url, cookies, fetch, request }) => {
-	const path = params.path || '';
-	return proxyRequest(request, path, url, cookies, fetch);
-};
-
-export const PUT: RequestHandler = async ({ params, url, cookies, fetch, request }) => {
-	const path = params.path || '';
-	return proxyRequest(request, path, url, cookies, fetch);
-};
-
-export const PATCH: RequestHandler = async ({ params, url, cookies, fetch, request }) => {
-	const path = params.path || '';
-	return proxyRequest(request, path, url, cookies, fetch);
-};
-
-export const DELETE: RequestHandler = async ({ params, url, cookies, fetch, request }) => {
-	const path = params.path || '';
-	return proxyRequest(request, path, url, cookies, fetch);
-};
+export const GET = forward;
+export const POST = forward;
+export const PUT = forward;
+export const PATCH = forward;
+export const DELETE = forward;

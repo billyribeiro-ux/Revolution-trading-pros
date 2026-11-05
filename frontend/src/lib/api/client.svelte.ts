@@ -1,3 +1,4 @@
+import { assertCrmClientRequest, isCrmRequestUrl } from '#lib/crm/request-gate.js';
 /**
  * API Client Service - Google L7+ Enterprise Implementation
  * ═══════════════════════════════════════════════════════════════════════════
@@ -560,12 +561,14 @@ class EnterpriseApiClient {
 	 * Core request method with all enterprise features
 	 */
 	private async request<T>(endpoint: string, config: RequestConfig = {}): Promise<T> {
+		const crmRequest = isCrmRequestUrl(this.buildUrl(endpoint, config.params));
+		assertCrmClientRequest(this.buildUrl(endpoint, config.params), config.method ?? 'GET');
 		// Generate request ID
 		const requestId = this.generateRequestId();
 		const cacheKey = config.cache?.key || this.getCacheKey(endpoint, config);
 
 		// Check cache first
-		if (config.cache?.enabled !== false && config.method === 'GET') {
+		if (!crmRequest && config.cache?.enabled !== false && config.method === 'GET') {
 			const cached = this.getFromCache<T>(cacheKey);
 			if (cached !== null) {
 				this.updateMetrics({ cached: true });
@@ -577,7 +580,7 @@ class EnterpriseApiClient {
 		// Mutations with the same endpoint can carry different payloads. Only
 		// share an in-flight request for reads; never silently drop a write.
 		const existingRequest =
-			config.method === 'GET'
+			!crmRequest && config.method === 'GET'
 				? (this.activeRequests.get(cacheKey) as Promise<T> | undefined)
 				: undefined;
 		if (existingRequest) {
@@ -609,7 +612,7 @@ class EnterpriseApiClient {
 			this.activeRequests.delete(cacheKey);
 
 			// Cache successful GET requests
-			if (config.method === 'GET' || !config.method) {
+			if (!crmRequest && (config.method === 'GET' || !config.method)) {
 				this.setCache(cacheKey, result, config.cache?.ttl);
 			}
 
@@ -657,9 +660,13 @@ class EnterpriseApiClient {
 			requestConfig.body = JSON.stringify(config.body);
 		}
 
+		assertCrmClientRequest(url, requestConfig.method ?? 'GET');
 		// Retry logic
 		let lastError: unknown;
-		const maxAttempts = config.retry?.attempts || RETRY_ATTEMPTS;
+		const maxAttempts =
+			isCrmRequestUrl(url) && !['GET', 'HEAD'].includes(requestConfig.method ?? 'GET')
+				? 1
+				: config.retry?.attempts || RETRY_ATTEMPTS;
 
 		for (let attempt = 0; attempt < maxAttempts; attempt++) {
 			try {
@@ -670,6 +677,12 @@ class EnterpriseApiClient {
 
 				// Handle response
 				if (!response.ok) {
+					if (
+						[401, 403].includes(response.status) &&
+						new URL(url, 'http://localhost').pathname.startsWith('/api/admin/crm/') &&
+						typeof window !== 'undefined'
+					)
+						window.dispatchEvent(new Event('crm-access-denied'));
 					const error = await this.handleErrorResponse(response, requestId);
 
 					// Check if we should retry

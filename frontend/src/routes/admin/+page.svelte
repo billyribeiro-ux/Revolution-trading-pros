@@ -40,6 +40,7 @@
 		IconPlugConnected
 	} from '#lib/icons/index.js';
 	import { onMount } from 'svelte';
+	import { readMemberFacts, parseMemberStats } from '#lib/api/member-statistics.js';
 	import { SvelteSet } from 'svelte/reactivity';
 	import { dev } from '$app/env';
 	import {
@@ -78,12 +79,6 @@
 	// returns heterogeneous JSON whose fields are all optional from the
 	// frontend's perspective; these interfaces capture only the fields read
 	// below so the `?.` chains stay type-safe without resorting to `any`.
-	interface MembersStatsResponse {
-		overview?: { total_members?: number };
-		total?: number;
-		subscriptions?: { active?: number };
-		revenue?: { mrr?: number };
-	}
 	interface CouponsResponse {
 		coupons?: Array<{ is_active?: boolean }>;
 		data?: Array<{ is_active?: boolean }>;
@@ -192,10 +187,9 @@
 	// metric panels stayed blank. Wrapping in `$state(...)` makes deep
 	// writes properly reactive via Svelte 5's proxy semantics.
 	let stats = $state({
-		activeSubscriptions: 0,
-		monthlyRevenue: 0,
+		activeSubscriptions: null as number | null,
 		activeCoupons: 0,
-		totalMembers: 0,
+		totalMembers: null as number | null,
 		totalPosts: 0,
 		totalProducts: 0
 	});
@@ -294,7 +288,7 @@
 			// ICT 7: Use correct backend endpoints
 			const [membersRes, couponsRes, postsRes, productsRes, analyticsRes] =
 				await Promise.allSettled([
-					localFetch<MembersStatsResponse>('/api/admin/members/stats', abort.signal),
+					readMemberFacts('/api/admin/members/stats', parseMemberStats, fetch, abort.signal),
 					localFetch<CouponsResponse>('/api/admin/coupons', abort.signal),
 					localFetch<PostsStatsResponse>('/api/admin/posts/stats', abort.signal),
 					localFetch<ProductsStatsResponse>('/api/admin/products/stats', abort.signal),
@@ -310,14 +304,11 @@
 			// Members stats
 			if (membersRes.status === 'fulfilled') {
 				const memberData = membersRes.value;
-				const newMembers = memberData?.overview?.total_members || memberData?.total || 0;
-
-				if (mounted)
-					animateValue(stats.totalMembers, newMembers, 800, (v) => (stats.totalMembers = v));
-				else stats.totalMembers = newMembers;
-
-				stats.activeSubscriptions = memberData?.subscriptions?.active || 0;
-				stats.monthlyRevenue = memberData?.revenue?.mrr || 0;
+				stats.totalMembers = memberData.overview.total_members;
+				stats.activeSubscriptions = memberData.subscriptions.active_membership_records;
+			} else {
+				stats.totalMembers = null;
+				stats.activeSubscriptions = null;
 			}
 
 			// Coupons
@@ -969,7 +960,7 @@
 			</div>
 
 			<div class="business-grid">
-				{#each [{ href: '/admin/members', icon: IconUserCircle, value: stats.totalMembers, label: 'Total Members', color: 'indigo' }, { href: '/admin/subscriptions', icon: IconReceipt, value: stats.activeSubscriptions, label: 'Active Subscriptions', color: 'teal' }, { href: '/admin/products', icon: IconShoppingCart, value: stats.totalProducts, label: 'Products', color: 'emerald' }, { href: '/admin/blog', icon: IconNews, value: stats.totalPosts, label: 'Blog Posts', color: 'blue' }, { href: '/admin/coupons', icon: IconTicket, value: stats.activeCoupons, label: 'Active Coupons', color: 'amber' }] as item, i (i)}
+				{#each [{ href: '/admin/members', icon: IconUserCircle, value: stats.totalMembers, label: 'Total Members', color: 'indigo' }, { href: '/admin/subscriptions', icon: IconReceipt, value: stats.activeSubscriptions, label: 'Active Membership Records', color: 'teal' }, { href: '/admin/products', icon: IconShoppingCart, value: stats.totalProducts, label: 'Products', color: 'emerald' }, { href: '/admin/blog', icon: IconNews, value: stats.totalPosts, label: 'Blog Posts', color: 'blue' }, { href: '/admin/coupons', icon: IconTicket, value: stats.activeCoupons, label: 'Active Coupons', color: 'amber' }] as item, i (i)}
 					{@const BusinessIcon = item.icon}
 					<a
 						href={item.href}
@@ -983,7 +974,7 @@
 								{#if isLoading}
 									<span class="skeleton-bar skeleton-bar--value" aria-hidden="true"></span>
 									<span class="sr-only">Loading {item.label}</span>
-								{:else}{formatNumber(item.value)}{/if}
+								{:else}{item.value === null ? 'Unavailable' : formatNumber(item.value)}{/if}
 							</span>
 							<span class="business-card-label">{item.label}</span>
 						</div>

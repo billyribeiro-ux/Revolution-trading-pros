@@ -5,6 +5,7 @@ export const AUTHENTICATED_PREFIXES = [
 	'/checkout',
 	'/trading-room',
 	'/admin',
+	'/crm',
 	'/email',
 	'/my'
 ] as const;

@@ -142,7 +142,7 @@ pub(super) async fn create_subscription(
     let subscription: SubscriptionRow = sqlx::query_as(
         r"
         INSERT INTO user_memberships (user_id, plan_id, status, starts_at, expires_at, created_at, updated_at)
-        VALUES ($1, $2, $3, COALESCE($4::timestamp, NOW()), $5::timestamp, NOW(), NOW())
+        VALUES ($1, $2, $3, COALESCE($4::timestamp, (NOW() AT TIME ZONE 'UTC')), $5::timestamp, (NOW() AT TIME ZONE 'UTC'), (NOW() AT TIME ZONE 'UTC'))
         RETURNING id, user_id, plan_id, status, starts_at, expires_at, cancelled_at,
                   payment_provider, stripe_subscription_id, stripe_customer_id, created_at, updated_at
         "
@@ -186,7 +186,7 @@ pub(super) async fn update_subscription(
             plan_id = COALESCE($3, plan_id),
             starts_at = COALESCE($4::timestamp, starts_at),
             expires_at = COALESCE($5::timestamp, expires_at),
-            updated_at = NOW()
+            updated_at = (NOW() AT TIME ZONE 'UTC')
         WHERE id = $1
         RETURNING id, user_id, plan_id, status, starts_at, expires_at, cancelled_at,
                   payment_provider, stripe_subscription_id, stripe_customer_id, created_at, updated_at

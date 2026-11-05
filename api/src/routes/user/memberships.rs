@@ -182,7 +182,7 @@ pub(super) async fn cancel_membership(
     if input.cancel_immediately {
         // Cancel immediately
         sqlx::query(
-            "UPDATE user_memberships SET status = 'cancelled', cancelled_at = NOW(), updated_at = NOW() WHERE id = $1"
+            "UPDATE user_memberships SET status = 'cancelled', cancelled_at = (NOW() AT TIME ZONE 'UTC'), updated_at = (NOW() AT TIME ZONE 'UTC') WHERE id = $1"
         )
         .bind(membership_id)
         .execute(&state.db.pool)
@@ -197,7 +197,7 @@ pub(super) async fn cancel_membership(
     } else {
         // Cancel at period end
         sqlx::query(
-            "UPDATE user_memberships SET cancel_at_period_end = true, updated_at = NOW() WHERE id = $1"
+            "UPDATE user_memberships SET cancel_at_period_end = true, updated_at = (NOW() AT TIME ZONE 'UTC') WHERE id = $1"
         )
         .bind(membership_id)
         .execute(&state.db.pool)

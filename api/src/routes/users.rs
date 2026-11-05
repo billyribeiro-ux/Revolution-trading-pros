@@ -19,8 +19,8 @@ async fn get_user(
     _admin: AdminUser, // ICT 7 FIX: Require admin authentication
     Path(id): Path<i64>,
 ) -> Result<Json<UserResponse>, (StatusCode, Json<serde_json::Value>)> {
-    let user: crate::models::User = sqlx::query_as(
-        "SELECT id, email, password_hash, name, role, email_verified_at, avatar_url, mfa_enabled, created_at, updated_at FROM users WHERE id = $1"
+    let value:serde_json::Value=sqlx::query_scalar(
+        "SELECT to_jsonb(record) FROM(SELECT id,email,name,role,is_active,email_verified_at,avatar_url,mfa_enabled,created_at,updated_at FROM users WHERE id=$1 AND deleted_at IS NULL AND COALESCE(LOWER(role),'')<>'deleted') record"
     )
         .bind(id)
         .fetch_optional(&state.db.pool)
@@ -33,6 +33,8 @@ async fn get_user(
         })?
         .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "User not found"}))))?;
 
+    let user = crate::services::account_authority::checked_user(value)
+        .map_err(|(status, message)| (status, Json(json!({"error":message}))))?;
     Ok(Json(user.into()))
 }
 
@@ -43,10 +45,8 @@ async fn list_users(
     _admin: AdminUser, // ICT 7 FIX: Require admin authentication
 ) -> Result<Json<Vec<UserResponse>>, (StatusCode, Json<serde_json::Value>)> {
     // ICT 7 FIX: Use explicit column list to avoid SQLx FromRow deserialization errors
-    let users: Vec<crate::models::User> = sqlx::query_as(
-        r"SELECT id, email, password_hash, name, role, email_verified_at, 
-                      avatar_url, mfa_enabled, created_at, updated_at 
-               FROM users ORDER BY created_at DESC LIMIT 100",
+    let values:Vec<serde_json::Value>=sqlx::query_scalar(
+        "SELECT to_jsonb(record) FROM(SELECT id,email,name,role,is_active,email_verified_at,avatar_url,mfa_enabled,created_at,updated_at FROM users WHERE deleted_at IS NULL AND COALESCE(LOWER(role),'')<>'deleted' ORDER BY created_at DESC NULLS LAST,id DESC LIMIT 100) record",
     )
     .fetch_all(&state.db.pool)
     .await
@@ -57,7 +57,12 @@ async fn list_users(
         )
     })?;
 
-    Ok(Json(users.into_iter().map(|u| u.into()).collect()))
+    let users = values
+        .into_iter()
+        .map(crate::services::account_authority::checked_user)
+        .collect::<Result<Vec<_>, _>>()
+        .map_err(|(status, message)| (status, Json(json!({"error":message}))))?;
+    Ok(Json(users.into_iter().map(UserResponse::from).collect()))
 }
 
 pub fn router() -> Router<AppState> {

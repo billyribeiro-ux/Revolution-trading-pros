@@ -84,7 +84,7 @@ pub(super) async fn handle_refund(
         if is_full_refund {
             // Revoke subscription membership scoped to the refunded order's plan items
             sqlx::query(
-                r"UPDATE user_memberships SET status = 'cancelled', cancelled_at = NOW(), updated_at = NOW()
+                r"UPDATE user_memberships SET status = 'cancelled', cancelled_at = (NOW() AT TIME ZONE 'UTC'), updated_at = (NOW() AT TIME ZONE 'UTC')
                    WHERE user_id = (SELECT user_id FROM orders WHERE payment_intent_id = $1 LIMIT 1)
                      AND plan_id IN (
                          SELECT oi.plan_id FROM order_items oi

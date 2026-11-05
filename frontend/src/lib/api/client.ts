@@ -1,3 +1,5 @@
+import { assertCrmClientRequest, isCrmRequestUrl } from '#lib/crm/request-gate.js';
+import { notifyCrmDenial } from '#lib/crm/denial.js';
 /**
  * Enterprise API Client - TypeScript 5.9+ Implementation
  * =============================================================================
@@ -25,7 +27,7 @@
  * @license MIT
  */
 
-import { browser } from '$app/env';
+const browser = typeof window !== 'undefined';
 import { getAuthToken } from '#lib/stores/auth.svelte.js';
 import {
 	ApiError,
@@ -466,6 +468,8 @@ export class ApiClient implements Disposable {
 
 		const context = this.createContext(endpoint, options);
 		const method = options.method ?? 'GET';
+		const crmRequest = isCrmRequestUrl(this.buildUrl(endpoint, options.params));
+		assertCrmClientRequest(this.buildUrl(endpoint, options.params), method);
 
 		// Circuit breaker check
 		if (this.circuitBreaker.isOpen()) {
@@ -480,7 +484,7 @@ export class ApiClient implements Disposable {
 
 		// Request deduplication for GET requests
 		const cacheKey = this.getCacheKey(endpoint, options);
-		if (method === 'GET') {
+		if (!crmRequest && method === 'GET') {
 			const existingRequest = this.activeRequests.get(cacheKey);
 			if (existingRequest) {
 				return existingRequest as Promise<ApiResponse<T>>;
@@ -496,7 +500,7 @@ export class ApiClient implements Disposable {
 		// Execute request with retry logic
 		const requestPromise = this.executeWithRetry<T>(endpoint, options, context);
 
-		if (method === 'GET') {
+		if (!crmRequest && method === 'GET') {
 			this.activeRequests.set(cacheKey, requestPromise);
 		}
 
@@ -504,7 +508,7 @@ export class ApiClient implements Disposable {
 			const response = await requestPromise;
 
 			// Cache successful GET responses
-			if (method === 'GET' && response.status < 400) {
+			if (!crmRequest && method === 'GET' && response.status < 400) {
 				this.cache.set(cacheKey, response, options.cache);
 
 				// Invalidate related cache on mutations
@@ -603,7 +607,11 @@ export class ApiClient implements Disposable {
 		options: RequestOptions,
 		context: RequestContext
 	): Promise<ApiResponse<T>> {
-		const maxRetries = options.retries ?? this.config.retries;
+		const maxRetries =
+			isCrmRequestUrl(this.buildUrl(endpoint, options.params)) &&
+			!['GET', 'HEAD'].includes(options.method ?? 'GET')
+				? 0
+				: (options.retries ?? this.config.retries);
 		let lastError: ApiError | null = null;
 
 		for (let attempt = 0; attempt <= maxRetries; attempt++) {
@@ -670,6 +678,7 @@ export class ApiClient implements Disposable {
 		}
 
 		const url = this.buildUrl(endpoint, processedOptions.params);
+		assertCrmClientRequest(url, processedOptions.method ?? 'GET');
 		const timeout = processedOptions.timeout ?? this.config.timeout;
 
 		// Create abort controller with timeout
@@ -694,6 +703,11 @@ export class ApiClient implements Disposable {
 			});
 
 			clearTimeout(timeoutId);
+			notifyCrmDenial(
+				new URL(url, 'http://localhost').pathname.startsWith('/api/admin/crm/')
+					? response.status
+					: 200
+			);
 
 			// Parse response
 			const responseData = await this.parseResponse<T>(response);

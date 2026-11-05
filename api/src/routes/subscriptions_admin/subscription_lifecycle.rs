@@ -67,7 +67,7 @@ pub(super) async fn cancel_subscription(
 
     let subscription: SubscriptionRow = sqlx::query_as(
         r"
-        UPDATE user_memberships SET status = 'cancelled', cancelled_at = NOW(), updated_at = NOW()
+        UPDATE user_memberships SET status = 'cancelled', cancelled_at = (NOW() AT TIME ZONE 'UTC'), updated_at = (NOW() AT TIME ZONE 'UTC')
         WHERE id = $1
         RETURNING id, user_id, plan_id, status, starts_at, expires_at, cancelled_at,
                   payment_provider, stripe_subscription_id, stripe_customer_id, created_at, updated_at
@@ -94,7 +94,7 @@ pub(super) async fn pause_subscription(
 
     let subscription: SubscriptionRow = sqlx::query_as(
         r"
-        UPDATE user_memberships SET status = 'paused', updated_at = NOW()
+        UPDATE user_memberships SET status = 'paused', updated_at = (NOW() AT TIME ZONE 'UTC')
         WHERE id = $1
         RETURNING id, user_id, plan_id, status, starts_at, expires_at, cancelled_at,
                   payment_provider, stripe_subscription_id, stripe_customer_id, created_at, updated_at
@@ -121,7 +121,7 @@ pub(super) async fn resume_subscription(
 
     let subscription: SubscriptionRow = sqlx::query_as(
         r"
-        UPDATE user_memberships SET status = 'active', updated_at = NOW()
+        UPDATE user_memberships SET status = 'active', updated_at = (NOW() AT TIME ZONE 'UTC')
         WHERE id = $1
         RETURNING id, user_id, plan_id, status, starts_at, expires_at, cancelled_at,
                   payment_provider, stripe_subscription_id, stripe_customer_id, created_at, updated_at
@@ -150,9 +150,9 @@ pub(super) async fn renew_subscription(
         r"
         UPDATE user_memberships SET
             status = 'active',
-            starts_at = NOW(),
-            expires_at = NOW() + INTERVAL '1 month',
-            updated_at = NOW()
+            starts_at = (NOW() AT TIME ZONE 'UTC'),
+            expires_at = (NOW() AT TIME ZONE 'UTC') + INTERVAL '1 month',
+            updated_at = (NOW() AT TIME ZONE 'UTC')
         WHERE id = $1
         RETURNING id, user_id, plan_id, status, starts_at, expires_at, cancelled_at,
                   payment_provider, stripe_subscription_id, stripe_customer_id, created_at, updated_at

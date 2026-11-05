@@ -15,6 +15,7 @@
 		tagsLoading,
 		listsLoading,
 		busy,
+		canReadTags, canReadLists, canAddTag, canRemoveTag, canAddList, canRemoveList,
 		onAddTag,
 		onRemoveTag,
 		onAddList,
@@ -31,6 +32,7 @@
 		tagsLoading: boolean;
 		listsLoading: boolean;
 		busy: boolean;
+		canReadTags: boolean; canReadLists: boolean; canAddTag: boolean; canRemoveTag: boolean; canAddList: boolean; canRemoveList: boolean;
 		onAddTag: () => void;
 		onRemoveTag: (id: string) => void;
 		onAddList: () => void;
@@ -72,9 +74,9 @@
 	<section>
 		<header>
 			<h2>Tags</h2>
-			<button onclick={onAddTag} disabled={busy}>Add tag</button>
+			<button onclick={onAddTag} disabled={busy || !canAddTag}>Add tag</button>
 		</header>
-		{#if tagsLoading}<p role="status">Loading tags…</p>{:else if tagsError}<p role="alert">
+		{#if !canReadTags}<p>Tag assignments are not permitted by your current CRM access.</p>{:else if tagsLoading}<p role="status">Loading tags…</p>{:else if tagsError}<p role="alert">
 				{tagsError}
 			</p>
 			<button onclick={onRefreshTags}>Retry tags</button>{:else if tags.length === 0}<p>
@@ -84,7 +86,7 @@
 						<span style:color={tag.color ?? undefined}>{tag.name}</span>{#if tag.id}<button
 								aria-label={`Remove tag ${tag.name}`}
 								onclick={() => tag.id && onRemoveTag(tag.id)}
-								disabled={busy}>Remove</button
+								disabled={busy || !canRemoveTag}>Remove</button
 							>{:else}<span>Unregistered label; register a matching tag to manage it.</span>{/if}
 					</li>{/each}
 			</ul>{/if}
@@ -92,9 +94,9 @@
 	<section>
 		<header>
 			<h2>Lists</h2>
-			<button onclick={onAddList} disabled={busy}>Add to list</button>
+			<button onclick={onAddList} disabled={busy || !canAddList}>Add to list</button>
 		</header>
-		{#if listsLoading}<p role="status">Loading lists…</p>{:else if listsError}<p role="alert">
+		{#if !canReadLists}<p>List memberships are not permitted by your current CRM access.</p>{:else if listsLoading}<p role="status">Loading lists…</p>{:else if listsError}<p role="alert">
 				{listsError}
 			</p>
 			<button onclick={onRefreshLists}>Retry lists</button>{:else if lists}<p>
@@ -106,7 +108,7 @@
 							><button
 								aria-label={`Remove from list ${list.name}`}
 								onclick={() => onRemoveFromList(list.id)}
-								disabled={busy}>Remove</button
+								disabled={busy || !canRemoveList}>Remove</button
 							>
 						</li>{/each}
 				</ul>{/if}

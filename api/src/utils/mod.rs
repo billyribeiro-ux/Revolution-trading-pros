@@ -43,29 +43,15 @@ pub struct Claims {
     pub iat: i64, // Issued at
     #[serde(default)]
     pub token_type: String, // "access" or "refresh"
-    // SECURITY (FULL_REPO_AUDIT_2026-05-17 P1-2 / security-C1+M3): per-user
-    // token epoch. Every issued token embeds the user's token_version at
-    // mint time. A logout-all / password-reset / ban bumps the user's stored
-    // version; the `User` extractor (middleware/auth.rs) then rejects any
-    // token whose `token_version` is *below* the current stored value. This
-    // closes the window where a stolen access JWT survived "log out all
-    // devices", password-reset and ban for its full TTL (and a stolen
-    // refresh token survived until rotation), because those flows only
-    // deleted Redis `session:*` keys and the single-device `/logout` was the
-    // ONLY thing that blacklisted an access JWT.
-    //
-    // `#[serde(default)]` is load-bearing for backward compatibility:
-    //   - Tokens minted BEFORE this change carry no `tv` field and decode
-    //     with `token_version == 0`. New users start at version 0 too, so
-    //     legacy tokens are accepted until the first bump (a bump moves the
-    //     stored version to >= 1, which then strands every version-0 token).
-    //   - The pre-existing `create_jwt`/`create_refresh_token`/`verify_jwt`
-    //     signatures are intentionally left untouched (they default the
-    //     version to 0) so `tests/utils_test.rs` — which we do not own and
-    //     must not edit — keeps compiling and passing. New code paths use
-    //     the `*_versioned` constructors below.
+    // Exact database epoch at mint time. av:1 makes the PostgreSQL rollout explicit;
+    // tokens without av require a new login and never inherit a Redis epoch guess.
     #[serde(default, rename = "tv")]
     pub token_version: i64,
+    /// Database authority rollout. Tokens without av must authenticate again.
+    #[serde(default, rename = "av")]
+    pub authority_version: u8,
+    #[serde(default, rename = "mfa")]
+    pub mfa_assured: bool,
     #[serde(default)]
     pub jti: String,
 }
@@ -315,6 +301,16 @@ pub fn create_jwt_versioned(
     expires_in_hours: i64,
     token_version: i64,
 ) -> Result<String> {
+    create_jwt_authenticated(user_id, secret, expires_in_hours, token_version, false)
+}
+
+pub fn create_jwt_authenticated(
+    user_id: i64,
+    secret: &str,
+    expires_in_hours: i64,
+    token_version: i64,
+    mfa_assured: bool,
+) -> Result<String> {
     let now = Utc::now();
     let claims = Claims {
         sub: user_id,
@@ -322,6 +318,8 @@ pub fn create_jwt_versioned(
         exp: (now + Duration::hours(expires_in_hours)).timestamp(),
         token_type: "access".to_string(),
         token_version,
+        authority_version: 1,
+        mfa_assured,
         jti: uuid::Uuid::new_v4().to_string(),
     };
 
@@ -353,6 +351,15 @@ pub fn create_refresh_token_versioned(
     secret: &str,
     token_version: i64,
 ) -> Result<String> {
+    create_refresh_token_authenticated(user_id, secret, token_version, false)
+}
+
+pub fn create_refresh_token_authenticated(
+    user_id: i64,
+    secret: &str,
+    token_version: i64,
+    mfa_assured: bool,
+) -> Result<String> {
     let now = Utc::now();
     let claims = Claims {
         sub: user_id,
@@ -360,6 +367,8 @@ pub fn create_refresh_token_versioned(
         exp: (now + Duration::days(7)).timestamp(),
         token_type: "refresh".to_string(),
         token_version,
+        authority_version: 1,
+        mfa_assured,
         jti: uuid::Uuid::new_v4().to_string(),
     };
 

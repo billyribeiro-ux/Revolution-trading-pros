@@ -251,7 +251,7 @@ pub async fn churned_members(
         SELECT u.id, u.name, u.email, u.created_at, u.updated_at
         FROM users u
         JOIN user_memberships us ON u.id = us.user_id
-        WHERE us.status IN ('cancelled', 'expired')
+        WHERE u.deleted_at IS NULL AND COALESCE(LOWER(u.role),'')<>'deleted' AND us.status IN ('cancelled', 'expired')
         AND u.id NOT IN (
             SELECT DISTINCT user_id FROM user_memberships WHERE status = 'active'
         )
@@ -278,7 +278,7 @@ pub async fn churned_members(
         SELECT COUNT(DISTINCT u.id)
         FROM users u
         JOIN user_memberships us ON u.id = us.user_id
-        WHERE us.status IN ('cancelled', 'expired')
+        WHERE u.deleted_at IS NULL AND COALESCE(LOWER(u.role),'')<>'deleted' AND us.status IN ('cancelled', 'expired')
         AND u.id NOT IN (
             SELECT DISTINCT user_id FROM user_memberships WHERE status = 'active'
         )
@@ -343,69 +343,13 @@ pub async fn export_members(
 }
 
 /// GET /admin/members/:id - Get single member details
-#[tracing::instrument(skip(state, _admin))]
+#[tracing::instrument(skip(state, admin))]
 pub async fn show(
-    State(state): State<AppState>,
-    _admin: AdminUser,
-    Path(id): Path<i64>,
-) -> Result<Json<serde_json::Value>, ApiError> {
-    let member: Option<Member> = sqlx::query_as(
-        "SELECT id, name, email, created_at, updated_at
-         FROM users WHERE id = $1",
-    )
-    .bind(id)
-    .fetch_optional(state.db.pool())
-    .await
-    .map_err(|e| ApiError::database_error(&e.to_string()))?;
-
-    match member {
-        Some(m) => {
-            // Subscription info — joined with membership_plans (canonical price + billing_cycle)
-            let subscriptions: Vec<serde_json::Value> = sqlx::query_as::<
-                _,
-                (
-                    i64,
-                    String,
-                    Option<i64>,
-                    Option<String>,
-                    Option<NaiveDateTime>,
-                ),
-            >(
-                r"SELECT um.id, um.status,
-                          (mp.price * 100)::BIGINT AS price_cents,
-                          mp.billing_cycle AS billing_period,
-                          um.created_at
-                   FROM user_memberships um
-                   LEFT JOIN membership_plans mp ON mp.id = um.plan_id
-                   WHERE um.user_id = $1
-                   ORDER BY um.created_at DESC",
-            )
-            .bind(id)
-            .fetch_all(state.db.pool())
-            .await?
-            .into_iter()
-            .map(|(id, status, price_cents, period, created)| {
-                serde_json::json!({
-                    "id": id,
-                    "status": status,
-                    "price_cents": price_cents,
-                    "billing_period": period,
-                    "created_at": created
-                })
-            })
-            .collect();
-
-            Ok(Json(serde_json::json!({
-                "member": m,
-                "subscriptions": subscriptions,
-                "stats": {
-                    "total_subscriptions": subscriptions.len(),
-                    "active_subscriptions": subscriptions.iter().filter(|s| s["status"] == "active").count()
-                }
-            })))
-        }
-        None => Err(ApiError::not_found("Member not found")),
-    }
+    state: State<AppState>,
+    admin: AdminUser,
+    path: Path<i64>,
+) -> Result<axum::response::Response, ApiError> {
+    crate::routes::admin_member_management::read_handlers::show(state, admin, path).await
 }
 
 /// Build the members router

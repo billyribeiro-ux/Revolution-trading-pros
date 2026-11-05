@@ -210,10 +210,18 @@ pub(super) async fn enforce_ip_rate_limit_strict(
 
     // Scope key by bucket + IP so register/forgot/reset are independently throttled.
     let key = format!("{bucket_key}:{ip}");
-    match redis
-        .check_ip_rate_limit(&key, max_requests, window_seconds)
-        .await
-    {
+    let checked = tokio::time::timeout(
+        std::time::Duration::from_secs(3),
+        redis.check_ip_rate_limit(&key, max_requests, window_seconds),
+    )
+    .await
+    .map_err(|_| {
+        (
+            StatusCode::SERVICE_UNAVAILABLE,
+            Json(json!({"error":"Service temporarily unavailable, please try again"})),
+        )
+    })?;
+    match checked {
         Ok(result) => {
             if !result.allowed {
                 tracing::warn!(
@@ -248,46 +256,5 @@ pub(super) async fn enforce_ip_rate_limit_strict(
                 Json(json!({"error": "Service temporarily unavailable, please try again"})),
             ))
         }
-    }
-}
-
-/// Hash a JWT token for blacklist storage
-pub(super) fn hash_token_for_blacklist(token: &str) -> String {
-    use sha2::{Digest, Sha256};
-    let mut hasher = Sha256::new();
-    hasher.update(token.as_bytes());
-    hex::encode(hasher.finalize())
-}
-
-/// SECURITY (FULL_REPO_AUDIT_2026-05-17 P1-2): resolve the user's current
-/// token epoch for embedding into a freshly minted access/refresh token.
-///
-/// Fail-closed contract (mirrors the `User` extractor and the existing
-/// fail-closed Redis paths in this file): if Redis is configured but the
-/// lookup errors we return 503 rather than minting a token at an unknown
-/// epoch — a token minted at the wrong (stale) version would either be
-/// instantly rejected by the extractor (annoying) or, worse, a guessed-too-
-/// low value could mask a real revocation. If Redis is NOT configured the
-/// epoch is 0, which is exactly what the extractor's "Redis absent -> skip
-/// the epoch check" branch expects, so the two stay consistent.
-pub(super) async fn current_token_version(
-    state: &AppState,
-    user_id: i64,
-) -> Result<i64, (StatusCode, Json<serde_json::Value>)> {
-    match state.services.redis.as_ref() {
-        Some(redis) => redis.get_token_version(user_id).await.map_err(|e| {
-            tracing::error!(
-                target: "security_audit",
-                event = "token_version_read_failed_fail_closed",
-                user_id = %user_id,
-                error = %e,
-                "Could not read token epoch; refusing to mint token (fail-closed)"
-            );
-            (
-                StatusCode::SERVICE_UNAVAILABLE,
-                Json(json!({"error": "Service temporarily unavailable, please try again"})),
-            )
-        }),
-        None => Ok(0),
     }
 }

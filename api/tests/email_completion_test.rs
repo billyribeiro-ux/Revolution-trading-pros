@@ -29,14 +29,24 @@ mod email_template_policy_proof;
 mod email_templates_workflows;
 #[path = "support/manager_permissions.rs"]
 mod manager_permissions_proof;
+#[path = "support/member_account_upgrade.rs"]
+mod member_account_upgrade_proof;
+#[path = "support/member_accounts.rs"]
+mod member_accounts_proof;
 #[path = "support/member_campaign_audience.rs"]
 mod member_campaign_audience_proof;
 #[path = "support/member_configuration.rs"]
 mod member_configuration_proof;
+#[path = "support/member_credentials.rs"]
+mod member_credentials_proof;
 #[path = "support/member_current_memberships.rs"]
 mod member_current_memberships_proof;
 #[path = "support/member_exports.rs"]
 mod member_exports_proof;
+#[path = "support/member_operational_utc.rs"]
+mod member_operational_utc_proof;
+#[path = "support/member_profile.rs"]
+mod member_profile_proof;
 #[path = "support/member_segment_analytics.rs"]
 mod member_segment_analytics_proof;
 #[path = "support/member_segments.rs"]
@@ -57,6 +67,8 @@ mod sequence_edges_proof;
 mod sequence_tests_proof;
 #[path = "support/sequence_triggers.rs"]
 mod sequence_triggers_proof;
+#[path = "support/session_revocation.rs"]
+mod session_revocation_proof;
 #[path = "support/smtp_delivery.rs"]
 mod smtp_delivery_proof;
 #[path = "support/smtp.rs"]
@@ -118,6 +130,12 @@ async fn provider(
         .unwrap_or("");
     let scenario = scenario.strip_prefix("[Test] ").unwrap_or(scenario);
     let scenario = match payload["To"].as_str() {
+        Some(email) if email.ends_with("+member-accounts-rejected@example.test") => {
+            "fixture-rejected"
+        }
+        Some(email) if email.ends_with("+member-accounts-unknown@example.test") => {
+            "fixture-unknown"
+        }
         Some("subscriber-rejected@example.test") => "fixture-rejected",
         Some("subscriber-unknown@example.test") => "fixture-unknown",
         _ => scenario,
@@ -893,33 +911,30 @@ async fn cms_datasource_proof(api: &Router, pool: &sqlx::PgPool, tokens: &[Strin
         csv_request(api, &csv_path, &editor_token, csv).await.0,
         StatusCode::FORBIDDEN
     );
-    let actor: i64 =
-        sqlx::query_scalar("SELECT id FROM users WHERE email='admin@email-completion.test'")
-            .fetch_one(pool)
-            .await
-            .unwrap();
     for role in ["super-admin", "superadmin", "SUPER_ADMIN", "developer"] {
-        sqlx::query("UPDATE users SET role=$2 WHERE id=$1")
-            .bind(actor)
-            .bind(role)
-            .execute(pool)
-            .await
-            .unwrap();
+        let actor:i64=sqlx::query_scalar("INSERT INTO users(name,email,password_hash,role) VALUES('CMS role alias probe',$1,'not-a-login-password',$2) RETURNING id").bind(format!("cms-alias-{}@example.test",uuid::Uuid::new_v4())).bind(role).fetch_one(pool).await.unwrap();
+        let token = revolution_api::utils::create_jwt_versioned(
+            actor,
+            &std::env::var("JWT_SECRET").unwrap(),
+            1,
+            0,
+        )
+        .unwrap();
         let saved = request(
             api,
             "PUT",
             &format!("{root}/{id}"),
-            Some(&tokens[0]),
+            Some(&token),
             json!({"description":format!("Alias {role}")}),
         )
         .await;
         assert_eq!(saved.0, StatusCode::OK, "{role}: {saved:?}");
+        sqlx::query("DELETE FROM users WHERE id=$1")
+            .bind(actor)
+            .execute(pool)
+            .await
+            .unwrap();
     }
-    sqlx::query("UPDATE users SET role='admin' WHERE id=$1")
-        .bind(actor)
-        .execute(pool)
-        .await
-        .unwrap();
     let copy = request(
         api,
         "POST",
@@ -1789,8 +1804,17 @@ async fn transactional_receipts_newsletter_and_email_jobs_use_real_adapter_ackno
     seo_sitemaps_proof::proof(&api, &pool, &tokens).await;
     video_privacy_proof::proof(&api, &pool, &tokens).await;
     member_statistics_proof::proof(&api, &pool, &tokens).await;
+    member_operational_utc_proof::proof(&api, &pool, &tokens).await;
+    member_profile_proof::proof(&api, &pool, &tokens, &adapter).await;
+    member_accounts_proof::proof(&api, &pool, &tokens, &adapter).await;
     member_exports_proof::proof(&api, &pool, &tokens).await;
     connections_proof::proof(&api, &pool, &tokens).await;
+    session_revocation_proof::proof(&api, &pool).await;
+    // Credential links are observed by the still-selected controlled Postmark
+    // adapter. The SMTP proof deliberately persists a selected SMTP provider
+    // and then stops its relay; later links must not bypass that selection.
+    // This is the last consumer of the separately owned credential Redis.
+    member_credentials_proof::proof(&pool, &adapter).await;
     smtp_proof::proof(&api, &pool, &tokens, &adapter).await;
     server.abort();
 }

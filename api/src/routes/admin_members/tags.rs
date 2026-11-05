@@ -71,7 +71,7 @@ use crate::{
 use serde_json::Value;
 use sqlx::PgPool;
 macro_rules! tag_sql {
-    ($prefix:literal,$suffix:literal)=>{concat!($prefix,"id,name,slug,color,description,(SELECT COUNT(*)::integer FROM user_member_tags assignment JOIN users member ON member.id=assignment.user_id WHERE assignment.tag_id=member_tags.id AND member.deleted_at IS NULL) AS member_count,(created_at AT TIME ZONE 'UTC') AS created_at,(updated_at AT TIME ZONE 'UTC') AS updated_at",$suffix)};
+    ($prefix:literal,$suffix:literal)=>{concat!($prefix,"id,name,slug,color,description,(SELECT COUNT(*)::integer FROM user_member_tags assignment JOIN users member ON member.id=assignment.user_id WHERE assignment.tag_id=member_tags.id AND member.deleted_at IS NULL AND COALESCE(LOWER(member.role),'')<>'deleted') AS member_count,(created_at AT TIME ZONE 'UTC') AS created_at,(updated_at AT TIME ZONE 'UTC') AS updated_at",$suffix)};
 }
 fn validate(
     name: Option<&str>,
@@ -243,7 +243,7 @@ async fn assign(
         return Err(ApiError::not_found("Member tag"));
     }
     let count: i64 =
-        sqlx::query_scalar("SELECT COUNT(*) FROM users WHERE id=ANY($1) AND deleted_at IS NULL")
+        sqlx::query_scalar("SELECT COUNT(*) FROM users WHERE id=ANY($1) AND deleted_at IS NULL AND COALESCE(LOWER(role),'')<>'deleted'")
             .bind(&users)
             .fetch_one(&mut *tx)
             .await
@@ -252,7 +252,7 @@ async fn assign(
         return Err(ApiError::not_found("Member"));
     }
     let assigned=sqlx::query("INSERT INTO user_member_tags(user_id,tag_id,added_by) SELECT member_id,tag_id,$3 FROM unnest($1::bigint[]) member_id CROSS JOIN unnest($2::bigint[]) tag_id ON CONFLICT(user_id,tag_id) DO NOTHING").bind(&users).bind(&tags).bind(actor).execute(&mut *tx).await.map_err(storage)?.rows_affected();
-    sqlx::query("UPDATE member_tags tag SET usage_count=(SELECT COUNT(*)::integer FROM user_member_tags assignment JOIN users member ON member.id=assignment.user_id WHERE assignment.tag_id=tag.id AND member.deleted_at IS NULL),updated_at=NOW() WHERE tag.id=ANY($1)").bind(&tags).execute(&mut *tx).await.map_err(storage)?;
+    sqlx::query("UPDATE member_tags tag SET usage_count=(SELECT COUNT(*)::integer FROM user_member_tags assignment JOIN users member ON member.id=assignment.user_id WHERE assignment.tag_id=tag.id AND member.deleted_at IS NULL AND COALESCE(LOWER(member.role),'')<>'deleted'),updated_at=NOW() WHERE tag.id=ANY($1)").bind(&tags).execute(&mut *tx).await.map_err(storage)?;
     let rows: Vec<MemberTag> = sqlx::query_as(tag_sql!(
         "SELECT ",
         " FROM member_tags WHERE id=ANY($1) ORDER BY id"
@@ -319,7 +319,7 @@ pub(super) async fn unassign_tag_from_user(
         .await
         .map_err(storage)?
         .rows_affected();
-    sqlx::query("UPDATE member_tags tag SET usage_count=(SELECT COUNT(*)::integer FROM user_member_tags assignment JOIN users member ON member.id=assignment.user_id WHERE assignment.tag_id=tag.id AND member.deleted_at IS NULL),updated_at=NOW() WHERE tag.id=$1").bind(input.tag_id).execute(&mut *tx).await.map_err(storage)?;
+    sqlx::query("UPDATE member_tags tag SET usage_count=(SELECT COUNT(*)::integer FROM user_member_tags assignment JOIN users member ON member.id=assignment.user_id WHERE assignment.tag_id=tag.id AND member.deleted_at IS NULL AND COALESCE(LOWER(member.role),'')<>'deleted'),updated_at=NOW() WHERE tag.id=$1").bind(input.tag_id).execute(&mut *tx).await.map_err(storage)?;
     validation::audit(
         &mut tx,
         admin.0.id,

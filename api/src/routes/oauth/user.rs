@@ -45,9 +45,9 @@ pub(super) async fn create_or_get_oauth_user(
         OAuthProvider::Apple => "apple_id",
     };
 
-    let existing_oauth_user: Option<User> = sqlx::query_as(sqlx::AssertSqlSafe(format!(
-        "SELECT id, email, password_hash, name, role, is_active, email_verified_at, avatar_url, mfa_enabled, created_at, updated_at
-         FROM users WHERE {provider_column} = $1"
+    let existing_oauth_user: Option<serde_json::Value> = sqlx::query_scalar(sqlx::AssertSqlSafe(format!(
+        "SELECT to_jsonb(account) FROM (SELECT id, email, password_hash, name, role, is_active, email_verified_at, avatar_url, mfa_enabled, created_at, updated_at
+         FROM users WHERE {provider_column} = $1 AND deleted_at IS NULL AND COALESCE(LOWER(role),'')<>'deleted') account"
     )))
     .bind(provider_id)
     .fetch_optional(&state.db.pool)
@@ -60,7 +60,9 @@ pub(super) async fn create_or_get_oauth_user(
         )
     })?;
 
-    if let Some(user) = existing_oauth_user {
+    if let Some(value) = existing_oauth_user {
+        let user = crate::services::account_authority::checked_user(value)
+            .map_err(|(status, message)| (status, Json(serde_json::json!({"error":message}))))?;
         if user.is_active == Some(false) {
             return Err((
                 StatusCode::FORBIDDEN,
@@ -83,9 +85,9 @@ pub(super) async fn create_or_get_oauth_user(
     }
 
     // ICT 7: Check if user exists with this email
-    let existing_email_user: Option<User> = sqlx::query_as(
-        "SELECT id, email, password_hash, name, role, is_active, email_verified_at, avatar_url, mfa_enabled, created_at, updated_at
-         FROM users WHERE email = $1"
+    let existing_email_user: Option<serde_json::Value> = sqlx::query_scalar(
+        "SELECT to_jsonb(account) FROM (SELECT id, email, password_hash, name, role, is_active, email_verified_at, avatar_url, mfa_enabled, created_at, updated_at
+         FROM users WHERE email = $1 AND deleted_at IS NULL AND COALESCE(LOWER(role),'')<>'deleted') account"
     )
     .bind(email)
     .fetch_optional(&state.db.pool)
@@ -98,7 +100,9 @@ pub(super) async fn create_or_get_oauth_user(
         )
     })?;
 
-    if let Some(user) = existing_email_user {
+    if let Some(value) = existing_email_user {
+        let user = crate::services::account_authority::checked_user(value)
+            .map_err(|(status, message)| (status, Json(serde_json::json!({"error":message}))))?;
         if user.is_active == Some(false) {
             return Err((
                 StatusCode::FORBIDDEN,
@@ -108,7 +112,7 @@ pub(super) async fn create_or_get_oauth_user(
 
         // ICT 7: Link OAuth to existing account
         let update_query = format!(
-            "UPDATE users SET {provider_column} = $1, oauth_linked_at = COALESCE(oauth_linked_at, NOW()), email_verified_at = COALESCE(email_verified_at, NOW()), updated_at = NOW() WHERE id = $2"
+            "UPDATE users SET {provider_column} = $1, oauth_linked_at = COALESCE(oauth_linked_at, NOW()), email_verified_at = COALESCE(email_verified_at, NOW() AT TIME ZONE 'UTC'), updated_at = NOW() AT TIME ZONE 'UTC' WHERE id = $2"
         );
 
         sqlx::query(sqlx::AssertSqlSafe(update_query.as_str()))
@@ -144,23 +148,10 @@ pub(super) async fn create_or_get_oauth_user(
             "ICT 7 AUDIT: OAuth account linked to existing user"
         );
 
-        // Refresh user data
-        let updated_user: User = sqlx::query_as(
-            "SELECT id, email, password_hash, name, role, is_active, email_verified_at, avatar_url, mfa_enabled, created_at, updated_at
-             FROM users WHERE id = $1"
-        )
-        .bind(user.id)
-        .fetch_one(&state.db.pool)
-        .await
-        .map_err(|e| {
-            tracing::error!("Database error: {}", e);
-            (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Json(serde_json::json!({"error": "Database error"})),
-            )
-        })?;
-
-        return Ok(updated_user);
+        return crate::services::account_authority::current(&state.db.pool, user.id)
+            .await
+            .map(|account| account.user)
+            .map_err(|(status, message)| (status, Json(serde_json::json!({"error":message}))));
     }
 
     // ICT 7: Create new user with OAuth
@@ -184,7 +175,7 @@ pub(super) async fn create_or_get_oauth_user(
             email, password_hash, name, role, email_verified_at, avatar_url,
             {provider_column}, oauth_provider, oauth_linked_at, created_at, updated_at
         )
-        VALUES ($1, $2, $3, 'user', NOW(), $4, $5, $6, NOW(), NOW(), NOW())
+        VALUES ($1, $2, $3, 'user', NOW() AT TIME ZONE 'UTC', $4, $5, $6, NOW(), NOW() AT TIME ZONE 'UTC', NOW() AT TIME ZONE 'UTC')
         RETURNING id, email, password_hash, name, role, email_verified_at, avatar_url, mfa_enabled, created_at, updated_at
         "
     );
@@ -268,22 +259,21 @@ pub(super) async fn create_oauth_auth_response(
     state: &AppState,
     session_id: &str,
 ) -> Result<AuthResponse, (StatusCode, Json<serde_json::Value>)> {
-    let token_version = match state.services.redis.as_ref() {
-        Some(redis) => redis.get_token_version(user.id).await.map_err(|e| {
-            tracing::error!(
-                target: "security_audit",
-                event = "token_version_read_failed_fail_closed",
-                user_id = %user.id,
-                error = %e,
-                "Could not read token epoch; refusing to mint OAuth token (fail-closed)"
-            );
-            (
-                StatusCode::SERVICE_UNAVAILABLE,
-                Json(serde_json::json!({"error": "Service temporarily unavailable, please try again"})),
-            )
-        })?,
-        None => 0,
-    };
+    let account = crate::services::account_authority::current(&state.db.pool, user.id)
+        .await
+        .map_err(|(status, message)| (status, Json(serde_json::json!({"error":message}))))?;
+    let mfa = crate::services::account_authority::require_mfa_state(&account)
+        .map_err(|(status, message)| (status, Json(serde_json::json!({"error":message}))))?;
+    if mfa {
+        return Err((
+            StatusCode::FORBIDDEN,
+            Json(
+                serde_json::json!({"mfa_required":true,"reauthentication_required":true,"error":"Complete password and MFA sign-in. Use password reset first if this account previously used OAuth only."}),
+            ),
+        ));
+    }
+    let token_version = account.version;
+    let user = account.user;
 
     // Create access token
     let token = create_jwt_versioned(

@@ -1,11 +1,14 @@
 <script lang="ts">
 	import { IconX, IconCalendar } from '#lib/icons/index.js';
-	import type { Subscription } from '#lib/api/members.js';
-	import { formatDate } from './helpers';
+	import type { MemberMembership } from '#lib/api/member-profile.js';
+	import { recordedWallClock } from './profile-display.js';
 
 	interface Props {
 		open: boolean;
-		subscription: Subscription | null;
+		subscription: MemberMembership | null;
+		newExpiry: string;
+		onNewExpiryChange: (value: string) => void;
+		error?: string;
 		extendDays: number;
 		extending: boolean;
 		onDaysChange: (value: number) => void;
@@ -13,18 +16,22 @@
 		onExtend: () => void;
 	}
 
-	let { open, subscription, extendDays, extending, onDaysChange, onClose, onExtend }: Props =
-		$props();
+	let {
+		open,
+		subscription,
+		newExpiry,
+		onNewExpiryChange,
+		error = '',
+		extendDays,
+		extending,
+		onDaysChange,
+		onClose,
+		onExtend
+	}: Props = $props();
 
 	// Pre-defined quick-pick values. Bounded set keeps selected-state styling
 	// limited to these six values.
 	const PRESETS = [7, 14, 30, 60, 90, 365] as const;
-
-	let previewDate = $derived.by(() => {
-		if (!subscription) return '';
-		const base = subscription.next_payment ? new Date(subscription.next_payment) : new Date();
-		return formatDate(new Date(base.getTime() + extendDays * 24 * 60 * 60 * 1000).toISOString());
-	});
 </script>
 
 {#if open && subscription}
@@ -37,18 +44,27 @@
 		role="dialog"
 		tabindex="-1"
 		aria-modal="true"
+		aria-label="Extend Membership"
 	>
 		<div class="modal-content" role="document">
 			<div class="modal-header">
 				<h2>Extend Membership</h2>
-				<button class="close-btn" onclick={onClose}>
+				<button class="close-btn" onclick={onClose} aria-label="Close extension dialog">
 					<IconX size={20} />
 				</button>
 			</div>
 			<div class="modal-body">
 				<p class="extend-info">
-					Extending: <strong>{subscription.product || 'Membership'}</strong>
+					Extending: <strong
+						>{subscription.plan_name ?? `Plan #${subscription.plan_id} (name not recorded)`}</strong
+					>
 				</p>
+				<p>Recorded expiry: {recordedWallClock(subscription.expires_at)}</p>
+				<p>
+					Existing historical timestamps have no verified timezone. New expiry writes use
+					operational UTC.
+				</p>
+				{#if error}<p role="alert">{error}</p>{/if}
 				<div class="form-group">
 					<label for="extend-days">Extend by (days)</label>
 					<div class="extend-options">
@@ -57,13 +73,16 @@
 								type="button"
 								class={['extend-option', { selected: extendDays === days }]}
 								onclick={() => onDaysChange(days)}
+								disabled={extending}
 							>
 								{days} days
 							</button>
 						{/each}
 					</div>
-					<input autocomplete="off"
+					<input
+						autocomplete="off"
 						id="extend-days"
+						disabled={extending}
 						name="extend-days"
 						type="number"
 						value={extendDays}
@@ -74,15 +93,32 @@
 						placeholder="Custom days..."
 					/>
 				</div>
+				<div class="form-group">
+					<label for="extend-new-expiry">New expiry (operational UTC)</label><input
+						id="extend-new-expiry"
+						type="datetime-local"
+						step="1"
+						value={newExpiry}
+						disabled={extending}
+						oninput={(event) => onNewExpiryChange(event.currentTarget.value)}
+					/><small
+						>For an open-ended or unrepresentable recorded expiry, choose the new expiry explicitly.
+						Day presets require a finite recorded expiry.</small
+					>
+				</div>
 				<p class="extend-preview">
-					New expiration: <strong>{previewDate}</strong>
+					New expiration: <strong
+						>{newExpiry
+							? `${newExpiry} UTC (operational convention)`
+							: 'Choose a new expiry'}</strong
+					>
 				</p>
 			</div>
 			<div class="modal-footer">
 				<button class="btn-secondary" onclick={onClose}>Cancel</button>
-				<button class="btn-primary" onclick={onExtend} disabled={extending || extendDays < 1}>
+				<button class="btn-primary" onclick={onExtend} disabled={extending || !newExpiry}>
 					<IconCalendar size={18} />
-					{extending ? 'Extending...' : `Extend by ${extendDays} Days`}
+					{extending ? 'Extending...' : 'Save new expiry'}
 				</button>
 			</div>
 		</div>

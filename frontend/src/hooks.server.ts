@@ -1,4 +1,8 @@
 import { building } from '$app/env';
+import { currentCrmPolicy } from '#lib/config/crm-policy.js';
+import { matchCrmPage } from '#lib/crm/policy.js';
+import { crmPagePath, crmRequestContext } from '#lib/server/crm-auth.js';
+import { crmAccessFailure } from '#lib/server/crm-context.js';
 import { SvelteDate } from 'svelte/reactivity';
 import { isAdminRole } from '#lib/config/role-policy.js';
 import { isAuthenticatedPath } from '#lib/config/private-routes.js';
@@ -63,7 +67,10 @@ async function isMaintenanceModeEnabled(): Promise<boolean> {
 		if (res.ok) {
 			const json = await res.json();
 			const mode = (json.data ?? json)?.maintenance_mode as boolean | undefined;
-			_maintenanceModeCache = { value: mode ?? false, expiresAt: now + MAINTENANCE_CACHE_TTL_MS };
+			_maintenanceModeCache = {
+				value: mode ?? false,
+				expiresAt: now + MAINTENANCE_CACHE_TTL_MS
+			};
 			return _maintenanceModeCache.value;
 		}
 	} catch {
@@ -113,7 +120,10 @@ const maintenanceHandler: Handle = async ({ event, resolve }) => {
 			if (accessToken) {
 				try {
 					const res = await fetch(`${API_BASE_URL}/api/auth/me`, {
-						headers: { Authorization: `Bearer ${accessToken}`, Accept: 'application/json' }
+						headers: {
+							Authorization: `Bearer ${accessToken}`,
+							Accept: 'application/json'
+						}
 					});
 					if (res.ok) {
 						const json = await res.json();
@@ -365,13 +375,44 @@ const authHandler: Handle = async ({ event, resolve }) => {
 		headers.set('Retry-After', '5');
 		if (isAdminApi)
 			return Response.json(
-				{ message: 'Authentication service is temporarily unavailable. Please retry.' },
+				{
+					message: 'Authentication service is temporarily unavailable. Please retry.'
+				},
 				{ status: 503, headers }
 			);
 		return new Response('Authentication service is temporarily unavailable. Please retry.', {
 			status: 503,
 			headers
 		});
+	}
+
+	// Current CRM admission is separate from global-admin identity. Never widen native APIs.
+	const crmApi = pathname === '/api/admin/crm' || pathname.startsWith('/api/admin/crm/');
+	const crmPageCandidate = ['/admin/crm', '/admin/contacts', '/crm/contacts', '/crm/deals'].some(
+		(prefix) => pathname === prefix || pathname.startsWith(prefix + '/')
+	);
+	if (crmApi || crmPageCandidate) {
+		try {
+			const compiled = currentCrmPolicy();
+			const page = crmPageCandidate ? matchCrmPage(compiled.policy, crmPagePath(event)) : undefined;
+			if (crmApi || page) {
+				const context = crmRequestContext(event);
+				if (crmApi) {
+					if (
+						pathname === compiled.policy.api_prefix + compiled.policy.capabilities_path &&
+						['GET', 'HEAD'].includes(event.request.method) &&
+						!event.url.search
+					)
+						await context.current();
+					else
+						await context.requireOperation(event.request.method, pathname, event.url.searchParams);
+				} else await context.requirePage(crmPagePath(event));
+				event.locals.crmCapabilities = await context.current();
+				return resolve(event);
+			}
+		} catch (error) {
+			return crmAccessFailure(error);
+		}
 	}
 
 	// Protect the HTML request as well as layout data, including CSR admin pages.
@@ -440,7 +481,22 @@ const securityHeaders: Handle = async ({ event, resolve }) => {
 		privateAuthPath ||
 		event.request.headers.has('Authorization')
 	)
-		headers.set('Cache-Control', 'no-store');
+		headers.set(
+			'Cache-Control',
+			headers.get('Cache-Control')?.includes('private') ? 'private, no-store' : 'no-store'
+		);
+	if (event.locals.crmCapabilities) {
+		headers.set('Cache-Control', 'private, no-store');
+		const vary = new Set(
+			(headers.get('Vary') ?? '')
+				.split(',')
+				.map((value) => value.trim())
+				.filter(Boolean)
+		);
+		vary.add('Authorization');
+		vary.add('Cookie');
+		headers.set('Vary', [...vary].join(', '));
+	}
 
 	// Permissions Policy - disable unnecessary browser features
 	headers.set(

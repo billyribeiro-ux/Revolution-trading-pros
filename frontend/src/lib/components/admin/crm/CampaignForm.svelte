@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { useCrmAccess } from '#lib/crm/access.svelte.js';
+	const access = useCrmAccess();
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { crmAPI } from '#lib/api/crm.js';
@@ -72,6 +74,11 @@
 		}
 	}
 	async function findTemplates() {
+		if (!access.can('GET', '/templates')) {
+			templates = [];
+			error = 'Your role cannot choose CRM templates. You can compose an original email.';
+			return;
+		}
 		if (searching) return;
 		searching = true;
 		error = '';
@@ -96,6 +103,10 @@
 	async function save(event: SubmitEvent) {
 		event.preventDefault();
 		if (saving || !loaded) return;
+		if (!access.can(id ? 'PUT' : 'POST', id ? '/campaigns/{id}' : '/campaigns')) {
+			error = 'Your role cannot save this campaign.';
+			return;
+		}
 		saving = true;
 		error = '';
 		try {

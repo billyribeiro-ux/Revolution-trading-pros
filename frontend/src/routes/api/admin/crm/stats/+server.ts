@@ -10,12 +10,18 @@ import { error } from '@sveltejs/kit';
 
 import type { RequestHandler } from '@sveltejs/kit';
 import { API_BASE_URL, BACKEND_URL } from '$app/env/private';
-import { requireAdmin } from '#lib/server/auth.js';
+import { requireCrmOperation } from '#lib/server/crm-auth.js';
+import { crmAccessFailure } from '#lib/server/crm-context.js';
 const PROD_BACKEND = API_BASE_URL || BACKEND_URL || 'http://localhost:8080';
 
 export const GET: RequestHandler = async (event) => {
 	const backendUrl = PROD_BACKEND;
-	const { token } = requireAdmin(event);
+	let token: string;
+	try {
+		({ token } = await requireCrmOperation(event));
+	} catch (error) {
+		return crmAccessFailure(error);
+	}
 	const authHeader = `Bearer ${token}`;
 
 	// Audit P2 #13: this proxy used to swallow upstream 5xx errors and

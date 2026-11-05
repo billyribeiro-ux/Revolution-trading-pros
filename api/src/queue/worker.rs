@@ -357,6 +357,10 @@ async fn apply_legacy_content(
 
 /// Clean up expired preview tokens
 async fn cleanup_expired_tokens(pool: &PgPool) -> Result<u32> {
+    sqlx::query("DELETE FROM auth_revoked_tokens WHERE expires_at<=NOW()")
+        .execute(pool)
+        .await?;
+
     let result = sqlx::query(
         r"
         DELETE FROM preview_tokens
@@ -429,6 +433,13 @@ pub async fn run(db: Database) {
             }
         }
 
+        if let Err(error) =
+            crate::routes::admin_member_management::account_actions::expire_restrictions(&db.pool)
+                .await
+        {
+            tracing::error!(error=%error.message,"Recorded account restriction expiry failed");
+        }
+
         // Clean up expired tokens every 5 minutes (300 iterations)
         cleanup_counter += 1;
         if cleanup_counter >= 300 {
@@ -440,10 +451,17 @@ pub async fn run(db: Database) {
     }
 }
 
+/// One real worker pass, also driven by the isolated integration proof.
+pub async fn process_account_expirations(db: &Database) -> anyhow::Result<usize> {
+    crate::routes::admin_member_management::account_actions::expire_restrictions(&db.pool)
+        .await
+        .map_err(|error| anyhow::anyhow!("Account expiry storage unavailable: {:?}", error))
+}
+
 /// Claim work atomically; a crashed worker's expired lease can be retried.
 pub async fn process_next_job(db: &Database) -> anyhow::Result<Option<uuid::Uuid>> {
     // An email lease lost after HTTP may already have been accepted. Do not resend it.
-    sqlx::query("UPDATE jobs SET status='failed',error='Email submission outcome is unknown after an expired worker lease; reconcile before retrying',reserved_at=NULL WHERE job_type='send_email' AND status='processing' AND reserved_at<NOW()-INTERVAL '5 minutes'").execute(&db.pool).await?;
+    sqlx::query("UPDATE jobs SET status='failed',error='Email submission outcome is unknown after an expired worker lease; reconcile before retrying',reserved_at=NULL WHERE job_type IN('send_email','member_welcome') AND status='processing' AND reserved_at<NOW()-INTERVAL '5 minutes'").execute(&db.pool).await?;
     sqlx::query("UPDATE jobs SET status='failed',error='Worker lease expired after final attempt',reserved_at=NULL WHERE status='processing' AND reserved_at<NOW()-INTERVAL '5 minutes' AND attempts>=max_attempts")
         .execute(&db.pool).await?;
     let job: Option<Job> = sqlx::query_as(
@@ -476,6 +494,9 @@ async fn process_job(db: &Database, job: &Job) -> anyhow::Result<()> {
     tracing::info!("Processing job: {} ({})", job.id, job.job_type);
 
     match job.job_type.as_str() {
+        "member_welcome" => {
+            crate::routes::admin_member_management::welcome::deliver(&db.pool, job.id).await
+        }
         "send_email" => {
             let to = job.payload["to"].as_str().unwrap_or("");
             let subject = job.payload["subject"].as_str().unwrap_or("");

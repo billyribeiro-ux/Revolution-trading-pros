@@ -30,7 +30,7 @@ pub(super) async fn handle_invoice_paid(
         // 5xx (matching the `handle_subscription_updated` pattern) so the
         // transaction rolls back and Stripe redelivers.
         sqlx::query(
-            "UPDATE user_memberships SET status = 'active', updated_at = NOW() WHERE stripe_subscription_id = $1"
+            "UPDATE user_memberships SET status = 'active', updated_at = (NOW() AT TIME ZONE 'UTC') WHERE stripe_subscription_id = $1"
         )
         .bind(sub_id)
         .execute(&mut **tx)
@@ -95,13 +95,13 @@ pub(super) async fn handle_payment_failed(
             r"UPDATE user_memberships SET
                status = 'past_due',
                grace_period_end = CASE
-                   WHEN grace_period_end IS NULL OR grace_period_end < NOW()
+                   WHEN grace_period_end IS NULL OR grace_period_end < (NOW() AT TIME ZONE 'UTC')
                    THEN $1
                    ELSE grace_period_end
                END,
                payment_failure_count = $2,
                last_payment_failure = NOW(),
-               updated_at = NOW()
+               updated_at = (NOW() AT TIME ZONE 'UTC')
                WHERE stripe_subscription_id = $3",
         )
         .bind(grace_period_end.naive_utc())

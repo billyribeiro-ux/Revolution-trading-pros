@@ -1,3 +1,5 @@
+import { assertCrmClientRequest } from '#lib/crm/request-gate.js';
+import { notifyCrmDenial } from '#lib/crm/denial.js';
 import type {
 	ExportJob,
 	ImportError,
@@ -252,6 +254,7 @@ export async function transferRequest(
 		signal: AbortSignal.timeout(30000)
 	};
 	if (method !== 'GET' && body !== undefined) init.body = multipart ? body : JSON.stringify(body);
+	assertCrmClientRequest(`/api/admin/crm/${endpoint}`, method);
 	let response: Response;
 	try {
 		response = await fetch(`/api/admin/crm/${endpoint}`, init);
@@ -260,6 +263,7 @@ export async function transferRequest(
 			'The transfer service could not confirm the request. Refresh its saved status before retrying.'
 		);
 	}
+	notifyCrmDenial(response.status);
 	if (!response.ok) {
 		const source = await response.text();
 		let message = source;
