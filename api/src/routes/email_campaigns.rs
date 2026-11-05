@@ -1,4 +1,5 @@
 //! Legacy email campaign identities and authoring. Delivery uses the shared outbox.
+mod delivery;
 use crate::{
     AppState,
     middleware::admin::AdminUser,
@@ -55,7 +56,7 @@ struct AbTest {
     subject_b: Option<String>,
     split_percentage: Option<u8>,
 }
-#[derive(Default, Deserialize, Serialize)]
+#[derive(Clone, Default, Deserialize, Serialize)]
 #[serde(default, deny_unknown_fields)]
 struct Config {
     from_name: String,
@@ -191,7 +192,7 @@ impl Input {
 }
 macro_rules! campaign_sql {
  ($before:literal,$after:literal)=>{concat!($before,
- "c.id,c.name,c.subject,c.template_id,c.segment_id,COALESCE(c.html_content,'') AS html_content,c.text_content AS plain_text_content,COALESCE(c.authoring_config->>'from_name','') AS from_name,COALESCE(c.authoring_config->>'from_email','') AS from_email,c.authoring_config->>'reply_to' AS reply_to,COALESCE(c.authoring_config->>'preview_text','') AS preview_text,COALESCE(NULLIF(c.authoring_config->>'type',''),'broadcast') AS type,COALESCE(c.authoring_config->'tags','[]'::jsonb) AS tags,c.authoring_config->'ab_test_config' AS ab_test_config,COALESCE(d.status,c.status,'draft') AS status,COALESCE(d.scheduled_at,c.scheduled_at AT TIME ZONE 'UTC') AS scheduled_at,c.authoring_config->>'planned_at' AS planned_at,COALESCE(d.sent_at,c.sent_at AT TIME ZONE 'UTC') AS sent_at,c.created_by,c.authoring_version,c.created_at AT TIME ZONE 'UTC' AS created_at,c.updated_at AT TIME ZONE 'UTC' AS updated_at,COALESCE(d.recipients_count,0)::bigint AS total_recipients,COALESCE(d.emails_sent,0)::bigint AS sent_count,COALESCE(d.opens,0)::bigint AS opened_count,COALESCE(d.clicks,0)::bigint AS clicked_count,COALESCE((d.delivery_stats->>'bounced')::bigint,0) AS bounced_count,COALESCE((d.delivery_stats->>'unsubscribed')::bigint,0) AS unsubscribed_count,d.open_rate,d.click_rate,'recorded_outbox'::text AS metrics_scope,jsonb_build_object('recipients',c.recipient_count,'sent',c.sent_count,'opened',c.open_count,'clicked',c.click_count,'bounced',c.bounce_count,'unsubscribed',c.unsubscribe_count) AS historical_counts,CASE WHEN t.id IS NULL THEN NULL ELSE jsonb_build_object('id',t.id,'name',t.name) END AS template,CASE WHEN u.id IS NULL THEN NULL ELSE jsonb_build_object('id',u.id,'name',u.name) END AS creator FROM email_campaigns c LEFT JOIN crm_campaigns d ON d.id=c.delivery_campaign_id LEFT JOIN email_templates t ON t.id=c.template_id LEFT JOIN users u ON u.id=c.created_by ",$after)};
+ "c.id,c.name,c.subject,c.template_id,c.segment_id,COALESCE(c.html_content,'') AS html_content,c.text_content AS plain_text_content,COALESCE(c.authoring_config->>'from_name','') AS from_name,COALESCE(c.authoring_config->>'from_email','') AS from_email,c.authoring_config->>'reply_to' AS reply_to,COALESCE(c.authoring_config->>'preview_text','') AS preview_text,COALESCE(NULLIF(c.authoring_config->>'type',''),'broadcast') AS type,COALESCE(c.authoring_config->'tags','[]'::jsonb) AS tags,c.authoring_config->'ab_test_config' AS ab_test_config,COALESCE(d.status,c.status,'draft') AS status,COALESCE(d.scheduled_at,c.scheduled_at AT TIME ZONE 'UTC') AS scheduled_at,c.authoring_config->>'planned_at' AS planned_at,COALESCE(d.sent_at,c.sent_at AT TIME ZONE 'UTC') AS sent_at,c.created_by,c.authoring_version,c.created_at AT TIME ZONE 'UTC' AS created_at,GREATEST(d.updated_at,c.updated_at AT TIME ZONE 'UTC') AS updated_at,COALESCE(d.recipients_count,0)::bigint AS total_recipients,COALESCE(d.emails_sent,0)::bigint AS sent_count,COALESCE(d.opens,0)::bigint AS opened_count,COALESCE(d.clicks,0)::bigint AS clicked_count,COALESCE((d.delivery_stats->>'bounced')::bigint,0) AS bounced_count,COALESCE((d.delivery_stats->>'unsubscribed')::bigint,0) AS unsubscribed_count,d.open_rate,d.click_rate,'recorded_outbox'::text AS metrics_scope,jsonb_build_object('recipients',c.recipient_count,'sent',c.sent_count,'opened',c.open_count,'clicked',c.click_count,'bounced',c.bounce_count,'unsubscribed',c.unsubscribe_count) AS historical_counts,CASE WHEN t.id IS NULL THEN NULL ELSE jsonb_build_object('id',t.id,'name',t.name) END AS template,CASE WHEN u.id IS NULL THEN NULL ELSE jsonb_build_object('id',u.id,'name',u.name) END AS creator FROM email_campaigns c LEFT JOIN crm_campaigns d ON d.id=c.delivery_campaign_id LEFT JOIN email_templates t ON t.id=c.template_id LEFT JOIN users u ON u.id=c.created_by ",$after)};
 }
 async fn row(pool: &PgPool, id: i64) -> Result<Value, ApiError> {
     sqlx::query_scalar(campaign_sql!(
@@ -343,25 +344,62 @@ async fn create(
         json!({"success":true,"data":row(&state.db.pool,id).await?}),
     ))
 }
+async fn lock_row(
+    tx: &mut Transaction<'_, Postgres>,
+    id: i64,
+) -> Result<(Value, Option<i64>, String), ApiError> {
+    // All shared-worker paths lock engine before native identity. A concurrent
+    // first submission is detected after the native lock, without reversing it.
+    let engine: Option<i64> =
+        sqlx::query_scalar("SELECT delivery_campaign_id FROM email_campaigns WHERE id=$1")
+            .bind(id)
+            .fetch_optional(&mut **tx)
+            .await
+            .map_err(db)?
+            .ok_or_else(|| ApiError::not_found("Campaign"))?;
+    let engine_status = if let Some(engine) = engine {
+        Some(
+            sqlx::query_scalar::<_, String>(
+                "SELECT status FROM crm_campaigns WHERE id=$1 FOR UPDATE",
+            )
+            .bind(engine)
+            .fetch_optional(&mut **tx)
+            .await
+            .map_err(db)?
+            .ok_or_else(|| ApiError::not_found("Campaign"))?,
+        )
+    } else {
+        None
+    };
+    let stored:Option<(Value,Option<i64>,String)>=sqlx::query_as("SELECT authoring_config,delivery_campaign_id,COALESCE(status,'draft') FROM email_campaigns WHERE id=$1 FOR UPDATE").bind(id).fetch_optional(&mut **tx).await.map_err(db)?;
+    let (config, current, status) = stored.ok_or_else(|| ApiError::not_found("Campaign"))?;
+    if current != engine {
+        return Err(errors::conflict(
+            "Campaign submission changed; reload before trying again",
+        ));
+    }
+    Ok((config, engine, engine_status.unwrap_or(status)))
+}
+async fn quiescent(
+    tx: &mut Transaction<'_, Postgres>,
+    engine: Option<i64>,
+) -> Result<(), ApiError> {
+    if let Some(engine) = engine {
+        let processing:bool=sqlx::query_scalar("SELECT EXISTS(SELECT 1 FROM crm_campaign_deliveries WHERE campaign_id=$1 AND status='processing')").bind(engine).fetch_one(&mut **tx).await.map_err(db)?;
+        if processing {
+            return Err(errors::conflict(
+                "A provider submission is in flight; pause future sends and refresh after it finishes",
+            ));
+        }
+    }
+    Ok(())
+}
 async fn locked(
     tx: &mut Transaction<'_, Postgres>,
     id: i64,
 ) -> Result<(Value, Option<i64>), ApiError> {
-    let found:Option<(Value,Option<i64>,String)>=sqlx::query_as("SELECT authoring_config,delivery_campaign_id,COALESCE(status,'draft') FROM email_campaigns WHERE id=$1 FOR UPDATE").bind(id).fetch_optional(&mut **tx).await.map_err(db)?;
-    let (config, engine, mut status) = found.ok_or_else(|| ApiError::not_found("Campaign"))?;
-    if let Some(engine) = engine {
-        status = sqlx::query_scalar("SELECT status FROM crm_campaigns WHERE id=$1 FOR UPDATE")
-            .bind(engine)
-            .fetch_one(&mut **tx)
-            .await
-            .map_err(db)?;
-        let processing:bool=sqlx::query_scalar("SELECT EXISTS(SELECT 1 FROM crm_campaign_deliveries WHERE campaign_id=$1 AND status='processing')").bind(engine).fetch_one(&mut **tx).await.map_err(db)?;
-        if processing {
-            return Err(errors::conflict(
-                "Provider submission is in flight; reload after it finishes",
-            ));
-        }
-    }
+    let (config, engine, status) = lock_row(tx, id).await?;
+    quiescent(tx, engine).await?;
     if !matches!(status.as_str(), "draft" | "paused" | "failed") {
         return Err(errors::conflict(
             "Pause before editing; duplicate a sent campaign",
@@ -369,6 +407,7 @@ async fn locked(
     }
     Ok((config, engine))
 }
+
 async fn update(
     State(state): State<AppState>,
     admin: AdminUser,
@@ -380,6 +419,20 @@ async fn update(
     let (stored, engine) = locked(&mut tx, id).await?;
     let config: Config = serde_json::from_value(stored)
         .map_err(|_| ApiError::database_error("Stored campaign configuration is invalid"))?;
+    let old_ab = config.ab_test_config.as_ref().is_some_and(|ab| ab.enabled);
+    let delivery_change = input.subject.is_some()
+        || input.template_id.is_some()
+        || input.segment_id.is_some()
+        || input.html_content.is_some()
+        || input.plain_text_content.is_some()
+        || input.from_name.is_some()
+        || input.from_email.is_some()
+        || input.reply_to.is_some()
+        || input.preview_text.is_some()
+        || input.kind.is_some()
+        || input.tags.is_some()
+        || input.ab_test_config.is_some()
+        || input.scheduled_at.is_some();
     let name = input.name.clone();
     let subject = input.subject.clone();
     let template = input.template_id;
@@ -387,12 +440,23 @@ async fn update(
     let html = input.html_content.clone();
     let plain = input.plain_text_content.clone();
     let config = input.merge(config)?;
+    if delivery_change && (old_ab || config.ab_test_config.as_ref().is_some_and(|ab| ab.enabled)) {
+        if let Some(engine) = engine {
+            let accepted:bool=sqlx::query_scalar("SELECT EXISTS(SELECT 1 FROM crm_campaign_deliveries WHERE campaign_id=$1 AND accepted_at IS NOT NULL)").bind(engine).fetch_one(&mut *tx).await.map_err(db)?;
+            if accepted {
+                return Err(errors::conflict(
+                    "Duplicate a started A/B campaign before changing its creative or audience",
+                ));
+            }
+        }
+    }
+
     let content = references(&mut tx, template.flatten(), segment.flatten()).await?;
     let html = html.or_else(|| content.as_ref().map(|v| v.0.clone()));
     let plain = plain.or_else(|| content.map(|v| v.1));
     sqlx::query("UPDATE email_campaigns SET name=COALESCE($2,name),subject=COALESCE($3,subject),template_id=CASE WHEN $4 THEN $5 ELSE template_id END,segment_id=CASE WHEN $6 THEN $7 ELSE segment_id END,html_content=COALESCE($8,html_content),text_content=CASE WHEN $9 THEN $10 ELSE text_content END,authoring_config=$11,authoring_version=authoring_version+1,updated_at=NOW() AT TIME ZONE 'UTC' WHERE id=$1").bind(id).bind(name.as_deref().map(str::trim)).bind(subject).bind(template.is_some()).bind(template.flatten()).bind(segment.is_some()).bind(segment.flatten()).bind(html).bind(plain.is_some()).bind(plain.flatten()).bind(json!(config)).execute(&mut *tx).await.map_err(db)?;
     if let Some(engine) = engine {
-        sqlx::query("UPDATE crm_campaigns SET authoring_version=authoring_version+1,updated_at=NOW() WHERE id=$1").bind(engine).execute(&mut *tx).await.map_err(db)?;
+        delivery::synchronize(&mut tx, id, engine).await?;
     }
     record(&mut tx, admin.0.id, id, "Email campaign updated").await?;
     tx.commit().await.map_err(db)?;
@@ -458,4 +522,5 @@ pub fn router() -> Router<AppState> {
         .route("/{id}/preview", get(preview))
         .route("/{id}", get(get_one).put(update).delete(delete))
         .route("/{id}/duplicate", post(duplicate))
+        .merge(delivery::router())
 }

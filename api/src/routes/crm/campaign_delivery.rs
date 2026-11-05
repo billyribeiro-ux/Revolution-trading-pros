@@ -96,6 +96,7 @@ pub(crate) async fn freeze_on(
             "An email submission has an unknown outcome; reconcile it with the provider before resuming",
         ));
     }
+    audience.lock_member_definition(tx).await?;
     let ab = &campaign["ab_test_config"];
     let enabled = ab["enabled"].as_bool().unwrap_or(false);
     let subject_b = ab["subject_b"].as_str().unwrap_or("");

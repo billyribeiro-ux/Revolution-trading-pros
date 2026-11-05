@@ -9,7 +9,7 @@ use serde::Deserialize;
 use serde_json::{Value, json};
 
 macro_rules! campaign_sql {
-    ($before:literal,$after:literal)=>{concat!($before,"id::text AS id,COALESCE(title,name) AS title,subject,subject AS email_subject,content AS email_body,text_body,status,campaign_type AS type,email_pre_header,design_template,template_id::text AS template_id,template_config,settings,subscriber_settings,utm_settings,email_template_id::text AS email_template_id,ab_test_config,(SELECT e.id FROM email_campaigns e WHERE e.delivery_campaign_id=crm_campaigns.id) AS native_email_campaign_id,created_by::text AS created_by,scheduled_at,sent_at,recipients_count,emails_sent,emails_sent AS sent_count,opens,opens AS open_count,clicks,clicks AS click_count,open_rate,click_rate,failed_count,last_error,pause_reason,delivery_stats,authoring_version,created_at,updated_at",$after)};
+    ($before:literal,$after:literal)=>{concat!($before,"id::text AS id,COALESCE(title,name) AS title,subject,subject AS email_subject,content AS email_body,text_body,status,campaign_type AS type,email_pre_header,design_template,template_id::text AS template_id,template_config,settings,subscriber_settings,utm_settings,email_template_id::text AS email_template_id,ab_test_config,native_email_campaign_id,created_by::text AS created_by,scheduled_at,sent_at,recipients_count,emails_sent,emails_sent AS sent_count,opens,opens AS open_count,clicks,clicks AS click_count,open_rate,click_rate,failed_count,last_error,pause_reason,delivery_stats,authoring_version,created_at,updated_at",$after)};
 }
 
 fn db(error: sqlx::Error) -> ApiError {

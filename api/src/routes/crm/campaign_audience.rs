@@ -97,7 +97,7 @@ async fn resolve_filters(
     }
     Ok(result)
 }
-pub(super) async fn resolve(
+pub(crate) async fn resolve(
     pool: &PgPool,
     value: Option<Value>,
 ) -> Result<ResolvedAudience, ApiError> {
@@ -219,6 +219,20 @@ fn append_filters(query: &mut QueryBuilder<Postgres>, filters: &[ResolvedFilter]
 impl ResolvedAudience {
     pub(super) fn is_newsletter(&self) -> bool {
         self.newsletter_segment.is_some()
+    }
+    pub(super) async fn lock_member_definition(
+        &self,
+        connection: &mut sqlx::PgConnection,
+    ) -> Result<(), ApiError> {
+        if let Some((id, definition)) = &self.member_segment {
+            let current:Option<(i64,bool)>=sqlx::query_as("SELECT authoring_version,COALESCE(is_active,false) FROM member_segments WHERE id=$1 FOR SHARE").bind(id).fetch_optional(connection).await.map_err(db)?;
+            if current != Some((definition.version, true)) {
+                return Err(crate::utils::errors::conflict(
+                    "Member segment changed; reload before submitting",
+                ));
+            }
+        }
+        Ok(())
     }
     pub(super) fn is_member(&self) -> bool {
         self.members
