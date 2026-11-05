@@ -14,12 +14,12 @@
 
 	interface Props {
 		links: TopLink[];
-		uniqueOpens: number;
+		accepted: number;
 		formatNumber: (num: number) => string;
 		truncateUrl: (url: string, maxLength?: number) => string;
 	}
 
-	const { links, uniqueOpens, formatNumber, truncateUrl }: Props = $props();
+	const { links, accepted, formatNumber, truncateUrl }: Props = $props();
 </script>
 
 <section class="glass-panel links-panel" in:fly={{ y: 20, duration: 500, delay: 250 }}>
@@ -36,6 +36,7 @@
 	</div>
 
 	<div class="links-table">
+		{#if !links.length}<p>No recorded link clicks.</p>{/if}
 		<div class="links-header">
 			<span class="link-col url-col">URL</span>
 			<span class="link-col clicks-col">Total Clicks</span>
@@ -43,7 +44,7 @@
 			<span class="link-col rate-col">Click Rate</span>
 		</div>
 		{#each links as link, i (link.url)}
-			{@const clickRate = (link.unique_clicks / uniqueOpens) * 100 || 0}
+			{@const clickRate = accepted > 0 ? (link.unique_clicks / accepted) * 100 : null}
 			<div class="link-row" in:fly={{ x: -10, duration: 300, delay: 300 + i * 50 }}>
 				<span class="link-col url-col">
 					<span class="link-rank">{i + 1}</span>
@@ -54,7 +55,7 @@
 				<span class="link-col clicks-col">{formatNumber(link.clicks)}</span>
 				<span class="link-col unique-col">{formatNumber(link.unique_clicks)}</span>
 				<span class="link-col rate-col">
-					<span class="click-rate">{clickRate.toFixed(1)}%</span>
+					<span class="click-rate">{clickRate === null ? '—' : `${clickRate.toFixed(1)}%`}</span>
 				</span>
 			</div>
 		{/each}

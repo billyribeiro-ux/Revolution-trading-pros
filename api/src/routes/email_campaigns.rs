@@ -1,5 +1,6 @@
 //! Legacy email campaign identities and authoring. Delivery uses the shared outbox.
 mod delivery;
+mod reports;
 use crate::{
     AppState,
     middleware::admin::AdminUser,
@@ -451,7 +452,16 @@ async fn update(
         }
     }
 
+    let previous_template: Option<i64> =
+        sqlx::query_scalar("SELECT template_id FROM email_campaigns WHERE id=$1")
+            .bind(id)
+            .fetch_one(&mut *tx)
+            .await
+            .map_err(db)?;
     let content = references(&mut tx, template.flatten(), segment.flatten()).await?;
+    // A form may include the unchanged reference. Its saved creative remains
+    // authoritative until the author selects a different physical template.
+    let content = content.filter(|_| template.flatten() != previous_template);
     let html = html.or_else(|| content.as_ref().map(|v| v.0.clone()));
     let plain = plain.or_else(|| content.map(|v| v.1));
     sqlx::query("UPDATE email_campaigns SET name=COALESCE($2,name),subject=COALESCE($3,subject),template_id=CASE WHEN $4 THEN $5 ELSE template_id END,segment_id=CASE WHEN $6 THEN $7 ELSE segment_id END,html_content=COALESCE($8,html_content),text_content=CASE WHEN $9 THEN $10 ELSE text_content END,authoring_config=$11,authoring_version=authoring_version+1,updated_at=NOW() AT TIME ZONE 'UTC' WHERE id=$1").bind(id).bind(name.as_deref().map(str::trim)).bind(subject).bind(template.is_some()).bind(template.flatten()).bind(segment.is_some()).bind(segment.flatten()).bind(html).bind(plain.is_some()).bind(plain.flatten()).bind(json!(config)).execute(&mut *tx).await.map_err(db)?;
@@ -523,4 +533,5 @@ pub fn router() -> Router<AppState> {
         .route("/{id}", get(get_one).put(update).delete(delete))
         .route("/{id}/duplicate", post(duplicate))
         .merge(delivery::router())
+        .merge(reports::router())
 }

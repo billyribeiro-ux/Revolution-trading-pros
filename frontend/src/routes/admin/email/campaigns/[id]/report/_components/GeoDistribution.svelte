@@ -30,17 +30,18 @@
 			</div>
 			<div>
 				<h3>Geographic Distribution</h3>
-				<span class="panel-subtitle">Where your subscribers are located</span>
+				<span class="panel-subtitle">Only geography supplied with recorded observations</span>
 			</div>
 		</div>
 	</div>
 
 	<div class="geo-list">
-		{#each distribution.slice(0, 8) as geo, i (geo.country_code)}
+		{#if !distribution.length}<p>No geographic observations supplied.</p>{/if}
+		{#each distribution.slice(0, 8) as geo, i (`${geo.country_code}:${geo.country}`)}
 			{const maxOpens = distribution[0]?.opens || 1}
 			<div class="geo-row" in:fly={{ x: 10, duration: 300, delay: 350 + i * 40 }}>
 				<div class="geo-info">
-					<span class="geo-flag">{getFlagEmoji(geo.country_code)}</span>
+					<span class="geo-flag">{getFlagEmoji(`${geo.country_code}:${geo.country}`)}</span>
 					<span class="geo-country">{geo.country}</span>
 				</div>
 				<div class="geo-stats">

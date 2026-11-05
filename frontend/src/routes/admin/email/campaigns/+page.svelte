@@ -46,6 +46,9 @@
 		deleteCampaign as apiDeleteCampaign,
 		duplicateCampaign as apiDuplicateCampaign,
 		sendCampaign,
+		scheduleCampaign,
+		pauseCampaign,
+		resumeCampaign,
 		cancelCampaign,
 		type Campaign as APICampaign,
 		type CampaignStats
@@ -71,6 +74,7 @@
 	let templatesError = $state('');
 	let segmentsError = $state('');
 	let creating = $state(false);
+	let actionPending = $state<number | null>(null);
 	let currentPage = $state(1);
 	let total = $state(0);
 	let totalPages = $state(1);
@@ -126,8 +130,51 @@
 	// Old code (kept for one revision per FIX-2026-04-26 marker — delete in follow-up):
 	onMount(() => {
 		void initializeData();
+		let polling = false;
+		let refreshedAt = Date.now();
+		const timer = setInterval(() => {
+			const delay = campaigns.some((c) => c.status === 'sending')
+				? 5000
+				: campaigns.some((c) => c.status === 'scheduled')
+					? 15000
+					: 0;
+			if (!delay || polling || loading || Date.now() - refreshedAt < delay) return;
+			polling = true;
+			refreshedAt = Date.now();
+			void Promise.all([loadCampaigns(), loadStats()]).finally(() => {
+				polling = false;
+			});
+		}, 5000);
+		return () => clearInterval(timer);
 	});
-
+	async function campaignAction(
+		id: number,
+		action: (id: number) => Promise<APICampaign>,
+		message: string
+	) {
+		if (actionPending !== null) return;
+		actionPending = id;
+		try {
+			const result = await action(id);
+			toastStore.success(`${message}. Current status: ${result.status}.`);
+		} catch (error) {
+			toastStore.error(error instanceof Error ? error.message : 'Campaign action failed');
+		} finally {
+			actionPending = null;
+			await Promise.all([loadCampaigns(), loadStats()]);
+		}
+	}
+	async function scheduleSaved(campaign: APICampaign) {
+		if (!campaign.planned_at) {
+			toastStore.error('Choose a requested time before scheduling');
+			return;
+		}
+		await campaignAction(
+			campaign.id,
+			(id) => scheduleCampaign(id, campaign.planned_at ?? ''),
+			'Campaign scheduled'
+		);
+	}
 	async function initializeData() {
 		await Promise.allSettled([
 			connections.load(),
@@ -278,9 +325,26 @@
 					: null
 			};
 
-			await createCampaign(campaignData);
+			if (campaignData.scheduled_at && new Date(campaignData.scheduled_at).getTime() <= Date.now())
+				throw new Error('Choose a future time to schedule this campaign');
+			const saved = await createCampaign(campaignData);
 			showCreateModal = false;
-			toastStore.success('Campaign created successfully');
+			activeTab = 'drafts';
+			currentPage = 1;
+			search = '';
+			if (campaignData.scheduled_at) {
+				try {
+					const submitted = await scheduleCampaign(saved.id, campaignData.scheduled_at);
+					activeTab = submitted.status === 'scheduled' ? 'scheduled' : 'all';
+					toastStore.success(`Campaign scheduled. Current status: ${submitted.status}.`);
+				} catch (error) {
+					toastStore.error(
+						`Draft saved. Scheduling was not confirmed. Refresh its status before retrying: ${error instanceof Error ? error.message : 'Refresh and try again'}`
+					);
+				}
+			} else {
+				toastStore.success('Campaign draft saved');
+			}
 
 			// Reset form
 			newCampaign = {
@@ -348,13 +412,7 @@
 		showSendModal = false;
 		const id = pendingCampaignId;
 		pendingCampaignId = null;
-		try {
-			await sendCampaign(id);
-			toastStore.success('Campaign is being sent');
-			await Promise.all([loadCampaigns(), loadStats()]);
-		} catch (err) {
-			toastStore.error(err instanceof Error ? err.message : 'Failed to send campaign');
-		}
+		await campaignAction(id, sendCampaign, 'Campaign submitted');
 	}
 
 	function handleCancelCampaign(id: number) {
@@ -367,13 +425,7 @@
 		showCancelModal = false;
 		const id = pendingCampaignId;
 		pendingCampaignId = null;
-		try {
-			await cancelCampaign(id);
-			toastStore.success('Campaign cancelled');
-			await Promise.all([loadCampaigns(), loadStats()]);
-		} catch (err) {
-			toastStore.error(err instanceof Error ? err.message : 'Failed to cancel campaign');
-		}
+		await campaignAction(id, cancelCampaign, 'Campaign cancelled');
 	}
 
 	// Helper to get segment name
@@ -546,6 +598,13 @@
 								>({formatNumber(campaign.total_recipients)} submitted recipients)</span
 							>
 						</div>
+						{#if campaign.status === 'draft' && campaign.planned_at}
+							<div class="meta-item">
+								<IconCalendar size={16} /><span
+									>Requested: {formatDate(campaign.planned_at)} · Draft not submitted</span
+								>
+							</div>
+						{/if}
 						{#if campaign.scheduled_at}
 							<div class="meta-item">
 								<IconCalendar size={16} />
@@ -611,6 +670,12 @@
 
 					<div class="campaign-actions">
 						{#if campaign.status === 'draft'}
+							{#if campaign.planned_at}<button
+									class="btn-secondary small"
+									disabled={actionPending !== null}
+									onclick={() => scheduleSaved(campaign)}
+									><IconCalendar size={16} />Schedule requested time</button
+								>{/if}
 							<button class="btn-primary small" onclick={() => handleSendCampaign(campaign.id)}>
 								<IconSend size={16} />
 								Send Now
@@ -626,7 +691,13 @@
 							>
 								<IconTrash size={16} />
 							</button>
-						{:else if campaign.status === 'scheduled'}
+						{:else if campaign.status === 'scheduled' || campaign.status === 'sending'}
+							<button
+								class="btn-secondary small"
+								disabled={actionPending !== null}
+								onclick={() => campaignAction(campaign.id, pauseCampaign, 'Future sends paused')}
+								>Pause future sends</button
+							>
 							<button class="btn-secondary small" onclick={() => handleCancelCampaign(campaign.id)}>
 								<IconX size={16} />
 								Cancel
@@ -636,6 +707,18 @@
 								Duplicate
 							</button>
 						{:else}
+							{#if campaign.status === 'paused' || campaign.status === 'failed'}
+								<button
+									class="btn-primary small"
+									disabled={actionPending !== null}
+									onclick={() => campaignAction(campaign.id, resumeCampaign, 'Campaign submitted')}
+									>Resume</button
+								>
+								<button
+									class="btn-secondary small"
+									onclick={() => handleCancelCampaign(campaign.id)}>Cancel</button
+								>
+							{/if}
 							<button class="btn-secondary small" onclick={() => viewCampaignReport(campaign)}>
 								<IconChartBar size={16} />
 								View Report
@@ -653,7 +736,7 @@
 				<div class="empty-state">
 					<IconMail size={48} stroke={1} />
 					<h3>No campaigns found</h3>
-					<p>Create your first email campaign to get started</p>
+					<p>Create a campaign or change the current filters</p>
 					<button class="btn-primary" onclick={() => (showCreateModal = true)}>
 						<IconPlus size={18} />
 						Create Campaign
@@ -845,7 +928,7 @@
 <ConfirmationModal
 	isOpen={showSendModal}
 	title="Send Campaign"
-	message="Send this campaign now? It will be delivered to all recipients."
+	message="Submit this campaign now to confirmed subscribers in its selected audience?"
 	confirmText="Send Now"
 	variant="info"
 	onConfirm={confirmSendCampaign}
@@ -858,7 +941,7 @@
 <ConfirmationModal
 	isOpen={showCancelModal}
 	title="Cancel Campaign"
-	message="Cancel this scheduled campaign? It will not be sent."
+	message="Stop future submissions for this campaign? Previously accepted messages cannot be recalled."
 	confirmText="Cancel Campaign"
 	variant="warning"
 	onConfirm={confirmCancelCampaign}

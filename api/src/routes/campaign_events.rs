@@ -154,7 +154,32 @@ async fn receive(
         ]))
         .map_err(|_| bad("Invalid provider event"))?,
     ));
-    let details = json!({"stream":stream,"suppressed":suppress,"reason":body["SuppressionReason"].as_str().filter(|v|v.len()<=100 && !v.contains('\0'))});
+    // Keep only bounded provider observations needed by the established report.
+    // No raw IP address, coordinates or user agent is retained here.
+    let observed = |value: &Value, limit: usize| {
+        value
+            .as_str()
+            .filter(|v| !v.is_empty() && v.len() <= limit && !v.chars().any(char::is_control))
+            .map(str::to_owned)
+    };
+    let original_link = observed(&body["OriginalLink"], 4096).filter(|value| {
+        reqwest::Url::parse(value).is_ok_and(|url| {
+            matches!(url.scheme(), "http" | "https")
+                && url.host_str().is_some()
+                && url.username().is_empty()
+                && url.password().is_none()
+        })
+    });
+    let country_code = observed(&body["Geo"]["CountryISOCode"], 2)
+        .filter(|v| v.len() == 2 && v.bytes().all(|b| b.is_ascii_alphabetic()))
+        .map(|v| v.to_ascii_uppercase());
+    let details = json!({"stream":stream,"suppressed":suppress,
+        "reason":observed(&body["SuppressionReason"],100),
+        "original_link":original_link,"platform":observed(&body["Platform"],50),
+        "client":observed(&body["Client"]["Name"],200),
+        "country":observed(&body["Geo"]["Country"],100),"country_code":country_code,
+        "bounce_type":if record == "Bounce" {observed(&body["Type"],100)} else {None}
+    });
     let inserted=sqlx::query("INSERT INTO crm_campaign_events(fingerprint,delivery_id,recipient_email,provider_message_id,record_type,occurred_at,details) VALUES($1,$2,$3,$4,$5,$6,$7) ON CONFLICT(fingerprint) DO NOTHING").bind(fingerprint).bind(delivery.as_ref().map(|v|v.0)).bind(&email).bind(message).bind(record).bind(occurred).bind(details).execute(&mut *tx).await.map_err(db)?;
     if inserted.rows_affected() == 0 {
         return Ok(Json(json!({"status":"duplicate"})));

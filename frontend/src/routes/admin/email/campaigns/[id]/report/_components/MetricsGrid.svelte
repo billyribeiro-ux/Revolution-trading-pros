@@ -3,6 +3,7 @@
 	Extracted from +page.svelte (R22-C) — read-only display, 0 binds.
 -->
 <script lang="ts">
+	import { formatCampaignRate } from '#lib/api/campaign-report.js';
 	import { fly, scale } from 'svelte/transition';
 	import {
 		IconSend,
@@ -23,11 +24,11 @@
 	}
 
 	interface Rates {
-		delivery_rate: number;
-		unique_open_rate: number;
-		unique_click_rate: number;
-		bounce_rate: number;
-		unsubscribe_rate: number;
+		delivery_rate: number | null;
+		unique_open_rate: number | null;
+		unique_click_rate: number | null;
+		bounce_rate: number | null;
+		unsubscribe_rate: number | null;
 	}
 
 	interface Props {
@@ -47,7 +48,7 @@
 			</div>
 			<div class="metric-content">
 				<span class="metric-value">{formatNumber(metrics.sent)}</span>
-				<span class="metric-label">Emails Sent</span>
+				<span class="metric-label">Provider Accepted</span>
 			</div>
 		</div>
 
@@ -57,8 +58,8 @@
 			</div>
 			<div class="metric-content">
 				<span class="metric-value">{formatNumber(metrics.delivered)}</span>
-				<span class="metric-label">Delivered</span>
-				<span class="metric-rate">{rates.delivery_rate.toFixed(1)}%</span>
+				<span class="metric-label">Recorded Deliveries</span>
+				<span class="metric-rate">{formatCampaignRate(rates.delivery_rate, 1)}</span>
 			</div>
 		</div>
 
@@ -69,7 +70,7 @@
 			<div class="metric-content">
 				<span class="metric-value">{formatNumber(metrics.unique_opens)}</span>
 				<span class="metric-label">Unique Opens</span>
-				<span class="metric-rate">{rates.unique_open_rate.toFixed(1)}%</span>
+				<span class="metric-rate">{formatCampaignRate(rates.unique_open_rate, 1)}</span>
 			</div>
 		</div>
 
@@ -80,7 +81,7 @@
 			<div class="metric-content">
 				<span class="metric-value">{formatNumber(metrics.unique_clicks)}</span>
 				<span class="metric-label">Unique Clicks</span>
-				<span class="metric-rate">{rates.unique_click_rate.toFixed(1)}%</span>
+				<span class="metric-rate">{formatCampaignRate(rates.unique_click_rate, 1)}</span>
 			</div>
 		</div>
 
@@ -91,7 +92,7 @@
 			<div class="metric-content">
 				<span class="metric-value">{formatNumber(metrics.bounced)}</span>
 				<span class="metric-label">Bounced</span>
-				<span class="metric-rate">{rates.bounce_rate.toFixed(1)}%</span>
+				<span class="metric-rate">{formatCampaignRate(rates.bounce_rate, 1)}</span>
 			</div>
 		</div>
 
@@ -102,7 +103,7 @@
 			<div class="metric-content">
 				<span class="metric-value">{formatNumber(metrics.unsubscribed)}</span>
 				<span class="metric-label">Unsubscribed</span>
-				<span class="metric-rate">{rates.unsubscribe_rate.toFixed(2)}%</span>
+				<span class="metric-rate">{formatCampaignRate(rates.unsubscribe_rate, 2)}</span>
 			</div>
 		</div>
 	</div>

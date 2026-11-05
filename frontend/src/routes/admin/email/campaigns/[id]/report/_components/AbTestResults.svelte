@@ -3,6 +3,7 @@
 	Extracted from +page.svelte (R22-C) — read-only display, 0 binds.
 -->
 <script lang="ts">
+	import { formatCampaignRate } from '#lib/api/campaign-report.js';
 	import { fly } from 'svelte/transition';
 	import { IconChartBar } from '#lib/icons/index.js';
 
@@ -10,9 +11,9 @@
 		subject: string;
 		sent: number;
 		opens: number;
-		open_rate: number;
+		open_rate: number | null;
 		clicks: number;
-		click_rate: number;
+		click_rate: number | null;
 	}
 
 	interface AbResults {
@@ -38,7 +39,9 @@
 			</div>
 			<div>
 				<h3>A/B Test Results</h3>
-				<span class="panel-subtitle">Subject line performance comparison</span>
+				<span class="panel-subtitle"
+					>Recorded subject variants; no statistical winner has been declared</span
+				>
 			</div>
 		</div>
 		{#if results.winner}
@@ -56,11 +59,11 @@
 			</div>
 			<div class="variant-stats">
 				<div class="variant-stat">
-					<span class="stat-value">{results.variant_a.open_rate.toFixed(1)}%</span>
+					<span class="stat-value">{formatCampaignRate(results.variant_a.open_rate)}</span>
 					<span class="stat-label">Open Rate</span>
 				</div>
 				<div class="variant-stat">
-					<span class="stat-value">{results.variant_a.click_rate.toFixed(1)}%</span>
+					<span class="stat-value">{formatCampaignRate(results.variant_a.click_rate)}</span>
 					<span class="stat-label">Click Rate</span>
 				</div>
 				<div class="variant-stat">
@@ -77,11 +80,11 @@
 			</div>
 			<div class="variant-stats">
 				<div class="variant-stat">
-					<span class="stat-value">{results.variant_b.open_rate.toFixed(1)}%</span>
+					<span class="stat-value">{formatCampaignRate(results.variant_b.open_rate)}</span>
 					<span class="stat-label">Open Rate</span>
 				</div>
 				<div class="variant-stat">
-					<span class="stat-value">{results.variant_b.click_rate.toFixed(1)}%</span>
+					<span class="stat-value">{formatCampaignRate(results.variant_b.click_rate)}</span>
 					<span class="stat-label">Click Rate</span>
 				</div>
 				<div class="variant-stat">

@@ -7,6 +7,8 @@ mod connections_proof;
 mod crm_webhook_proof;
 #[path = "support/email_campaign_authoring.rs"]
 mod email_campaign_authoring_proof;
+#[path = "support/email_campaign_delivery.rs"]
+mod email_campaign_delivery_proof;
 #[path = "support/email_subscribers.rs"]
 mod email_subscriber_proof;
 #[path = "support/email_template_catalog.rs"]
@@ -1726,6 +1728,7 @@ async fn transactional_receipts_newsletter_and_email_jobs_use_real_adapter_ackno
     member_current_memberships_proof::proof(&api, &pool, &tokens).await;
     member_campaign_audience_proof::proof(&api, &pool, &tokens, &adapter).await;
     email_campaign_authoring_proof::proof(&api, &pool, &tokens).await;
+    email_campaign_delivery_proof::proof(&api, &pool, &tokens, &adapter).await;
     connections_proof::proof(&api, &pool, &tokens).await;
     smtp_proof::proof(&api, &pool, &tokens, &adapter).await;
     server.abort();

@@ -235,7 +235,9 @@ fn input(body: Bytes) -> Result<SendInput, ApiError> {
     if body.is_empty() {
         Ok(SendInput::default())
     } else {
-        serde_json::from_slice(&body).map_err(|_| invalid("Provide a valid scheduled_at timestamp"))
+        serde_json::from_slice::<Option<SendInput>>(&body)
+            .map(Option::unwrap_or_default)
+            .map_err(|_| invalid("Provide a valid scheduled_at timestamp"))
     }
 }
 async fn send(

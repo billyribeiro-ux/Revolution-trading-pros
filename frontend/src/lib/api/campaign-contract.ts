@@ -54,6 +54,11 @@ export function campaignRecord(value: unknown): Campaign {
 			(typeof value[key] !== 'string' || !Number.isFinite(Date.parse(value[key])))
 		)
 			throw new Error('Invalid campaign timestamps');
+	if (
+		value.planned_at != null &&
+		(typeof value.planned_at !== 'string' || !Number.isFinite(Date.parse(value.planned_at)))
+	)
+		throw new Error('Invalid requested campaign time');
 	if (value.reply_to !== null && typeof value.reply_to !== 'string')
 		throw new Error('Invalid campaign reply-to');
 	for (const key of ['open_rate', 'click_rate', 'bounce_rate', 'unsubscribe_rate'] as const)

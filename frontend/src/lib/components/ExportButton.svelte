@@ -10,6 +10,7 @@
 	 * - Progress indication during export
 	 */
 
+	import { exportToCSV } from '#lib/utils/export.js';
 	import { fade, scale } from 'svelte/transition';
 	import {
 		IconDownload,
@@ -74,7 +75,7 @@
 		try {
 			switch (format) {
 				case 'csv':
-					await exportToCsv();
+					exportToCsv();
 					break;
 				case 'json':
 					await exportToJson();
@@ -83,7 +84,7 @@
 					if (onPdfExport) {
 						await onPdfExport();
 					} else {
-						toastStore.warning('PDF export not configured');
+						throw new Error('PDF export not configured');
 					}
 					break;
 			}
@@ -102,39 +103,15 @@
 		}
 	}
 
-	async function exportToCsv() {
-		if (!data || data.length === 0) return;
-
-		// Get headers from first object
-		const firstRow = data[0];
-		if (!firstRow) return;
-		const headers = Object.keys(firstRow);
-
-		// Build CSV content
-		const csvContent = [
-			headers.join(','),
-			...data.map((row) =>
-				headers
-					.map((header) => {
-						const value = row[header];
-						// Handle different types
-						if (value === null || value === undefined) return '';
-						if (typeof value === 'string') {
-							// Escape quotes and wrap in quotes if contains comma
-							const escaped = value.replace(/"/g, '""');
-							return value.includes(',') || value.includes('"') || value.includes('\n')
-								? `"${escaped}"`
-								: escaped;
-						}
-						if (typeof value === 'object') return JSON.stringify(value);
-						return String(value);
-					})
-					.join(',')
-			)
-		].join('\n');
-
-		// Download
-		downloadFile(csvContent, `${filename}.csv`, 'text/csv');
+	function exportToCsv() {
+		const first = data[0];
+		if (!first) return;
+		exportToCSV({
+			filename,
+			data,
+			columns: Object.keys(first).map((key) => ({ key, label: key })),
+			includeTimestamp: false
+		});
 	}
 
 	async function exportToJson() {

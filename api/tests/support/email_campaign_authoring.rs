@@ -127,6 +127,40 @@ pub async fn proof(api: &Router, pool: &PgPool, tokens: &[String]) {
     let preview = request(api, "GET", &format!("{path}/preview"), admin, Value::Null).await;
     assert_eq!(preview.0, StatusCode::OK, "{preview:?}");
     assert_eq!(preview.1["data"]["html"], "<p>Second campaign source</p>");
+    let unchanged = request(
+        api,
+        "PUT",
+        &path,
+        admin,
+        json!({"name":"Native authoring edited","template_id":second}),
+    )
+    .await;
+    assert_eq!(unchanged.0, StatusCode::OK, "{unchanged:?}");
+    assert_eq!(
+        unchanged.1["data"]["html_content"],
+        "<p>Second campaign source</p>"
+    );
+    assert_eq!(unchanged.1["data"]["plain_text_content"], Value::Null);
+    let explicit = request(api, "PUT", &path, admin,
+        json!({"template_id":second,"html_content":"<p>Explicit authored content</p>","plain_text_content":"Explicit alternative"})).await;
+    assert_eq!(explicit.0, StatusCode::OK, "{explicit:?}");
+    assert_eq!(
+        explicit.1["data"]["html_content"],
+        "<p>Explicit authored content</p>"
+    );
+    assert_eq!(
+        explicit.1["data"]["plain_text_content"],
+        "Explicit alternative"
+    );
+    let restored = request(
+        api,
+        "PUT",
+        &path,
+        admin,
+        json!({"html_content":"<p>Second campaign source</p>","plain_text_content":null}),
+    )
+    .await;
+    assert_eq!(restored.0, StatusCode::OK);
     sqlx::query("ALTER TABLE crm_operational_logs RENAME TO email_campaign_audit_unavailable")
         .execute(pool)
         .await

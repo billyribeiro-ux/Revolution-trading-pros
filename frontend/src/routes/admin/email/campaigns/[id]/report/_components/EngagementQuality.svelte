@@ -3,11 +3,12 @@
 	Extracted from +page.svelte (R22-C) — read-only display, 0 binds.
 -->
 <script lang="ts">
+	import { formatCampaignRate } from '#lib/api/campaign-report.js';
 	import { fly } from 'svelte/transition';
 	import { IconChartBar } from '#lib/icons/index.js';
 
 	interface Props {
-		clickToOpenRate: number;
+		clickToOpenRate: number | null;
 		opened: number;
 		clicked: number;
 		formatNumber: (num: number) => string;
@@ -32,11 +33,11 @@
 	<div class="ctor-metrics">
 		<div class="ctor-item primary">
 			<span class="ctor-label">Click-to-Open Rate</span>
-			<span class="ctor-value">{clickToOpenRate.toFixed(1)}%</span>
+			<span class="ctor-value">{formatCampaignRate(clickToOpenRate)}</span>
 			<div class="ctor-bar">
-				<div class="ctor-bar-fill" style:width={`${Math.min(clickToOpenRate, 100)}%`}></div>
+				<div class="ctor-bar-fill" style:width={`${Math.min(clickToOpenRate ?? 0, 100)}%`}></div>
 			</div>
-			<span class="ctor-desc">Industry avg: 10-15%</span>
+			<span class="ctor-desc">Recorded unique clicks per unique open signal</span>
 		</div>
 
 		<div class="ctor-stats">

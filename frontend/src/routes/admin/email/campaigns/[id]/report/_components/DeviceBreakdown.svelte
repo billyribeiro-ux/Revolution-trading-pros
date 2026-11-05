@@ -36,12 +36,14 @@
 			</div>
 			<div>
 				<h3>Device Breakdown</h3>
-				<span class="panel-subtitle">How subscribers read your email</span>
+				<span class="panel-subtitle">Recorded open observations; no device is inferred</span>
 			</div>
 		</div>
 	</div>
 
 	<div class="device-chart">
+		{#if totalDevices === 0}<p>No recorded open observations.</p>{/if}
+		<p>Unknown device observations: {deviceBreakdown.unknown}</p>
 		<div class="device-row">
 			<div class="device-info">
 				<IconDevices size={18} />
@@ -50,11 +52,11 @@
 			<div class="device-bar-wrap">
 				<div
 					class="device-bar desktop"
-					style:width={`${(deviceBreakdown.desktop / totalDevices) * 100}%`}
+					style:width={`${(deviceBreakdown.desktop / (totalDevices || 1)) * 100}%`}
 				></div>
 			</div>
 			<span class="device-percent"
-				>{((deviceBreakdown.desktop / totalDevices) * 100).toFixed(1)}%</span
+				>{((deviceBreakdown.desktop / (totalDevices || 1)) * 100).toFixed(1)}%</span
 			>
 		</div>
 		<div class="device-row">
@@ -65,11 +67,11 @@
 			<div class="device-bar-wrap">
 				<div
 					class="device-bar mobile"
-					style:width={`${(deviceBreakdown.mobile / totalDevices) * 100}%`}
+					style:width={`${(deviceBreakdown.mobile / (totalDevices || 1)) * 100}%`}
 				></div>
 			</div>
 			<span class="device-percent"
-				>{((deviceBreakdown.mobile / totalDevices) * 100).toFixed(1)}%</span
+				>{((deviceBreakdown.mobile / (totalDevices || 1)) * 100).toFixed(1)}%</span
 			>
 		</div>
 		<div class="device-row">
@@ -80,11 +82,11 @@
 			<div class="device-bar-wrap">
 				<div
 					class="device-bar tablet"
-					style:width={`${(deviceBreakdown.tablet / totalDevices) * 100}%`}
+					style:width={`${(deviceBreakdown.tablet / (totalDevices || 1)) * 100}%`}
 				></div>
 			</div>
 			<span class="device-percent"
-				>{((deviceBreakdown.tablet / totalDevices) * 100).toFixed(1)}%</span
+				>{((deviceBreakdown.tablet / (totalDevices || 1)) * 100).toFixed(1)}%</span
 			>
 		</div>
 	</div>
@@ -92,6 +94,7 @@
 	<div class="email-clients">
 		<h4>Email Clients</h4>
 		<div class="clients-list">
+			{#if !emailClientBreakdown.length}<p>No email client observations supplied.</p>{/if}
 			{#each emailClientBreakdown as client (client.client)}
 				<div class="client-row">
 					<span class="client-name">{client.client}</span>

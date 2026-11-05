@@ -292,4 +292,38 @@ pub async fn proof(api: &Router, pool: &PgPool, tokens: &[String], adapter: &Ada
         .0,
         StatusCode::BAD_REQUEST
     );
+    let retained:uuid::Uuid=sqlx::query_scalar("SELECT unsubscribe_token FROM crm_campaign_deliveries WHERE campaign_id=$1 AND email='member-campaign-accepted@example.test'").bind(id).fetch_one(pool).await.unwrap();
+    assert_eq!(
+        request(api, "DELETE", &path, admin, Value::Null).await.0,
+        StatusCode::OK
+    );
+    assert_eq!(
+        request(
+            api,
+            "GET",
+            &format!("/api/newsletter/unsubscribe?token={retained}"),
+            None,
+            Value::Null
+        )
+        .await
+        .0,
+        StatusCode::OK
+    );
+    assert_eq!(
+        request(
+            api,
+            "GET",
+            &format!("/api/newsletter/unsubscribe?token={retained}"),
+            None,
+            Value::Null
+        )
+        .await
+        .0,
+        StatusCode::OK
+    );
+    let consent:String=sqlx::query_scalar("SELECT status FROM newsletter_subscribers WHERE email='member-campaign-accepted@example.test'").fetch_one(pool).await.unwrap();
+    assert_eq!(
+        consent, "unsubscribed",
+        "Deleting a campaign must not disable its recipients' opt-out links"
+    );
 }

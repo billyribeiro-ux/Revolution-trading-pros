@@ -5,8 +5,13 @@
 
 	import type { PageData } from './$types';
 	import { fade, fly } from 'svelte/transition';
-	import { afterNavigate, goto } from '$app/navigation';
+	import { afterNavigate } from '$app/navigation';
 	import { adminFetch } from '#lib/utils/adminFetch.js';
+	import {
+		campaignReport,
+		type CampaignReport,
+		formatCampaignRate
+	} from '#lib/api/campaign-report.js';
 	import ExportButton from '#lib/components/ExportButton.svelte';
 	import { IconArrowLeft, IconRefresh, IconAlertTriangle, IconChartBar } from '#lib/icons/index.js';
 
@@ -29,94 +34,12 @@
 
 	// Types
 
-	interface CampaignReport {
-		id: number;
-		name: string;
-		subject: string;
-		status: string;
-		sent_at: string | null;
-		scheduled_at: string | null;
-		created_at: string;
-		segment_name: string | null;
-		template_name: string | null;
-		metrics: {
-			sent: number;
-			delivered: number;
-			opened: number;
-			unique_opens: number;
-			clicked: number;
-			unique_clicks: number;
-			bounced: number;
-			soft_bounced: number;
-			hard_bounced: number;
-			unsubscribed: number;
-			complained: number;
-		};
-		rates: {
-			delivery_rate: number;
-			open_rate: number;
-			unique_open_rate: number;
-			click_rate: number;
-			unique_click_rate: number;
-			click_to_open_rate: number;
-			bounce_rate: number;
-			unsubscribe_rate: number;
-		};
-		engagement_over_time: Array<{
-			hour: number;
-			opens: number;
-			clicks: number;
-		}>;
-		top_links: Array<{
-			url: string;
-			clicks: number;
-			unique_clicks: number;
-		}>;
-		device_breakdown: {
-			desktop: number;
-			mobile: number;
-			tablet: number;
-			unknown: number;
-		};
-		email_client_breakdown: Array<{
-			client: string;
-			count: number;
-			percentage: number;
-		}>;
-		geographic_distribution: Array<{
-			country: string;
-			country_code: string;
-			opens: number;
-			clicks: number;
-		}>;
-		ab_test_results?: {
-			enabled: boolean;
-			winner: 'a' | 'b' | null;
-			variant_a: {
-				subject: string;
-				sent: number;
-				opens: number;
-				open_rate: number;
-				clicks: number;
-				click_rate: number;
-			};
-			variant_b: {
-				subject: string;
-				sent: number;
-				opens: number;
-				open_rate: number;
-				clicks: number;
-				click_rate: number;
-			};
-		};
-	}
-
 	// State - Svelte 5 Runes
 
 	let loading = $state(true);
 	let error = $state<string | null>(null);
 	let report = $state<CampaignReport | null>(null);
-	let _isExporting = $state(false);
+	let loadVersion = 0;
 
 	// Derived State
 
@@ -201,35 +124,35 @@
 			{
 				category: 'Rates',
 				metric: 'Delivery Rate',
-				value: `${report.rates.delivery_rate.toFixed(1)}%`
+				value: formatCampaignRate(report.rates.delivery_rate)
 			},
 
 			{
 				category: 'Rates',
 				metric: 'Open Rate',
-				value: `${report.rates.open_rate.toFixed(1)}%`
+				value: formatCampaignRate(report.rates.open_rate)
 			},
 
 			{
 				category: 'Rates',
 				metric: 'Click Rate',
-				value: `${report.rates.click_rate.toFixed(1)}%`
+				value: formatCampaignRate(report.rates.click_rate)
 			},
 
 			{
 				category: 'Rates',
 				metric: 'Click-to-Open Rate',
-				value: `${report.rates.click_to_open_rate.toFixed(1)}%`
+				value: formatCampaignRate(report.rates.click_to_open_rate)
 			},
 			{
 				category: 'Rates',
 				metric: 'Bounce Rate',
-				value: `${report.rates.bounce_rate.toFixed(1)}%`
+				value: formatCampaignRate(report.rates.bounce_rate)
 			},
 			{
 				category: 'Rates',
 				metric: 'Unsubscribe Rate',
-				value: `${report.rates.unsubscribe_rate.toFixed(1)}%`
+				value: formatCampaignRate(report.rates.unsubscribe_rate)
 			},
 			...report.top_links.map((link, i) => ({
 				category: 'Top Links',
@@ -254,9 +177,9 @@
 	});
 
 	let totalDevices = $derived.by(() => {
-		if (!report?.device_breakdown) return 1;
+		if (!report?.device_breakdown) return 0;
 		const d = report.device_breakdown;
-		return d.desktop + d.mobile + d.tablet + d.unknown || 1;
+		return d.desktop + d.mobile + d.tablet + d.unknown;
 	});
 
 	// Lifecycle
@@ -271,90 +194,21 @@
 	// API Functions
 
 	async function loadReport() {
+		const version = ++loadVersion;
+		const requested = campaignId;
 		loading = true;
 		error = null;
-
+		report = null;
 		try {
-			const response = await adminFetch(`/api/admin/email/campaigns/${campaignId}/report`);
-			report = response.data || response;
-		} catch (_err) {
-			// If no real data, use demo data for display
-			report = generateDemoReport();
+			const response = await adminFetch<unknown>(`/api/admin/email/campaigns/${requested}/report`);
+			const actual = campaignReport(response, Number(requested));
+			if (version === loadVersion && requested === campaignId) report = actual;
+		} catch (err) {
+			if (version === loadVersion)
+				error = err instanceof Error ? err.message : 'Unable to load recorded campaign results';
 		} finally {
-			loading = false;
+			if (version === loadVersion) loading = false;
 		}
-	}
-
-	function generateDemoReport(): CampaignReport {
-		return {
-			id: parseInt(campaignId),
-			name: 'December Newsletter - Trading Insights',
-			subject: 'Your Weekly Trading Analysis & Market Updates',
-			status: 'sent',
-			sent_at: new Date(Date.now() - 86400000 * 3).toISOString(),
-			scheduled_at: null,
-			created_at: new Date(Date.now() - 86400000 * 5).toISOString(),
-			segment_name: 'Active Members',
-			template_name: 'Weekly Newsletter',
-			metrics: {
-				sent: 12847,
-				delivered: 12634,
-				opened: 4892,
-				unique_opens: 3847,
-				clicked: 1247,
-				unique_clicks: 892,
-				bounced: 213,
-				soft_bounced: 156,
-				hard_bounced: 57,
-				unsubscribed: 23,
-				complained: 2
-			},
-			rates: {
-				delivery_rate: 98.3,
-				open_rate: 38.7,
-				unique_open_rate: 30.5,
-				click_rate: 9.9,
-				unique_click_rate: 7.1,
-				click_to_open_rate: 23.2,
-				bounce_rate: 1.7,
-				unsubscribe_rate: 0.18
-			},
-			engagement_over_time: Array.from({ length: 48 }, (_, i) => ({
-				hour: i,
-				opens: Math.floor(Math.random() * 300 * Math.exp(-i / 12)),
-				clicks: Math.floor(Math.random() * 80 * Math.exp(-i / 12))
-			})),
-			top_links: [
-				{ url: 'https://rtp.com/live-trading', clicks: 423, unique_clicks: 312 },
-				{ url: 'https://rtp.com/courses/options', clicks: 287, unique_clicks: 198 },
-				{ url: 'https://rtp.com/market-analysis', clicks: 156, unique_clicks: 134 },
-				{ url: 'https://rtp.com/member-dashboard', clicks: 142, unique_clicks: 98 },
-				{ url: 'https://rtp.com/resources', clicks: 89, unique_clicks: 67 }
-			],
-			device_breakdown: {
-				desktop: 5234,
-				mobile: 3892,
-				tablet: 678,
-				unknown: 234
-			},
-			email_client_breakdown: [
-				{ client: 'Gmail', count: 4523, percentage: 45.2 },
-				{ client: 'Apple Mail', count: 2156, percentage: 21.5 },
-				{ client: 'Outlook', count: 1834, percentage: 18.3 },
-				{ client: 'Yahoo Mail', count: 892, percentage: 8.9 },
-				{ client: 'Other', count: 633, percentage: 6.1 }
-			],
-			geographic_distribution: [
-				{ country: 'United States', country_code: 'US', opens: 2847, clicks: 634 },
-				{ country: 'United Kingdom', country_code: 'GB', opens: 892, clicks: 187 },
-				{ country: 'Canada', country_code: 'CA', opens: 634, clicks: 156 },
-				{ country: 'Australia', country_code: 'AU', opens: 423, clicks: 98 },
-				{ country: 'Germany', country_code: 'DE', opens: 287, clicks: 67 },
-				{ country: 'France', country_code: 'FR', opens: 198, clicks: 45 },
-				{ country: 'Netherlands', country_code: 'NL', opens: 156, clicks: 34 },
-				{ country: 'Singapore', country_code: 'SG', opens: 134, clicks: 28 }
-			]
-		};
 	}
 
 	// Helper Functions
@@ -436,18 +290,14 @@
 
 	R22-C extracted 8 read-only display components into _components/.
 -->
-<svelte:head
-	><title>Campaign Report - {report?.name || 'Loading...'} | Revolution Trading Pros</title
-	></svelte:head
->
 
 <div class="report-page">
 	<!-- Header -->
 	<header class="page-header" in:fly={{ y: -20, duration: 400 }}>
-		<button class="back-btn" onclick={() => goto('/admin/email/campaigns')}>
+		<a class="back-btn" href="/admin/email/campaigns">
 			<IconArrowLeft size={20} />
 			Back to Campaigns
-		</button>
+		</a>
 
 		<div class="header-content">
 			<div class="header-title">
@@ -497,6 +347,12 @@
 	{:else if report}
 		<!-- Report Content -->
 		<div class="report-content" in:fade={{ duration: 400 }}>
+			<p class="report-scope">
+				Recorded outbox results. Provider acceptance does not confirm inbox delivery. Opens and
+				clicks may include automated requests. Device, client and geography show only supplied
+				observations; a dash means no rate denominator. Historical totals are retained separately.
+			</p>
+			{#if report.last_error}<p role="status">{report.last_error}</p>{/if}
 			<CampaignOverview
 				overview={{
 					name: report.name,
@@ -528,7 +384,7 @@
 
 			<TopLinksTable
 				links={report.top_links}
-				uniqueOpens={report.metrics.unique_opens}
+				accepted={report.metrics.sent}
 				{formatNumber}
 				{truncateUrl}
 			/>
@@ -605,7 +461,6 @@
 		align-items: center;
 		justify-content: center;
 		color: var(--bg-base);
-		
 	}
 
 	.header-title h1 {
@@ -645,7 +500,6 @@
 		background: var(--primary-500);
 		color: var(--bg-base);
 	}
-
 
 	.btn-secondary {
 		background: var(--bg-surface);

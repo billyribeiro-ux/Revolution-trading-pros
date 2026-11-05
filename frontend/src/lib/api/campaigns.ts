@@ -310,6 +310,18 @@ class CampaignsApiClient {
 		return campaignEnvelope(response, id);
 	}
 
+	async pauseCampaign(id: number): Promise<Campaign> {
+		return campaignEnvelope(
+			await this.request<unknown>('POST', `/admin/email/campaigns/${id}/pause`),
+			id
+		);
+	}
+	async resumeCampaign(id: number): Promise<Campaign> {
+		return campaignEnvelope(
+			await this.request<unknown>('POST', `/admin/email/campaigns/${id}/resume`),
+			id
+		);
+	}
 	async sendTestEmail(id: number, email: string): Promise<void> {
 		await this.request('POST', `/admin/email/campaigns/${id}/test`, { email });
 	}
@@ -363,3 +375,6 @@ export const sendTestEmail = (id: number, email: string) => campaignsApi.sendTes
 export const getCampaignStats = () => campaignsApi.getStats();
 export const getCampaignAnalytics = (id: number) => campaignsApi.getAnalytics(id);
 export const getCampaignPreview = (id: number) => campaignsApi.getPreview(id);
+
+export const pauseCampaign = (id: number) => campaignsApi.pauseCampaign(id);
+export const resumeCampaign = (id: number) => campaignsApi.resumeCampaign(id);
