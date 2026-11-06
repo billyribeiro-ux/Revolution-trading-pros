@@ -4,6 +4,17 @@
 
 All notable changes to this project. Format roughly follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); we don't strictly adhere to SemVer because the product isn't a published library.
 
+## [Unreleased] — 2026-11-05 — Credential integration fixture retention
+
+### Fixed
+
+- Retain the credential proof's test accounts and linked audit/email evidence in its isolated, stopped PostgreSQL cluster. Removing the accounts at the end of the proof violated the existing `email_logs_user_id_fkey` retention constraint; the schema and all 140 assertions remain unchanged.
+
+### Validation
+
+- Independently reran the guarded account-authority wrapper against a new PostgreSQL cluster and owned Redis. The complete integration proof passed in 380.50 seconds, including recipient-bound verification/reset, one-use recovery, MFA, durable authority during real Redis loss, and the subsequent SMTP checks. Both fixture wrappers exited successfully; logs are retained at `/private/tmp/revolution-pending-files-review.log`.
+- Reviewed the separate six-process/48-check restart report and the progress notes. This does not establish completion of the pending combined frontend/browser proof.
+
 ## [Unreleased] — 2026-11-03 — Admin console-error audit: layout, scroll, shortcuts, baseline DB
 
 Evidence-driven pass over the admin dashboard. Method: every admin route (164 pages; the 38 dynamic ones with placeholder id `1`) was loaded in a clean, extension-free headless Chromium while recording console errors/warnings, uncaught page errors and every HTTP >= 400 response; failures were then traced to a file or endpoint. `/admin` itself is clean (0 console errors, 0 failed requests). The `Unchecked runtime.lastError ... message channel closed` messages seen in a normal browser are Chrome-extension noise (page-level `admin:1`, no app frame).
