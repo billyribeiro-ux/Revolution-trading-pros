@@ -1,0 +1,510 @@
+{
+	"origin": "https://revolution-trading-pros.pages.dev",
+	"label": "live-before",
+	"routes": [
+		{
+			"path": "/privacy",
+			"exceptions": [],
+			"widths": [
+				{
+					"width": 320,
+					"problems": []
+				},
+				{
+					"width": 390,
+					"problems": []
+				},
+				{
+					"width": 639,
+					"problems": []
+				},
+				{
+					"width": 640,
+					"problems": []
+				},
+				{
+					"width": 767,
+					"problems": []
+				},
+				{
+					"width": 768,
+					"problems": []
+				},
+				{
+					"width": 1023,
+					"problems": []
+				},
+				{
+					"width": 1024,
+					"problems": []
+				},
+				{
+					"width": 1280,
+					"problems": []
+				},
+				{
+					"width": 1920,
+					"problems": []
+				}
+			],
+			"status": 200,
+			"destination": "https://revolution-trading-pros.pages.dev/privacy",
+			"typography": {
+				"h1": {
+					"font": "Inter, \"Open Sans\", system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+					"size": "36px",
+					"weight": "400",
+					"lineHeight": "61.2px",
+					"width": 672,
+					"x": 296.5
+				},
+				"h2": null,
+				"body": {
+					"font": "Inter, \"Open Sans\", system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+					"size": "16px",
+					"weight": "400",
+					"lineHeight": "27.2px",
+					"width": 672,
+					"x": 296.5
+				}
+			},
+			"enlarged": [
+				{
+					"left": 48,
+					"right": 299.96875
+				},
+				{
+					"left": 48,
+					"right": 251.84375
+				}
+			],
+			"axe": []
+		},
+		{
+			"path": "/terms",
+			"exceptions": [],
+			"widths": [
+				{
+					"width": 320,
+					"problems": []
+				},
+				{
+					"width": 390,
+					"problems": []
+				},
+				{
+					"width": 639,
+					"problems": []
+				},
+				{
+					"width": 640,
+					"problems": []
+				},
+				{
+					"width": 767,
+					"problems": []
+				},
+				{
+					"width": 768,
+					"problems": []
+				},
+				{
+					"width": 1023,
+					"problems": []
+				},
+				{
+					"width": 1024,
+					"problems": []
+				},
+				{
+					"width": 1280,
+					"problems": []
+				},
+				{
+					"width": 1920,
+					"problems": []
+				}
+			],
+			"status": 200,
+			"destination": "https://revolution-trading-pros.pages.dev/terms",
+			"typography": {
+				"h1": {
+					"font": "Inter, \"Open Sans\", system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+					"size": "36px",
+					"weight": "400",
+					"lineHeight": "61.2px",
+					"width": 672,
+					"x": 300
+				},
+				"h2": null,
+				"body": {
+					"font": "Inter, \"Open Sans\", system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+					"size": "16px",
+					"weight": "400",
+					"lineHeight": "27.2px",
+					"width": 672,
+					"x": 300
+				}
+			},
+			"enlarged": [
+				{
+					"left": 48,
+					"right": 260.140625
+				},
+				{
+					"left": 48,
+					"right": 117.828125
+				},
+				{
+					"left": 48,
+					"right": 305.421875
+				}
+			],
+			"axe": []
+		},
+		{
+			"path": "/refund",
+			"exceptions": [],
+			"widths": [
+				{
+					"width": 320,
+					"problems": []
+				},
+				{
+					"width": 390,
+					"problems": []
+				},
+				{
+					"width": 639,
+					"problems": []
+				},
+				{
+					"width": 640,
+					"problems": []
+				},
+				{
+					"width": 767,
+					"problems": []
+				},
+				{
+					"width": 768,
+					"problems": []
+				},
+				{
+					"width": 1023,
+					"problems": []
+				},
+				{
+					"width": 1024,
+					"problems": []
+				},
+				{
+					"width": 1280,
+					"problems": []
+				},
+				{
+					"width": 1920,
+					"problems": []
+				}
+			],
+			"status": 200,
+			"destination": "https://revolution-trading-pros.pages.dev/refund",
+			"typography": {
+				"h1": {
+					"font": "Inter, \"Open Sans\", system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+					"size": "40px",
+					"weight": "800",
+					"lineHeight": "48px",
+					"width": 780,
+					"x": 242.5
+				},
+				"h2": {
+					"font": "Inter, \"Open Sans\", system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+					"size": "18px",
+					"weight": "700",
+					"lineHeight": "27px",
+					"width": 780,
+					"x": 242.5
+				},
+				"body": {
+					"font": "Inter, \"Open Sans\", system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+					"size": "14px",
+					"weight": "400",
+					"lineHeight": "25.2px",
+					"width": 780,
+					"x": 242.5
+				}
+			},
+			"enlarged": [
+				{
+					"left": 48,
+					"right": 244.78125
+				},
+				{
+					"left": 48,
+					"right": 214.1875
+				}
+			],
+			"axe": []
+		},
+		{
+			"path": "/disclaimer",
+			"exceptions": [],
+			"widths": [
+				{
+					"width": 320,
+					"problems": []
+				},
+				{
+					"width": 390,
+					"problems": []
+				},
+				{
+					"width": 639,
+					"problems": []
+				},
+				{
+					"width": 640,
+					"problems": []
+				},
+				{
+					"width": 767,
+					"problems": []
+				},
+				{
+					"width": 768,
+					"problems": []
+				},
+				{
+					"width": 1023,
+					"problems": []
+				},
+				{
+					"width": 1024,
+					"problems": []
+				},
+				{
+					"width": 1280,
+					"problems": []
+				},
+				{
+					"width": 1920,
+					"problems": []
+				}
+			],
+			"status": 200,
+			"destination": "https://revolution-trading-pros.pages.dev/disclaimer",
+			"typography": {
+				"h1": {
+					"font": "Inter, \"Open Sans\", system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+					"size": "40px",
+					"weight": "800",
+					"lineHeight": "48px",
+					"width": 780,
+					"x": 242.5
+				},
+				"h2": {
+					"font": "Inter, \"Open Sans\", system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+					"size": "18px",
+					"weight": "700",
+					"lineHeight": "27px",
+					"width": 780,
+					"x": 242.5
+				},
+				"body": {
+					"font": "Inter, \"Open Sans\", system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+					"size": "14px",
+					"weight": "400",
+					"lineHeight": "25.2px",
+					"width": 780,
+					"x": 242.5
+				}
+			},
+			"enlarged": [
+				{
+					"left": 48,
+					"right": 163.828125
+				},
+				{
+					"left": 48,
+					"right": 315.296875
+				},
+				{
+					"left": 48,
+					"right": 70.8125
+				}
+			],
+			"axe": []
+		},
+		{
+			"path": "/cookie-policy",
+			"exceptions": [],
+			"widths": [
+				{
+					"width": 320,
+					"problems": []
+				},
+				{
+					"width": 390,
+					"problems": []
+				},
+				{
+					"width": 639,
+					"problems": []
+				},
+				{
+					"width": 640,
+					"problems": []
+				},
+				{
+					"width": 767,
+					"problems": []
+				},
+				{
+					"width": 768,
+					"problems": []
+				},
+				{
+					"width": 1023,
+					"problems": []
+				},
+				{
+					"width": 1024,
+					"problems": []
+				},
+				{
+					"width": 1280,
+					"problems": []
+				},
+				{
+					"width": 1920,
+					"problems": []
+				}
+			],
+			"status": 200,
+			"destination": "https://revolution-trading-pros.pages.dev/cookie-policy",
+			"typography": {
+				"h1": {
+					"font": "Inter, \"Open Sans\", system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+					"size": "40px",
+					"weight": "700",
+					"lineHeight": "60px",
+					"width": 264.71875,
+					"x": 424.640625
+				},
+				"h2": {
+					"font": "Inter, \"Open Sans\", system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+					"size": "24px",
+					"weight": "600",
+					"lineHeight": "36px",
+					"width": 1000,
+					"x": 136
+				},
+				"body": {
+					"font": "Inter, \"Open Sans\", system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+					"size": "17.6px",
+					"weight": "400",
+					"lineHeight": "26.4px",
+					"width": 600,
+					"x": 336
+				}
+			},
+			"enlarged": [
+				{
+					"left": 95.421875,
+					"right": 286.5625
+				},
+				{
+					"left": 107.90625,
+					"right": 274.09375
+				}
+			],
+			"axe": []
+		},
+		{
+			"path": "/contact",
+			"exceptions": [],
+			"widths": [
+				{
+					"width": 320,
+					"problems": []
+				},
+				{
+					"width": 390,
+					"problems": []
+				},
+				{
+					"width": 639,
+					"problems": []
+				},
+				{
+					"width": 640,
+					"problems": []
+				},
+				{
+					"width": 767,
+					"problems": []
+				},
+				{
+					"width": 768,
+					"problems": []
+				},
+				{
+					"width": 1023,
+					"problems": []
+				},
+				{
+					"width": 1024,
+					"problems": []
+				},
+				{
+					"width": 1280,
+					"problems": []
+				},
+				{
+					"width": 1920,
+					"problems": []
+				}
+			],
+			"status": 200,
+			"destination": "https://revolution-trading-pros.pages.dev/contact",
+			"typography": {
+				"h1": {
+					"font": "Inter, \"Open Sans\", system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+					"size": "36px",
+					"weight": "400",
+					"lineHeight": "61.2px",
+					"width": 672,
+					"x": 296.5
+				},
+				"h2": {
+					"font": "Inter, \"Open Sans\", system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+					"size": "24px",
+					"weight": "400",
+					"lineHeight": "40.8px",
+					"width": 672,
+					"x": 296.5
+				},
+				"body": {
+					"font": "Inter, \"Open Sans\", system-ui, -apple-system, \"system-ui\", \"Segoe UI\", sans-serif",
+					"size": "16px",
+					"weight": "400",
+					"lineHeight": "27.2px",
+					"width": 672,
+					"x": 296.5
+				}
+			},
+			"enlarged": [
+				{
+					"left": 48,
+					"right": 315.328125
+				},
+				{
+					"left": 48,
+					"right": 139.59375
+				}
+			],
+			"axe": []
+		}
+	]
+}

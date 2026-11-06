@@ -4,6 +4,23 @@
 
 All notable changes to this project. Format roughly follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); we don't strictly adhere to SemVer because the product isn't a published library.
 
+## [Unreleased] — 2026-11-06 — Standard legal and support layout
+
+### Changed
+
+- Standardize Privacy, Terms, Refund, Risk Disclaimer, Cookie Policy and Contact with one marketing document component: shared reading width, responsive heading scale, Inter typography, prose spacing, accessible links and current-page navigation.
+- Replace Privacy/Terms implementation placeholders with an explicit pending-publication status and support link. Preserve existing page-update dates and published Refund/Disclaimer body wording; align placeholder SEO descriptions with their actual status.
+- Bring cookie controls, cards and tables into the same marketing token system while retaining language selection and consent receipt actions.
+
+### Fixed
+
+- Mount the existing consent preferences dialog on Cookie Policy so Cookie Settings opens a working dialog. Contain keyboard focus, restore the opener and previous scroll state, and honor live reduced-motion preferences. Refresh the cookie declaration after consent changes and clean up the listener on unmount.
+
+### Validation
+
+- Twelve new legal/support browser checks pass, including typography consistency, navigation/history, enlarged text, modal accessibility/focus, language switching and receipt download. Before/after measurements and captures are retained in [the audit](docs/audits/2026-11-06-legal-support/REPORT.md).
+- Privacy and Terms remain pending approved final policy content; this change does not create legal policies or claim compliance certification.
+
 ## [Unreleased] — 2026-11-05 — Public marketing audit and repairs
 
 ### Fixed

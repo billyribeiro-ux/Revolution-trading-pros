@@ -11,7 +11,7 @@ export const load = () => ({
 	seo: {
 		title: 'Terms of Service',
 		description:
-			'Terms of service for Revolution Trading Pros — your rights and responsibilities when using the platform.',
+			'The Terms of Service are awaiting publication. Contact Revolution Trading Pros support with questions or browse our other policies.',
 		jsonld: [
 			buildBreadcrumb([
 				{ name: 'Home', url: `${SITE}/` },

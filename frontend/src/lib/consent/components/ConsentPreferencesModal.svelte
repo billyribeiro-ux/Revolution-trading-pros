@@ -16,7 +16,7 @@
 	 */
 
 	import { fade, scale } from 'svelte/transition';
-	import { browser } from '$app/env';
+	import { prefersReducedMotion } from 'svelte/motion';
 	import type { ConsentCategory } from '../types';
 	import { consentStore, showPreferencesModal, closePreferencesModal } from '../store.svelte';
 	import { getVendorsByCategory } from '../vendors';
@@ -114,17 +114,44 @@
 
 	// Handle escape key
 	function handleKeydown(event: KeyboardEvent): void {
-		if (event.key === 'Escape' && $showPreferencesModal) {
+		if (!$showPreferencesModal || event.defaultPrevented) return;
+		if (event.key === 'Escape') {
+			event.preventDefault();
 			handleCancel();
+			return;
 		}
+		if (event.key !== 'Tab' || !modalElement) return;
+		const controls = [
+			...modalElement.querySelectorAll<HTMLElement>(
+				'button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+			)
+		].filter((element) => element.getClientRects().length > 0);
+		const first = controls[0];
+		const last = controls.at(-1);
+		if (!first || !last) {
+			event.preventDefault();
+			modalElement.focus();
+			return;
+		}
+		if (
+			event.shiftKey &&
+			(document.activeElement === first || document.activeElement === modalElement)
+		) {
+			event.preventDefault();
+			last.focus();
+		} else if (
+			!event.shiftKey &&
+			(document.activeElement === last || !modalElement.contains(document.activeElement))
+		) {
+			event.preventDefault();
+			first.focus();
+		}
+	}
+	function handleBackdropClick(event: MouseEvent): void {
+		if (event.target === event.currentTarget) handleCancel();
 	}
 
-	// Handle backdrop click
-	function handleBackdropClick(event: MouseEvent): void {
-		if (event.target === event.currentTarget) {
-			handleCancel();
-		}
-	}
+	let modalElement: HTMLElement | null = null;
 
 	let previouslyFocused: HTMLElement | null = null;
 
@@ -138,7 +165,7 @@
 	}
 
 	function attachModalElement(element: HTMLElement): () => void {
-		if (!browser) return () => {};
+		modalElement = element;
 
 		resetPendingConsentFromStore();
 		previouslyFocused = document.activeElement as HTMLElement;
@@ -150,24 +177,19 @@
 			window.clearTimeout(focusTimer);
 			previouslyFocused?.focus();
 			previouslyFocused = null;
+			modalElement = null;
 		};
 	}
 
-	// Prevent body scroll when modal is open
+	// Restore the previous scroll state on close and route unmount.
 	$effect(() => {
-		if (!browser) return;
-
-		document.body.style.overflow = $showPreferencesModal ? 'hidden' : '';
-
+		if (!$showPreferencesModal) return;
+		const previousOverflow = document.body.style.overflow;
+		document.body.style.overflow = 'hidden';
 		return () => {
-			document.body.style.overflow = '';
+			document.body.style.overflow = previousOverflow;
 		};
 	});
-
-	// Check for reduced motion
-	const prefersReducedMotion = $derived(
-		browser ? window.matchMedia('(prefers-reduced-motion: reduce)').matches : false
-	);
 </script>
 
 <svelte:window onkeydown={handleKeydown} />
@@ -178,7 +200,7 @@
 		role="presentation"
 		onclick={handleBackdropClick}
 		onkeydown={handleKeydown}
-		transition:fade={{ duration: prefersReducedMotion ? 0 : 200 }}
+		transition:fade={{ duration: prefersReducedMotion.current ? 0 : 200 }}
 	>
 		<div
 			class="modal-container"
@@ -187,7 +209,7 @@
 			aria-labelledby="preferences-modal-title"
 			tabindex="-1"
 			{@attach attachModalElement}
-			transition:scale={{ start: 0.95, duration: prefersReducedMotion ? 0 : 200 }}
+			transition:scale={{ start: 0.95, duration: prefersReducedMotion.current ? 0 : 200 }}
 		>
 			<div class="modal-header">
 				<h2 id="preferences-modal-title" class="modal-title">Cookie Preferences</h2>
@@ -319,7 +341,8 @@
 		max-height: 100dvh;
 		display: flex;
 		flex-direction: column;
-		background: linear-gradient(135deg, #1a1f2e 0%, #0d1117 100%);
+		background: var(--rtp-bg, #0a0a0a);
+		font-family: var(--rtp-font-sans, Inter, system-ui, sans-serif);
 		border: none;
 		border-radius: 0;
 		box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
@@ -357,7 +380,7 @@
 		padding: 1rem;
 		padding-top: calc(1.25rem + env(safe-area-inset-top, 0));
 		border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-		background: rgba(26, 31, 46, 0.95);
+		background: var(--rtp-surface, #161616);
 		backdrop-filter: blur(12px);
 		-webkit-backdrop-filter: blur(12px);
 		flex-shrink: 0;
@@ -543,7 +566,7 @@
 		padding: 1rem;
 		padding-bottom: calc(1rem + env(safe-area-inset-bottom, 0));
 		border-top: 1px solid rgba(255, 255, 255, 0.1);
-		background: rgba(26, 31, 46, 0.95);
+		background: var(--rtp-surface, #161616);
 		backdrop-filter: blur(12px);
 		-webkit-backdrop-filter: blur(12px);
 		flex-shrink: 0;
@@ -553,6 +576,7 @@
 	.footer-actions-right {
 		display: flex;
 		gap: 0.75rem;
+		flex-wrap: wrap;
 		width: 100%;
 		justify-content: center;
 	}
@@ -567,7 +591,9 @@
 		border-radius: 0.75rem;
 		cursor: pointer;
 		transition: all 0.2s ease;
-		white-space: nowrap;
+		white-space: normal;
+		min-width: 0;
+		overflow-wrap: anywhere;
 		border: none;
 		-webkit-tap-highlight-color: transparent;
 		touch-action: manipulation;
@@ -579,7 +605,7 @@
 	}
 
 	.consent-btn-primary {
-		background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+		background: var(--rtp-primary-action, #1d4ed8);
 		color: #ffffff;
 	}
 

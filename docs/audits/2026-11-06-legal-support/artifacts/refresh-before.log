@@ -1,0 +1,46 @@
+
+Running 1 test using 1 worker
+
+(node:72413) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [chromium] › tests/legal-support.spec.ts:133:1 › cookie declaration refreshes after a visitor changes preferences (11.0s)
+
+
+  1) [chromium] › tests/legal-support.spec.ts:133:1 › cookie declaration refreshes after a visitor changes preferences
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: locator('.cookie-name code').filter({ hasText: 'rtp_legal_support_fixture' })
+    Expected: visible
+    Timeout: 10000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" locator('.cookie-name code').filter({ hasText: 'rtp_legal_support_fixture' }) with timeout 10000ms
+      - waiting for locator('.cookie-name code').filter({ hasText: 'rtp_legal_support_fixture' })
+
+
+      136 |  await page.getByRole('button',{name:'Cookie Settings',exact:true}).click();
+      137 |  await page.getByRole('dialog',{name:'Cookie Preferences'}).getByRole('button',{name:'Reject All',exact:true}).click();
+    > 138 |  await expect(page.locator('.cookie-name code').filter({hasText:'rtp_legal_support_fixture'})).toBeVisible();
+          |                                                                                                ^
+      139 | });
+      140 |
+        at /Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/legal-support.spec.ts:138:96
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/legal-support-cookie-decla-edc79-visitor-changes-preferences-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/legal-support-cookie-decla-edc79-visitor-changes-preferences-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/legal-support-cookie-decla-edc79-visitor-changes-preferences-chromium/error-context.md
+
+  1 failed
+    [chromium] › tests/legal-support.spec.ts:133:1 › cookie declaration refreshes after a visitor changes preferences
+Error: ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL
+
+  × "pnpm recursive exec" failed in /Users/billyribeiro/dev/revolution-
+  │ trading-pros/frontend

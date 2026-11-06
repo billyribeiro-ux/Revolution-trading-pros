@@ -1,0 +1,299 @@
+
+Running 8 tests using 4 workers
+
+(node:66859) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:66860) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:66858) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:66857) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  4 [chromium] › tests/legal-support.spec.ts:4:1 › legal and support pages share the marketing heading scale and readable body type (888ms)
+(node:66911) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 [chromium] › tests/legal-support.spec.ts:17:2 › /terms exposes legal/support navigation and reflows enlarged text (10.8s)
+  ✘  2 [chromium] › tests/legal-support.spec.ts:17:2 › /refund exposes legal/support navigation and reflows enlarged text (10.8s)
+  ✘  3 [chromium] › tests/legal-support.spec.ts:17:2 › /privacy exposes legal/support navigation and reflows enlarged text (10.8s)
+(node:66934) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:66933) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:66932) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  5 [chromium] › tests/legal-support.spec.ts:17:2 › /disclaimer exposes legal/support navigation and reflows enlarged text (10.8s)
+  ✘  6 [chromium] › tests/legal-support.spec.ts:17:2 › /contact exposes legal/support navigation and reflows enlarged text (10.8s)
+  ✘  7 [chromium] › tests/legal-support.spec.ts:17:2 › /cookie-policy exposes legal/support navigation and reflows enlarged text (10.8s)
+  ✘  8 [chromium] › tests/legal-support.spec.ts:34:1 › cookie preferences still open from the standardized policy page (11.0s)
+
+
+  1) [chromium] › tests/legal-support.spec.ts:4:1 › legal and support pages share the marketing heading scale and readable body type
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 1
+    Received: 3
+
+      11 |   await expect(page.locator('[aria-label="Breadcrumb"]')).toHaveCount(1);
+      12 |  }
+    > 13 |  expect(new Set(headings.map(h=>JSON.stringify(h))).size).toBe(1);
+         |                                                           ^
+      14 |  expect(Number(headings[0].weight)).toBeGreaterThanOrEqual(700);
+      15 | });
+      16 | for(const route of routes){
+        at /Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/legal-support.spec.ts:13:59
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/legal-support-legal-and-su-5be9b-cale-and-readable-body-type-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/legal-support-legal-and-su-5be9b-cale-and-readable-body-type-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/legal-support-legal-and-su-5be9b-cale-and-readable-body-type-chromium/error-context.md
+
+  2) [chromium] › tests/legal-support.spec.ts:17:2 › /privacy exposes legal/support navigation and reflows enlarged text
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('navigation', { name: 'Legal and support' })
+    Expected: visible
+    Timeout: 10000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByRole('navigation', { name: 'Legal and support' }) with timeout 10000ms
+      - waiting for getByRole('navigation', { name: 'Legal and support' })
+
+
+      18 |   await page.setViewportSize({width:390,height:560});await page.goto(route);
+      19 |   const navigation=page.getByRole('navigation',{name:'Legal and support'});
+    > 20 |   await expect(navigation).toBeVisible();
+         |                            ^
+      21 |   await expect(navigation.getByRole('link', {current:'page'})).toHaveAttribute('href',route);
+      22 |   await expect(navigation.getByRole('link')).toHaveCount(6);
+      23 |   await page.evaluate(()=>{document.documentElement.style.fontSize='32px';});
+        at /Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/legal-support.spec.ts:20:28
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/legal-support--privacy-exp-76884-n-and-reflows-enlarged-text-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/legal-support--privacy-exp-76884-n-and-reflows-enlarged-text-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/legal-support--privacy-exp-76884-n-and-reflows-enlarged-text-chromium/error-context.md
+
+  3) [chromium] › tests/legal-support.spec.ts:17:2 › /terms exposes legal/support navigation and reflows enlarged text
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('navigation', { name: 'Legal and support' })
+    Expected: visible
+    Timeout: 10000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByRole('navigation', { name: 'Legal and support' }) with timeout 10000ms
+      - waiting for getByRole('navigation', { name: 'Legal and support' })
+
+
+      18 |   await page.setViewportSize({width:390,height:560});await page.goto(route);
+      19 |   const navigation=page.getByRole('navigation',{name:'Legal and support'});
+    > 20 |   await expect(navigation).toBeVisible();
+         |                            ^
+      21 |   await expect(navigation.getByRole('link', {current:'page'})).toHaveAttribute('href',route);
+      22 |   await expect(navigation.getByRole('link')).toHaveCount(6);
+      23 |   await page.evaluate(()=>{document.documentElement.style.fontSize='32px';});
+        at /Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/legal-support.spec.ts:20:28
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/legal-support--terms-expos-93fa2-n-and-reflows-enlarged-text-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/legal-support--terms-expos-93fa2-n-and-reflows-enlarged-text-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/legal-support--terms-expos-93fa2-n-and-reflows-enlarged-text-chromium/error-context.md
+
+  4) [chromium] › tests/legal-support.spec.ts:17:2 › /refund exposes legal/support navigation and reflows enlarged text
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('navigation', { name: 'Legal and support' })
+    Expected: visible
+    Timeout: 10000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByRole('navigation', { name: 'Legal and support' }) with timeout 10000ms
+      - waiting for getByRole('navigation', { name: 'Legal and support' })
+
+
+      18 |   await page.setViewportSize({width:390,height:560});await page.goto(route);
+      19 |   const navigation=page.getByRole('navigation',{name:'Legal and support'});
+    > 20 |   await expect(navigation).toBeVisible();
+         |                            ^
+      21 |   await expect(navigation.getByRole('link', {current:'page'})).toHaveAttribute('href',route);
+      22 |   await expect(navigation.getByRole('link')).toHaveCount(6);
+      23 |   await page.evaluate(()=>{document.documentElement.style.fontSize='32px';});
+        at /Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/legal-support.spec.ts:20:28
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/legal-support--refund-expo-6ebbf-n-and-reflows-enlarged-text-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/legal-support--refund-expo-6ebbf-n-and-reflows-enlarged-text-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/legal-support--refund-expo-6ebbf-n-and-reflows-enlarged-text-chromium/error-context.md
+
+  5) [chromium] › tests/legal-support.spec.ts:17:2 › /disclaimer exposes legal/support navigation and reflows enlarged text
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('navigation', { name: 'Legal and support' })
+    Expected: visible
+    Timeout: 10000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByRole('navigation', { name: 'Legal and support' }) with timeout 10000ms
+      - waiting for getByRole('navigation', { name: 'Legal and support' })
+
+
+      18 |   await page.setViewportSize({width:390,height:560});await page.goto(route);
+      19 |   const navigation=page.getByRole('navigation',{name:'Legal and support'});
+    > 20 |   await expect(navigation).toBeVisible();
+         |                            ^
+      21 |   await expect(navigation.getByRole('link', {current:'page'})).toHaveAttribute('href',route);
+      22 |   await expect(navigation.getByRole('link')).toHaveCount(6);
+      23 |   await page.evaluate(()=>{document.documentElement.style.fontSize='32px';});
+        at /Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/legal-support.spec.ts:20:28
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/legal-support--disclaimer--84801-n-and-reflows-enlarged-text-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/legal-support--disclaimer--84801-n-and-reflows-enlarged-text-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/legal-support--disclaimer--84801-n-and-reflows-enlarged-text-chromium/error-context.md
+
+  6) [chromium] › tests/legal-support.spec.ts:17:2 › /cookie-policy exposes legal/support navigation and reflows enlarged text
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('navigation', { name: 'Legal and support' })
+    Expected: visible
+    Timeout: 10000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByRole('navigation', { name: 'Legal and support' }) with timeout 10000ms
+      - waiting for getByRole('navigation', { name: 'Legal and support' })
+
+
+      18 |   await page.setViewportSize({width:390,height:560});await page.goto(route);
+      19 |   const navigation=page.getByRole('navigation',{name:'Legal and support'});
+    > 20 |   await expect(navigation).toBeVisible();
+         |                            ^
+      21 |   await expect(navigation.getByRole('link', {current:'page'})).toHaveAttribute('href',route);
+      22 |   await expect(navigation.getByRole('link')).toHaveCount(6);
+      23 |   await page.evaluate(()=>{document.documentElement.style.fontSize='32px';});
+        at /Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/legal-support.spec.ts:20:28
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/legal-support--cookie-poli-6b2a3-n-and-reflows-enlarged-text-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/legal-support--cookie-poli-6b2a3-n-and-reflows-enlarged-text-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/legal-support--cookie-poli-6b2a3-n-and-reflows-enlarged-text-chromium/error-context.md
+
+  7) [chromium] › tests/legal-support.spec.ts:17:2 › /contact exposes legal/support navigation and reflows enlarged text
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('navigation', { name: 'Legal and support' })
+    Expected: visible
+    Timeout: 10000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByRole('navigation', { name: 'Legal and support' }) with timeout 10000ms
+      - waiting for getByRole('navigation', { name: 'Legal and support' })
+
+
+      18 |   await page.setViewportSize({width:390,height:560});await page.goto(route);
+      19 |   const navigation=page.getByRole('navigation',{name:'Legal and support'});
+    > 20 |   await expect(navigation).toBeVisible();
+         |                            ^
+      21 |   await expect(navigation.getByRole('link', {current:'page'})).toHaveAttribute('href',route);
+      22 |   await expect(navigation.getByRole('link')).toHaveCount(6);
+      23 |   await page.evaluate(()=>{document.documentElement.style.fontSize='32px';});
+        at /Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/legal-support.spec.ts:20:28
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/legal-support--contact-exp-4ae34-n-and-reflows-enlarged-text-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/legal-support--contact-exp-4ae34-n-and-reflows-enlarged-text-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/legal-support--contact-exp-4ae34-n-and-reflows-enlarged-text-chromium/error-context.md
+
+  8) [chromium] › tests/legal-support.spec.ts:34:1 › cookie preferences still open from the standardized policy page
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('dialog', { name: 'Cookie Preferences' })
+    Expected: visible
+    Timeout: 10000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByRole('dialog', { name: 'Cookie Preferences' }) with timeout 10000ms
+      - waiting for getByRole('dialog', { name: 'Cookie Preferences' })
+
+
+      36 |  await page.getByRole('button',{name:'Cookie Settings',exact:true}).click();
+      37 |  const dialog=page.getByRole('dialog',{name:'Cookie Preferences'});
+    > 38 |  await expect(dialog).toBeVisible();
+         |                       ^
+      39 |  await dialog.getByRole('button',{name:'Close preferences'}).click();
+      40 |  await expect(dialog).toHaveCount(0);
+      41 | });
+        at /Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/legal-support.spec.ts:38:23
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/legal-support-cookie-prefe-73e48-he-standardized-policy-page-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/legal-support-cookie-prefe-73e48-he-standardized-policy-page-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/legal-support-cookie-prefe-73e48-he-standardized-policy-page-chromium/error-context.md
+
+  8 failed
+    [chromium] › tests/legal-support.spec.ts:4:1 › legal and support pages share the marketing heading scale and readable body type
+    [chromium] › tests/legal-support.spec.ts:17:2 › /privacy exposes legal/support navigation and reflows enlarged text
+    [chromium] › tests/legal-support.spec.ts:17:2 › /terms exposes legal/support navigation and reflows enlarged text
+    [chromium] › tests/legal-support.spec.ts:17:2 › /refund exposes legal/support navigation and reflows enlarged text
+    [chromium] › tests/legal-support.spec.ts:17:2 › /disclaimer exposes legal/support navigation and reflows enlarged text
+    [chromium] › tests/legal-support.spec.ts:17:2 › /cookie-policy exposes legal/support navigation and reflows enlarged text
+    [chromium] › tests/legal-support.spec.ts:17:2 › /contact exposes legal/support navigation and reflows enlarged text
+    [chromium] › tests/legal-support.spec.ts:34:1 › cookie preferences still open from the standardized policy page
+Error: ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL
+
+  × "pnpm recursive exec" failed in /Users/billyribeiro/dev/revolution-
+  │ trading-pros/frontend
