@@ -1,4 +1,5 @@
 <script lang="ts">
+	import type { Attachment } from 'svelte/attachments';
 	import IconPlayerPlay from '@tabler/icons-svelte-runes/icons/player-play';
 	import IconPlayerPause from '@tabler/icons-svelte-runes/icons/player-pause';
 	import { formatCurrency } from '../utils/formatters.js';
@@ -27,11 +28,11 @@
 	// Playback timer: it exists only while playing, and pausing or unmounting runs
 	// the cleanup. `tick` reads `speed` and the day when it fires (outside the
 	// effect), so the effect depends on `isPlaying` alone.
-	$effect(() => {
+	const playback: Attachment = () => {
 		if (!isPlaying) return;
 		const timer = setInterval(tick, TICK_MS);
 		return () => clearInterval(timer);
-	});
+	};
 
 	function togglePlay() {
 		// Replay from the start once the timeline has reached expiration.
@@ -68,7 +69,7 @@
 	});
 </script>
 
-<div class="flex flex-col gap-2">
+<div class="flex flex-col gap-2" {@attach playback}>
 	<!-- Header row -->
 	<div class="flex items-center justify-between">
 		<div class="flex items-center gap-2">
@@ -91,7 +92,7 @@
 				onclick={cycleSpeed}
 				aria-label="Playback speed {speed}x"
 				class="text-[10px] font-bold px-2 py-1 rounded-lg cursor-pointer"
-				style="background: var(--calc-surface); color: var(--calc-accent); border: 1px solid var(--calc-border); font-family: var(--calc-font-mono);"
+				style="background: var(--calc-surface); color: var(--calc-accent-text); border: 1px solid var(--calc-border); font-family: var(--calc-font-mono);"
 			>
 				{speed}x
 			</button>

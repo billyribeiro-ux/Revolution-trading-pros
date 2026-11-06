@@ -134,6 +134,8 @@ export default defineConfig(({ mode, command }) => {
 						'worker-src': ['self', ...(isDev ? (['blob:'] as const) : [])],
 						'media-src': [
 							'self',
+							'https://simpler-options.s3.amazonaws.com',
+							'https://cloud-streaming.s3.amazonaws.com',
 							...publicMediaPolicy.file_hosts.map(mediaCspHost),
 							...(isDev ? ([fixtureMediaOrigin()] as const) : [])
 						],
@@ -143,8 +145,11 @@ export default defineConfig(({ mode, command }) => {
 							'https://revolution-trading-pros.pages.dev',
 							'https://api.stripe.com',
 							'https://www.googleapis.com',
+							// CSS preload requests use fetch/XHR as well as style-src.
+							'https://fonts.googleapis.com',
 							'https://www.google-analytics.com',
 							'https://static.cloudflareinsights.com',
+							'https://cloudflareinsights.com',
 							'https://*.mediadelivery.net',
 							'https://vz-5a23b520-193.b-cdn.net',
 							// Dev-only: allow direct calls to the local Rust API,

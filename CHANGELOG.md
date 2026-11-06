@@ -4,6 +4,24 @@
 
 All notable changes to this project. Format roughly follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); we don't strictly adhere to SemVer because the product isn't a published library.
 
+## [Unreleased] — 2026-11-05 — Public marketing audit and repairs
+
+### Fixed
+
+- Render each indicator detail from its actual catalog entry; remove unrelated product downloads and unsupported zero-price metadata. Replace the foreign placeholder tutorial list with the approved public-video catalog.
+- Fetch public blog posts through the runtime backend without visitor credentials. Distinguish an outage from an empty library, validate responses, bound requests, and keep pagination/history synchronized through route loads.
+- Repair narrow and enlarged-text clipping across marketing headings, course grids/instructor cards, room heroes, mentorship and mission sections. Keep the calculator chart tabs scrollable and keyboard accessible; improve measured text/CTA contrast while preserving brand decoration.
+- Honor reduced motion across CSS, canvas, Svelte transitions and scoped GSAP contexts; cancel async setup and clean up route animations/timers. Keep Home headings readable in SSR and provide an automatic-slide Pause toggle.
+- Correct nested landmarks, duplicated breadcrumbs, the stock-region filter label, scanner-list roles and decorative chart focus. Contain About decoration and keep its illustrative ticker below navigation; repair the Swings billing selector and announce its selected state.
+- Use the confirmed support email for both support and sales and shared support defaults. Direct anonymous class visitors to sign in for protected downloads; parse the member API's nested downloads correctly. Permit only the existing class media origins, show recording failure/retry, and remove mismatched VideoObject URLs/dates. Replace failing remote noise textures with the existing local asset.
+- Allow the exact font preload and Cloudflare collection hosts required by configured integrations.
+
+### Validation and operations
+
+- Retain [the 56-route audit](docs/audits/2026-11-05-all-marketing/REPORT.md), reproducible browser scripts, failing baseline regressions, selected before/after captures and a trace. Remove redundant generated captures and duplicate animation/content code; preserve components still used by dashboards.
+- Validate empty, published and unavailable states using an owned loopback-only Rust API and disposable PostgreSQL fixture. The configured class-recording host still denies some existing files with HTTP 403; the page reports this explicitly. Replacement authorized media is an external content requirement.
+- Final command results and Git delivery are recorded in the audit report; test thresholds and security/entitlement gates are unchanged.
+
 ## [Unreleased] — 2026-11-03 — Admin console-error audit: layout, scroll, shortcuts, baseline DB
 
 Evidence-driven pass over the admin dashboard. Method: every admin route (164 pages; the 38 dynamic ones with placeholder id `1`) was loaded in a clean, extension-free headless Chromium while recording console errors/warnings, uncaught page errors and every HTTP >= 400 response; failures were then traced to a file or endpoint. `/admin` itself is clean (0 console errors, 0 failed requests). The `Unchecked runtime.lastError ... message channel closed` messages seen in a normal browser are Chrome-extension noise (page-level `admin:1`, no app frame).

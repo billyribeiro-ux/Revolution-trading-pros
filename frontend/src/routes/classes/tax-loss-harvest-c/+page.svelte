@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { authStore } from '#lib/stores/auth.svelte.js';
 	import { onMount } from 'svelte';
 	import ClassHeaderSection from '#lib/components/classes/ClassHeaderSection.svelte';
 	import ClassVideoSection from '#lib/components/classes/ClassVideoSection.svelte';
@@ -86,7 +87,16 @@
 			</div>
 		</section>
 
-		<ClassDownloadsSection courseSlug="tax-loss-harvest-c" />
+		{#if authStore.isAuthenticated}<ClassDownloadsSection
+				courseSlug="tax-loss-harvest-c"
+			/>{:else}<section class="class-section">
+				<h2 class="downloads-heading">Class Downloads</h2>
+				<p class="downloads-access">
+					<a href="/login?redirect=/classes/tax-loss-harvest-c"
+						>Sign in to access your class downloads</a
+					>.
+				</p>
+			</section>{/if}
 	</div>
 </div>
 
@@ -189,5 +199,18 @@
 		.current-title {
 			font-size: 1.1rem;
 		}
+	}
+	.downloads-access {
+		color: #334155;
+	}
+	.downloads-access a {
+		color: #075985;
+		text-decoration: underline;
+	}
+	.downloads-heading {
+		color: #334155;
+		font-size: 1.5rem;
+		font-weight: 700;
+		margin-bottom: 1rem;
 	}
 </style>

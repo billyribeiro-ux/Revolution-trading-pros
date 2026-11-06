@@ -1,6 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import { browser } from '$app/env';
+	import { scrollReveal } from '#lib/animations/scroll-reveal.js';
 	import IconTrendingUp from '@tabler/icons-svelte-runes/icons/trending-up';
 	import IconShield from '@tabler/icons-svelte-runes/icons/shield';
 	import IconUsers from '@tabler/icons-svelte-runes/icons/users';
@@ -13,62 +12,6 @@
 	import MathOfEdgeCalculator from './_sections/MathOfEdgeCalculator.svelte';
 	import SyllabusAccordion from './_sections/SyllabusAccordion.svelte';
 	import MissionFaqAccordion from './_sections/MissionFaqAccordion.svelte';
-
-	onMount(() => {
-		if (!browser) return;
-
-		let ctx: ReturnType<typeof import('gsap').gsap.context> | null = null;
-
-		(async () => {
-			const { gsap } = await import('gsap');
-			const { ScrollTrigger } = await import('gsap/ScrollTrigger');
-			gsap.registerPlugin(ScrollTrigger);
-
-			const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-			if (prefersReducedMotion) {
-				gsap.set('[data-gsap]', { opacity: 1, y: 0 });
-				return;
-			}
-
-			ctx = gsap.context(() => {
-				const all = document.querySelectorAll('[data-gsap]');
-				gsap.set(all, { opacity: 0, y: 30 });
-
-				const aboveFold: Element[] = [];
-				const belowFold: Element[] = [];
-				all.forEach((el) => {
-					const top = el.getBoundingClientRect().top;
-					if (top < window.innerHeight * 0.85) aboveFold.push(el);
-					else belowFold.push(el);
-				});
-
-				if (aboveFold.length > 0) {
-					gsap.to(aboveFold, { opacity: 1, y: 0, duration: 0.9, ease: 'power3.out', stagger: 0.1 });
-				}
-
-				if (belowFold.length > 0) {
-					ScrollTrigger.batch(belowFold, {
-						onEnter: (batch) => {
-							gsap.to(batch, {
-								opacity: 1,
-								y: 0,
-								duration: 0.8,
-								ease: 'power3.out',
-								stagger: 0.1,
-								overwrite: true
-							});
-						},
-						start: 'top 85%',
-						once: true
-					});
-				}
-
-				ScrollTrigger.refresh();
-			});
-		})();
-
-		return () => ctx?.revert();
-	});
 
 	let glossarySearch = $state('');
 
@@ -165,7 +108,7 @@
 	];
 </script>
 
-<div class="mission">
+<div class="mission" {@attach scrollReveal}>
 	<div class="mission__atmosphere" aria-hidden="true">
 		<div class="mission__halo mission__halo--top"></div>
 		<div class="mission__noise"></div>
@@ -824,6 +767,7 @@
 	}
 	.reality__grid {
 		display: grid;
+		grid-template-columns: minmax(0, 1fr);
 		gap: 4rem;
 		align-items: center;
 	}
@@ -1285,6 +1229,8 @@
 		color: var(--rtp-text-muted);
 	}
 	.lexicon__search {
+		max-width: 100%;
+		min-width: 0;
 		position: relative;
 	}
 	.lexicon__search-icon {
@@ -1305,7 +1251,7 @@
 		font-size: 0.875rem;
 		color: #fff;
 		outline: none;
-		width: 16rem;
+		width: min(16rem, 100%);
 		transition: border-color var(--rtp-dur-fast) var(--rtp-ease-out);
 	}
 	.lexicon__input:focus {
@@ -1574,7 +1520,7 @@
 			translate var(--rtp-dur-base) var(--rtp-ease-out);
 	}
 	.btn--primary {
-		background: var(--rtp-primary);
+		background: var(--rtp-primary-action);
 		color: #fff;
 		box-shadow: 0 0 30px var(--m-primary-glow);
 	}

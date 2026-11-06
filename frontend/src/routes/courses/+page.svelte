@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { cubicOut } from 'svelte/easing';
-	import { slide } from 'svelte/transition';
+	import { motionSlide as slide } from '#lib/animations/motion.js';
 	import { browser } from '$app/env';
-	import { Tween } from 'svelte/motion';
+	import { Tween, prefersReducedMotion } from 'svelte/motion';
 	import { expoOut } from 'svelte/easing';
 	import type { Attachment } from 'svelte/attachments';
 
@@ -175,7 +175,8 @@
 		const ctx: CanvasRenderingContext2D = maybeCtx;
 
 		let particles: ParticleData[] = [];
-		let rafId: number;
+		let rafId = 0;
+		const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
 		function seed(w: number, h: number) {
 			const count = w < 768 ? 30 : 60;
@@ -202,7 +203,11 @@
 					}
 				}
 			}
-			rafId = requestAnimationFrame(animate);
+			if (!motion.matches) rafId = requestAnimationFrame(animate);
+		}
+		function syncMotion() {
+			cancelAnimationFrame(rafId);
+			animate();
 		}
 
 		const ro = new ResizeObserver((entries) => {
@@ -213,12 +218,15 @@
 			node.width = w;
 			node.height = h;
 			seed(w, h);
+			if (motion.matches) animate();
 		});
 		ro.observe(node);
 		animate();
+		motion.addEventListener('change', syncMotion);
 
 		return () => {
 			cancelAnimationFrame(rafId);
+			motion.removeEventListener('change', syncMotion);
 			ro.disconnect();
 		};
 	};
@@ -299,24 +307,41 @@
 		if (!browser) return;
 
 		// Start the student counter tween
-		studentCounter.set(STUDENT_COUNT);
+		studentCounter.set(STUDENT_COUNT, { duration: prefersReducedMotion.current ? 0 : 2000 });
 
-		// Load GSAP dynamically for SSR safety
-		(async () => {
+		// Scope the async entrance to this route and the active motion preference.
+		let cancelled = false;
+		let media: ReturnType<typeof import('gsap').gsap.matchMedia> | undefined;
+		void (async () => {
 			const { gsap } = await import('gsap');
-
-			// GSAP Entrance Timeline (transform-only so text contrast is 100% from initial paint)
-			const tl = gsap.timeline();
-			tl.from('.hero-badge', { y: 20, duration: 0.8, ease: 'power3.out' })
-				.from(
-					'.hero-title-line',
-					{ y: 50, duration: 1, stagger: 0.15, ease: 'power4.out' },
-					'-=0.4'
-				)
-				.from('.hero-desc', { y: 20, duration: 0.8, ease: 'power2.out' }, '-=0.6')
-				.from('.hero-stats', { scale: 0.95, duration: 0.8, ease: 'back.out(1.7)' }, '-=0.6')
-				.from('.ticker-bar', { y: 100, duration: 1 }, '-=0.8');
-		})();
+			if (cancelled) return;
+			const root = document.querySelector('.courses');
+			if (!root) return;
+			media = gsap.matchMedia();
+			media.add(
+				'(prefers-reduced-motion: no-preference)',
+				() => {
+					// GSAP Entrance Timeline (transform-only so text contrast is 100% from initial paint)
+					const tl = gsap.timeline();
+					tl.from('.hero-badge', { y: 20, duration: 0.8, ease: 'power3.out' })
+						.from(
+							'.hero-title-line',
+							{ y: 50, duration: 1, stagger: 0.15, ease: 'power4.out' },
+							'-=0.4'
+						)
+						.from('.hero-desc', { y: 20, duration: 0.8, ease: 'power2.out' }, '-=0.6')
+						.from('.hero-stats', { scale: 0.95, duration: 0.8, ease: 'back.out(1.7)' }, '-=0.6')
+						.from('.ticker-bar', { y: 100, duration: 1 }, '-=0.8');
+				},
+				root
+			);
+		})().catch((error) => {
+			if (!cancelled) console.error('[Courses] Animation initialization failed', error);
+		});
+		return () => {
+			cancelled = true;
+			media?.revert();
+		};
 	});
 
 	// Course schemas now emitted from +page.ts (page.data.seo).
@@ -1031,7 +1056,7 @@
 	.trap__visual-noise {
 		position: absolute;
 		inset: 0;
-		background-image: url('https://assets.codepen.io/907368/noise.svg');
+		background-image: url('/textures/noise.svg');
 		opacity: 0.2;
 		pointer-events: none;
 	}

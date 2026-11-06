@@ -140,7 +140,7 @@
 		color: var(--rtp-text);
 	}
 	a {
-		color: var(--rtp-indigo);
+		color: #a5b4fc;
 		text-decoration: underline;
 		text-underline-offset: 3px;
 	}

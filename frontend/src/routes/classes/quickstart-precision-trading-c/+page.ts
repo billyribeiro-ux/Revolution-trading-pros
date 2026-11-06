@@ -1,5 +1,5 @@
 import type { SEOInput } from '#lib/seo/types.js';
-import { buildBreadcrumb, buildCourse, buildVideoObject } from '#lib/seo/schemas.js';
+import { buildBreadcrumb, buildCourse } from '#lib/seo/schemas.js';
 
 import { PRODUCTION_ORIGIN } from '#lib/seo/config.js';
 
@@ -32,20 +32,6 @@ export const load = () => ({
 				provider: { name: 'Revolution Trading Pros', url: SITE },
 				hasCourseInstance: {
 					courseMode: 'Online'
-				}
-			}),
-			buildVideoObject({
-				name: 'Quickstart To Precision Trading',
-				description:
-					'Full class recording covering precision trading entries, risk management, and chart setups.',
-				thumbnailUrl: `${SITE}/revolution-trading-pros.png`,
-				uploadDate: '2025-12-01T00:00:00Z',
-				contentUrl:
-					'https://s3.amazonaws.com/simpler-cdn/dev/wp-content/uploads/2021/08/02153240/Quickstart-To-Precision-Trading-with-TG-Watkins.mp4',
-				creator: {
-					name: 'Revolution Trading Pros',
-					url: SITE,
-					type: 'Organization'
 				}
 			})
 		]

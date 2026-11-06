@@ -39,12 +39,7 @@ export const load: PageLoad = ({ params }) => {
 				url,
 				applicationCategory: 'FinanceApplication',
 				operatingSystem: 'Web, ThinkorSwim, TradingView',
-				image: `${SITE}/revolution-trading-pros.png`,
-				offers: {
-					price: 0,
-					priceCurrency: 'USD',
-					url
-				}
+				image: `${SITE}/revolution-trading-pros.png`
 			})
 		]
 	};

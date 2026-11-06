@@ -53,7 +53,7 @@
 				onclick={() => (is3DView = false)}
 				aria-pressed={!is3DView}
 				class="pl-2 pr-1 py-1 cursor-pointer"
-				style:opacity={is3DView ? 0.5 : 1}
+				style:color={is3DView ? 'var(--calc-text-muted)' : 'var(--calc-text)'}
 			>
 				2D
 			</button>
@@ -63,7 +63,7 @@
 				onclick={() => (is3DView = true)}
 				aria-pressed={is3DView}
 				class="pl-1 pr-2 py-1 cursor-pointer"
-				style:opacity={is3DView ? 1 : 0.5}
+				style:color={is3DView ? 'var(--calc-text)' : 'var(--calc-text-muted)'}
 			>
 				3D
 			</button>

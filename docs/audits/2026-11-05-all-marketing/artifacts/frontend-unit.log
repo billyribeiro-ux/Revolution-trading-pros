@@ -1,0 +1,14 @@
+$ vp test run
+Using secrets defined in .env.local
+
+ RUN  v5.0.5 /Users/billyribeiro/dev/revolution-trading-pros/frontend
+
+
+ Test Files  138 passed (138)
+      Tests  3081 passed | 32 skipped (3113)
+   Start at  21:56:37
+   Duration  6.77s (environment 52%, setup 25%, tests 10%, transform 9%, import 3%, worker 1%)
+
+Environment  jsdom was created 138 times · 81.79s total, 52% of tracked time
+             create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)
+             learn more: https://vitest.dev/guide/improving-performance#test-environments

@@ -1,0 +1,586 @@
+{
+	"keyboard": [
+		{
+			"path": "/about",
+			"skip": {
+				"hash": "#main-content",
+				"focused": "main-content"
+			}
+		},
+		{
+			"path": "/about",
+			"menuClosed": true,
+			"scrollLock": {
+				"html": "hidden auto",
+				"body": "visible"
+			}
+		},
+		{
+			"path": "/about",
+			"faqs": 4,
+			"keyboardToggle": true
+		},
+		{
+			"path": "/alerts/explosive-swings",
+			"skip": {
+				"hash": "#main-content",
+				"focused": "main-content"
+			}
+		},
+		{
+			"path": "/alerts/explosive-swings",
+			"menuClosed": true,
+			"scrollLock": {
+				"html": "hidden auto",
+				"body": "visible"
+			}
+		},
+		{
+			"path": "/alerts/explosive-swings",
+			"faqs": 12,
+			"keyboardToggle": true
+		}
+	],
+	"anchors": [
+		{
+			"path": "/about",
+			"hash": "#how-it-works",
+			"targetExists": true
+		},
+		{
+			"path": "/alerts/explosive-swings",
+			"hash": "#methodology",
+			"targetExists": true
+		}
+	],
+	"links": [
+		{
+			"path": "/about",
+			"href": "/",
+			"status": 200,
+			"destination": "http://127.0.0.1:4174/"
+		},
+		{
+			"path": "/about",
+			"href": "/mentorship",
+			"status": 200,
+			"destination": "http://127.0.0.1:4174/mentorship"
+		},
+		{
+			"path": "/about",
+			"href": "/our-mission",
+			"status": 200,
+			"destination": "http://127.0.0.1:4174/our-mission"
+		},
+		{
+			"path": "/about",
+			"href": "/about",
+			"status": 200,
+			"destination": "http://127.0.0.1:4174/about"
+		},
+		{
+			"path": "/about",
+			"href": "/blog",
+			"status": 200,
+			"destination": "http://127.0.0.1:4174/blog"
+		},
+		{
+			"path": "/about",
+			"href": "/pricing",
+			"status": 200,
+			"destination": "http://127.0.0.1:4174/pricing"
+		},
+		{
+			"path": "/about",
+			"href": "/login",
+			"status": 200,
+			"destination": "http://127.0.0.1:4174/login"
+		},
+		{
+			"path": "/about",
+			"href": "/live-trading-rooms",
+			"status": 200,
+			"destination": "http://127.0.0.1:4174/live-trading-rooms"
+		},
+		{
+			"path": "/about",
+			"href": "/alerts",
+			"status": 200,
+			"destination": "http://127.0.0.1:4174/alerts"
+		},
+		{
+			"path": "/about",
+			"href": "/courses",
+			"status": 200,
+			"destination": "http://127.0.0.1:4174/courses"
+		},
+		{
+			"path": "/about",
+			"href": "/classes",
+			"status": 200,
+			"destination": "http://127.0.0.1:4174/classes"
+		},
+		{
+			"path": "/about",
+			"href": "/indicators",
+			"status": 200,
+			"destination": "http://127.0.0.1:4174/indicators"
+		},
+		{
+			"path": "/about",
+			"href": "/store/scanners",
+			"status": 200,
+			"destination": "http://127.0.0.1:4174/store/scanners"
+		},
+		{
+			"path": "/about",
+			"href": "/tools/options-calculator",
+			"status": 200,
+			"destination": "http://127.0.0.1:4174/tools/options-calculator"
+		},
+		{
+			"path": "/about",
+			"href": "/team",
+			"status": 200,
+			"destination": "http://127.0.0.1:4174/team"
+		},
+		{
+			"path": "/about",
+			"href": "/resources",
+			"status": 200,
+			"destination": "http://127.0.0.1:4174/resources"
+		},
+		{
+			"path": "/about",
+			"href": "/tutorials",
+			"status": 200,
+			"destination": "http://127.0.0.1:4174/tutorials"
+		},
+		{
+			"path": "/about",
+			"href": "/contact",
+			"status": 200,
+			"destination": "http://127.0.0.1:4174/contact"
+		},
+		{
+			"path": "/about",
+			"href": "/careers",
+			"status": 200,
+			"destination": "http://127.0.0.1:4174/careers"
+		},
+		{
+			"path": "/about",
+			"href": "/terms",
+			"status": 200,
+			"destination": "http://127.0.0.1:4174/terms"
+		},
+		{
+			"path": "/about",
+			"href": "/privacy",
+			"status": 200,
+			"destination": "http://127.0.0.1:4174/privacy"
+		},
+		{
+			"path": "/about",
+			"href": "/cookie-policy",
+			"status": 200,
+			"destination": "http://127.0.0.1:4174/cookie-policy"
+		},
+		{
+			"path": "/about",
+			"href": "/disclaimer",
+			"status": 200,
+			"destination": "http://127.0.0.1:4174/disclaimer"
+		},
+		{
+			"path": "/about",
+			"href": "/refund",
+			"status": 200,
+			"destination": "http://127.0.0.1:4174/refund"
+		},
+		{
+			"path": "/alerts/explosive-swings",
+			"href": "/",
+			"status": 200,
+			"destination": "http://127.0.0.1:4174/"
+		},
+		{
+			"path": "/alerts/explosive-swings",
+			"href": "/mentorship",
+			"status": 200,
+			"destination": "http://127.0.0.1:4174/mentorship"
+		},
+		{
+			"path": "/alerts/explosive-swings",
+			"href": "/our-mission",
+			"status": 200,
+			"destination": "http://127.0.0.1:4174/our-mission"
+		},
+		{
+			"path": "/alerts/explosive-swings",
+			"href": "/about",
+			"status": 200,
+			"destination": "http://127.0.0.1:4174/about"
+		},
+		{
+			"path": "/alerts/explosive-swings",
+			"href": "/blog",
+			"status": 200,
+			"destination": "http://127.0.0.1:4174/blog"
+		},
+		{
+			"path": "/alerts/explosive-swings",
+			"href": "/pricing",
+			"status": 200,
+			"destination": "http://127.0.0.1:4174/pricing"
+		},
+		{
+			"path": "/alerts/explosive-swings",
+			"href": "/login",
+			"status": 200,
+			"destination": "http://127.0.0.1:4174/login"
+		},
+		{
+			"path": "/alerts/explosive-swings",
+			"href": "/alerts",
+			"status": 200,
+			"destination": "http://127.0.0.1:4174/alerts"
+		},
+		{
+			"path": "/alerts/explosive-swings",
+			"href": "/contact",
+			"status": 200,
+			"destination": "http://127.0.0.1:4174/contact"
+		},
+		{
+			"path": "/alerts/explosive-swings",
+			"href": "/live-trading-rooms",
+			"status": 200,
+			"destination": "http://127.0.0.1:4174/live-trading-rooms"
+		},
+		{
+			"path": "/alerts/explosive-swings",
+			"href": "/courses",
+			"status": 200,
+			"destination": "http://127.0.0.1:4174/courses"
+		},
+		{
+			"path": "/alerts/explosive-swings",
+			"href": "/classes",
+			"status": 200,
+			"destination": "http://127.0.0.1:4174/classes"
+		},
+		{
+			"path": "/alerts/explosive-swings",
+			"href": "/indicators",
+			"status": 200,
+			"destination": "http://127.0.0.1:4174/indicators"
+		},
+		{
+			"path": "/alerts/explosive-swings",
+			"href": "/store/scanners",
+			"status": 200,
+			"destination": "http://127.0.0.1:4174/store/scanners"
+		},
+		{
+			"path": "/alerts/explosive-swings",
+			"href": "/tools/options-calculator",
+			"status": 200,
+			"destination": "http://127.0.0.1:4174/tools/options-calculator"
+		},
+		{
+			"path": "/alerts/explosive-swings",
+			"href": "/team",
+			"status": 200,
+			"destination": "http://127.0.0.1:4174/team"
+		},
+		{
+			"path": "/alerts/explosive-swings",
+			"href": "/resources",
+			"status": 200,
+			"destination": "http://127.0.0.1:4174/resources"
+		},
+		{
+			"path": "/alerts/explosive-swings",
+			"href": "/tutorials",
+			"status": 200,
+			"destination": "http://127.0.0.1:4174/tutorials"
+		},
+		{
+			"path": "/alerts/explosive-swings",
+			"href": "/careers",
+			"status": 200,
+			"destination": "http://127.0.0.1:4174/careers"
+		},
+		{
+			"path": "/alerts/explosive-swings",
+			"href": "/terms",
+			"status": 200,
+			"destination": "http://127.0.0.1:4174/terms"
+		},
+		{
+			"path": "/alerts/explosive-swings",
+			"href": "/privacy",
+			"status": 200,
+			"destination": "http://127.0.0.1:4174/privacy"
+		},
+		{
+			"path": "/alerts/explosive-swings",
+			"href": "/cookie-policy",
+			"status": 200,
+			"destination": "http://127.0.0.1:4174/cookie-policy"
+		},
+		{
+			"path": "/alerts/explosive-swings",
+			"href": "/disclaimer",
+			"status": 200,
+			"destination": "http://127.0.0.1:4174/disclaimer"
+		},
+		{
+			"path": "/alerts/explosive-swings",
+			"href": "/refund",
+			"status": 200,
+			"destination": "http://127.0.0.1:4174/refund"
+		}
+	],
+	"text": [
+		{
+			"path": "/about",
+			"viewport": 390,
+			"fontSize": "32px",
+			"overflow": []
+		},
+		{
+			"path": "/alerts/explosive-swings",
+			"viewport": 390,
+			"fontSize": "32px",
+			"overflow": []
+		}
+	],
+	"listeners": [
+		{
+			"cycle": 0,
+			"window": {
+				"load": 2,
+				"unhandledrejection": 1,
+				"error": 1,
+				"online": 1,
+				"crm-request": 1,
+				"crm-access-denied": 1,
+				"beforeunload": 1,
+				"visibilitychange": 1,
+				"focus": 1,
+				"popstate": 1,
+				"hashchange": 1,
+				"pageshow": 1,
+				"wheel": 3,
+				"resize": 1
+			},
+			"document": {
+				"visibilitychange": 3,
+				"click": 2,
+				"keydown": 2,
+				"scroll": 1,
+				"touchcancel": 1,
+				"pointerdown": 1,
+				"touchstart": 2,
+				"mousedown": 2,
+				"pointerup": 1,
+				"touchend": 1,
+				"mouseup": 1,
+				"DOMContentLoaded": 1,
+				"mousemove": 1,
+				"input": 1,
+				"pointermove": 1,
+				"change": 1
+			}
+		},
+		{
+			"cycle": 1,
+			"window": {
+				"load": 2,
+				"unhandledrejection": 1,
+				"error": 1,
+				"online": 1,
+				"crm-request": 1,
+				"crm-access-denied": 1,
+				"beforeunload": 1,
+				"visibilitychange": 1,
+				"focus": 1,
+				"popstate": 1,
+				"hashchange": 1,
+				"pageshow": 1,
+				"wheel": 3,
+				"resize": 1
+			},
+			"document": {
+				"visibilitychange": 3,
+				"click": 2,
+				"keydown": 2,
+				"scroll": 1,
+				"touchcancel": 1,
+				"pointerdown": 1,
+				"touchstart": 2,
+				"mousedown": 2,
+				"pointerup": 1,
+				"touchend": 1,
+				"mouseup": 1,
+				"DOMContentLoaded": 1,
+				"mousemove": 1,
+				"input": 1,
+				"pointermove": 1,
+				"change": 1
+			}
+		},
+		{
+			"cycle": 2,
+			"window": {
+				"load": 2,
+				"unhandledrejection": 1,
+				"error": 1,
+				"online": 1,
+				"crm-request": 1,
+				"crm-access-denied": 1,
+				"beforeunload": 1,
+				"visibilitychange": 1,
+				"focus": 1,
+				"popstate": 1,
+				"hashchange": 1,
+				"pageshow": 1,
+				"wheel": 3,
+				"resize": 1
+			},
+			"document": {
+				"visibilitychange": 3,
+				"click": 2,
+				"keydown": 2,
+				"scroll": 1,
+				"touchcancel": 1,
+				"pointerdown": 1,
+				"touchstart": 2,
+				"mousedown": 2,
+				"pointerup": 1,
+				"touchend": 1,
+				"mouseup": 1,
+				"DOMContentLoaded": 1,
+				"mousemove": 1,
+				"input": 1,
+				"pointermove": 1,
+				"change": 1
+			}
+		},
+		{
+			"cycle": 3,
+			"window": {
+				"load": 2,
+				"unhandledrejection": 1,
+				"error": 1,
+				"online": 1,
+				"crm-request": 1,
+				"crm-access-denied": 1,
+				"beforeunload": 1,
+				"visibilitychange": 1,
+				"focus": 1,
+				"popstate": 1,
+				"hashchange": 1,
+				"pageshow": 1,
+				"wheel": 3,
+				"resize": 1
+			},
+			"document": {
+				"visibilitychange": 3,
+				"click": 2,
+				"keydown": 2,
+				"scroll": 1,
+				"touchcancel": 1,
+				"pointerdown": 1,
+				"touchstart": 2,
+				"mousedown": 2,
+				"pointerup": 1,
+				"touchend": 1,
+				"mouseup": 1,
+				"DOMContentLoaded": 1,
+				"mousemove": 1,
+				"input": 1,
+				"pointermove": 1,
+				"change": 1
+			}
+		},
+		{
+			"cycle": 4,
+			"window": {
+				"load": 2,
+				"unhandledrejection": 1,
+				"error": 1,
+				"online": 1,
+				"crm-request": 1,
+				"crm-access-denied": 1,
+				"beforeunload": 1,
+				"visibilitychange": 1,
+				"focus": 1,
+				"popstate": 1,
+				"hashchange": 1,
+				"pageshow": 1,
+				"wheel": 3,
+				"resize": 1
+			},
+			"document": {
+				"visibilitychange": 3,
+				"click": 2,
+				"keydown": 2,
+				"scroll": 1,
+				"touchcancel": 1,
+				"pointerdown": 1,
+				"touchstart": 2,
+				"mousedown": 2,
+				"pointerup": 1,
+				"touchend": 1,
+				"mouseup": 1,
+				"DOMContentLoaded": 1,
+				"mousemove": 1,
+				"input": 1,
+				"pointermove": 1,
+				"change": 1
+			}
+		},
+		{
+			"cycle": 5,
+			"window": {
+				"load": 2,
+				"unhandledrejection": 1,
+				"error": 1,
+				"online": 1,
+				"crm-request": 1,
+				"crm-access-denied": 1,
+				"beforeunload": 1,
+				"visibilitychange": 1,
+				"focus": 1,
+				"popstate": 1,
+				"hashchange": 1,
+				"pageshow": 1,
+				"wheel": 3,
+				"resize": 1
+			},
+			"document": {
+				"visibilitychange": 3,
+				"click": 2,
+				"keydown": 2,
+				"scroll": 1,
+				"touchcancel": 1,
+				"pointerdown": 1,
+				"touchstart": 2,
+				"mousedown": 2,
+				"pointerup": 1,
+				"touchend": 1,
+				"mouseup": 1,
+				"DOMContentLoaded": 1,
+				"mousemove": 1,
+				"input": 1,
+				"pointermove": 1,
+				"change": 1
+			}
+		}
+	],
+	"exceptions": [],
+	"serviceWorkers": ["http://127.0.0.1:4174/service-worker.js"]
+}

@@ -10,6 +10,7 @@
 	 * - Premium button interactions
 	 */
 	import { onMount, onDestroy, tick } from 'svelte';
+	import { prefersReducedMotion } from 'svelte/motion';
 	import { browser } from '$app/env';
 	import type { CandlestickData, IChartApi, ISeriesApi, UTCTimestamp } from 'lightweight-charts';
 	import type gsap from 'gsap';
@@ -118,6 +119,9 @@
 	let replayInterval: ReturnType<typeof setInterval> | null = null;
 	let slideInterval: ReturnType<typeof setInterval> | null = null;
 	let currentSlide = $state(0);
+	let rotationPaused = $state(false);
+	let destroyed = false;
+	let loopTimeline: gsap.core.Timeline | null = null;
 	let isLooping = $state(false);
 	let gsapLib: typeof gsap | null = null;
 	let timeline: gsap.core.Timeline | null = null;
@@ -170,6 +174,7 @@
 			// Chart library failed to load - hero will display without chart background
 			return;
 		}
+		if (destroyed || !heroSection || !chartContainer) return;
 
 		const width = heroSection.clientWidth || window.innerWidth;
 		const height = heroSection.clientHeight || window.innerHeight;
@@ -232,7 +237,16 @@
 
 	// REPLAY ANIMATION
 	function startReplay(startIndex: number = 10): void {
-		if (!browser || !series || !chart || !heroSection) return;
+		if (
+			destroyed ||
+			prefersReducedMotion.current ||
+			rotationPaused ||
+			!browser ||
+			!series ||
+			!chart ||
+			!heroSection
+		)
+			return;
 
 		if (replayInterval) {
 			clearInterval(replayInterval);
@@ -266,7 +280,17 @@
 	}
 
 	function handleLoop(): void {
-		if (isLooping || !browser || !chartContainer || !gsapLib || !series) return;
+		if (
+			destroyed ||
+			prefersReducedMotion.current ||
+			rotationPaused ||
+			isLooping ||
+			!browser ||
+			!chartContainer ||
+			!gsapLib ||
+			!series
+		)
+			return;
 
 		isLooping = true;
 		isAnimating = true;
@@ -279,6 +303,7 @@
 				startReplay(10);
 			}
 		});
+		loopTimeline = loopTL;
 
 		loopTL
 			.to(chartContainer, { opacity: 0, scale: 1.02, duration: 0.6, ease: 'power2.in' })
@@ -298,6 +323,7 @@
 
 	// Pulse the ambient glow during transitions
 	function pulseAmbientGlow(): void {
+		if (prefersReducedMotion.current) return;
 		const glowEl = document.querySelector('.ambient-glow');
 		if (!glowEl || !gsapLib) return;
 
@@ -313,6 +339,7 @@
 
 	// Flash effect on chart during transition
 	function flashChart(): void {
+		if (prefersReducedMotion.current) return;
 		if (!chartContainer || !gsapLib) return;
 
 		gsapLib.to(chartContainer, {
@@ -332,7 +359,7 @@
 
 	function animateSlideOut(slideIndex: number): Promise<void> {
 		return new Promise((resolve) => {
-			if (!gsapLib || slideIndex < 0) {
+			if (prefersReducedMotion.current || !gsapLib || slideIndex < 0) {
 				resolve();
 				return;
 			}
@@ -425,7 +452,7 @@
 		const buttons = slide.querySelectorAll('.cta');
 
 		// Fallback: If no GSAP, just make everything visible
-		if (!gsapLib) {
+		if (prefersReducedMotion.current || !gsapLib) {
 			[h1, h2, p, ...Array.from(buttons)].forEach((el) => {
 				if (el instanceof HTMLElement) {
 					el.style.opacity = '1';
@@ -661,7 +688,8 @@
 			showSlide(index, true);
 			startProgressTimer();
 			// Restart interval
-			slideInterval = setInterval(nextSlide, 7000);
+			if (!rotationPaused && !prefersReducedMotion.current)
+				slideInterval = setInterval(nextSlide, 7000);
 		}
 	}
 
@@ -669,6 +697,7 @@
 	function startProgressTimer(): void {
 		if (progressInterval) clearInterval(progressInterval);
 		slideProgress = 0;
+		if (rotationPaused || prefersReducedMotion.current) return;
 
 		progressInterval = setInterval(() => {
 			slideProgress += 100 / 70; // 7 seconds = 7000ms, update every 100ms
@@ -711,6 +740,7 @@
 
 		// PE7: Schedule async initialization
 		tick().then(() => {
+			if (destroyed) return;
 			// Setup ResizeObserver
 			if (heroSection && typeof ResizeObserver !== 'undefined') {
 				resizeObserver = new ResizeObserver(handleResize);
@@ -730,17 +760,35 @@
 
 			// PE7: Load GSAP with proper error handling
 			initGSAP();
-
-			// Start slide rotation
-			slideInterval = setInterval(nextSlide, 7000);
-			startProgressTimer();
 		});
 	});
+
+	function stopRotation(): void {
+		if (slideInterval) clearInterval(slideInterval);
+		if (progressInterval) clearInterval(progressInterval);
+		if (replayInterval) clearInterval(replayInterval);
+	}
+
+	const rotationControl: Attachment = () => {
+		if (prefersReducedMotion.current || rotationPaused) {
+			stopRotation();
+			timeline?.progress(1);
+			exitTimeline?.progress(1);
+			loopTimeline?.progress(1);
+			return;
+		}
+		if (!gsapLoaded) return;
+		slideInterval = setInterval(nextSlide, 7000);
+		startProgressTimer();
+		if (chartReady) startReplay(10);
+		return stopRotation;
+	};
 
 	// PE7: Separate async function for GSAP initialization
 	async function initGSAP(): Promise<void> {
 		try {
 			const gsapModule = await import('gsap');
+			if (destroyed) return;
 			gsapLib = gsapModule?.gsap || gsapModule?.default || null;
 
 			if (!gsapLib) {
@@ -751,6 +799,7 @@
 			// PE7: Wait for DOM to be fully ready
 			await tick();
 			await new Promise((resolve) => requestAnimationFrame(resolve));
+			if (destroyed) return;
 
 			// PE7: Verify slide element exists before animating
 			const slide = document.querySelector(`[data-slide="${currentSlide}"]`);
@@ -776,6 +825,8 @@
 	}
 
 	onDestroy(() => {
+		destroyed = true;
+		loopTimeline?.kill();
 		if (slideInterval) clearInterval(slideInterval);
 		if (replayInterval) clearInterval(replayInterval);
 		if (progressInterval) clearInterval(progressInterval);
@@ -793,6 +844,7 @@
 </script>
 
 <section
+	{@attach rotationControl}
 	{@attach captureHeroSection}
 	id="hero"
 	aria-label="Revolution Trading Pros hero"
@@ -809,7 +861,13 @@
 	</div>
 
 	<!-- Chart Background -->
-	<div id="chart-bg" {@attach captureChartContainer} class="hero-chart" aria-hidden="true"></div>
+	<div
+		id="chart-bg"
+		{@attach captureChartContainer}
+		class="hero-chart"
+		aria-hidden="true"
+		inert
+	></div>
 
 	<!-- Vignette Overlay -->
 	<div class="hero-vignette" aria-hidden="true"></div>
@@ -851,6 +909,14 @@
 
 		<!-- Slide Indicators -->
 		<nav class="slide-indicators" aria-label="Slide navigation">
+			<button
+				type="button"
+				class="slide-pause"
+				aria-label="Pause automatic slides"
+				aria-pressed={rotationPaused || prefersReducedMotion.current}
+				disabled={prefersReducedMotion.current}
+				onclick={() => (rotationPaused = !rotationPaused)}>Pause</button
+			>
 			{#each SLIDES as _, i (i)}
 				<button
 					type="button"
@@ -870,6 +936,14 @@
 </section>
 
 <style>
+	.slide-pause {
+		color: #cbd5e1;
+		border: 1px solid #64748b;
+		border-radius: 0.5rem;
+		padding: 0.4rem 0.75rem;
+		font-size: 0.75rem;
+		cursor: pointer;
+	}
 	/* ═══════════════════════════════════════════════════════════════════════════════
 	 * HERO SECTION DESIGN TOKENS - Netflix L11+ Cinematic Trading Hero
 	 * All hero-specific tokens scoped to this component

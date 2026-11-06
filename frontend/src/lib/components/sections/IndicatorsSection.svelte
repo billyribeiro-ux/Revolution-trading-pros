@@ -11,7 +11,7 @@
 	 * ✓ Reduced motion support
 	 * ══════════════════════════════════════════════════════════════════════════════
 	 */
-	import { onMount, onDestroy, tick } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
 	import { cubicOut, backOut } from 'svelte/easing';
 	import IconChartLine from '@tabler/icons-svelte-runes/icons/chart-line';
 	import IconActivity from '@tabler/icons-svelte-runes/icons/activity';
@@ -19,7 +19,7 @@
 	import IconBolt from '@tabler/icons-svelte-runes/icons/bolt';
 	import IconArrowRight from '@tabler/icons-svelte-runes/icons/arrow-right';
 	import IconSparkles from '@tabler/icons-svelte-runes/icons/sparkles';
-	import type ScrollTriggerType from 'gsap/ScrollTrigger';
+	import { scrollReveal } from '#lib/animations/scroll-reveal.js';
 	import type { Attachment } from 'svelte/attachments';
 
 	// Local shape for the synthetic OHLC candles `generateCandleData` emits —
@@ -99,16 +99,16 @@
 	let sectionRef = $state<HTMLElement | null>(null);
 	let chartRef = $state<HTMLElement | null>(null);
 	// January 2026 motion: content is revealed lazily as the section scrolls into view.
-	let isVisible = $state(false);
+	let isVisible = $state(true);
 	let activeIndicator = $state(0);
 	// `ScrollTriggerType` is the *class* (used statically — `.getAll()`,
 	// `.refresh()`); instances returned by `.getAll()` are `ScrollTriggerType`
 	// instances of the same class.
-	let scrollTriggerInstance: typeof ScrollTriggerType | null = null;
 	let animationFrame: number;
 	let chartCtx: CanvasRenderingContext2D | null = null;
 	let canvasRef = $state<HTMLCanvasElement | null>(null);
 	let prefersReducedMotion = $state(false);
+	let destroyed = false;
 
 	const captureSection: Attachment<HTMLElement> = (node) => {
 		sectionRef = node;
@@ -258,7 +258,7 @@
 	// ============================================================================
 	function animate() {
 		drawChart();
-		animationFrame = requestAnimationFrame(animate);
+		if (!prefersReducedMotion) animationFrame = requestAnimationFrame(animate);
 	}
 
 	// ============================================================================
@@ -267,17 +267,22 @@
 	let rotationInterval: ReturnType<typeof setInterval> | null = null;
 	let resizeObserver: ResizeObserver | null = null;
 	let visibilityObserver: IntersectionObserver | null = null;
-	let gsapLoadStarted = false;
-
-	function loadGSAPAfterReveal() {
-		if (prefersReducedMotion || gsapLoadStarted) return;
-		gsapLoadStarted = true;
-		loadGSAP();
-	}
-
 	onMount(() => {
 		// Check for reduced motion preference
-		prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+		const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
+		prefersReducedMotion = motion.matches;
+		const syncMotion = () => {
+			prefersReducedMotion = motion.matches;
+			if (animationFrame) cancelAnimationFrame(animationFrame);
+			if (rotationInterval) clearInterval(rotationInterval);
+			if (prefersReducedMotion) {
+				chartProgress = 1;
+				drawChart();
+			} else if (canvasInitialized) {
+				animate();
+			}
+		};
+		motion.addEventListener('change', syncMotion);
 
 		// Trigger entrance animations when section scrolls into viewport
 		queueMicrotask(() => {
@@ -287,7 +292,6 @@
 						if (entries[0]?.isIntersecting) {
 							isVisible = true;
 							startCanvasIfReady();
-							loadGSAPAfterReveal();
 							observer.disconnect();
 						}
 					},
@@ -298,20 +302,21 @@
 			} else {
 				isVisible = true;
 				startCanvasIfReady();
-				loadGSAPAfterReveal();
 			}
 		});
 
 		// Auto-rotate indicators (slower on mobile for better UX)
 		const isMobile = window.innerWidth < 768;
-		rotationInterval = setInterval(
-			() => {
-				activeIndicator = (activeIndicator + 1) % indicators.length;
-			},
-			isMobile ? 5000 : 4000
-		);
+		if (!prefersReducedMotion)
+			rotationInterval = setInterval(
+				() => {
+					activeIndicator = (activeIndicator + 1) % indicators.length;
+				},
+				isMobile ? 5000 : 4000
+			);
 
 		return () => {
+			motion.removeEventListener('change', syncMotion);
 			if (rotationInterval) clearInterval(rotationInterval);
 			visibilityObserver?.disconnect();
 			resizeObserver?.disconnect();
@@ -330,6 +335,7 @@
 		// Double rAF ensures layout is fully computed after the {#if} block mounts
 		requestAnimationFrame(() => {
 			requestAnimationFrame(() => {
+				if (destroyed) return;
 				setupCanvas();
 
 				resizeObserver = new ResizeObserver(() => {
@@ -381,6 +387,7 @@
 		const duration = 2000;
 		const start = performance.now();
 		function step(now: number) {
+			if (destroyed || prefersReducedMotion) return;
 			const elapsed = now - start;
 			const progress = Math.min(elapsed / duration, 1);
 			chartProgress = cubicOut(progress);
@@ -389,62 +396,9 @@
 		requestAnimationFrame(step);
 	}
 
-	async function loadGSAP() {
-		try {
-			const { gsap } = await import('gsap');
-			const { ScrollTrigger } = await import('gsap/ScrollTrigger');
-			gsap.registerPlugin(ScrollTrigger);
-			scrollTriggerInstance = ScrollTrigger;
-
-			// Animate indicator cards on scroll
-			await tick();
-			const cards = sectionRef?.querySelectorAll('.indicator-card');
-			if (cards && cards.length > 0) {
-				gsap.fromTo(
-					cards,
-					{ y: 40, opacity: 0 },
-					{
-						y: 0,
-						opacity: 1,
-						duration: 0.6,
-						stagger: 0.1,
-						ease: 'power2.out',
-						scrollTrigger: {
-							trigger: sectionRef,
-							start: 'top 70%',
-							toggleActions: 'play none none reverse'
-						}
-					}
-				);
-
-				// fromTo applies opacity:0 immediately and ScrollTrigger
-				// computes start positions now — before late images/fonts
-				// load. Refresh after paint and again on window load so the
-				// trigger can't end up stale (cards stuck invisible).
-				scrollTriggerInstance.refresh();
-				if (document.readyState !== 'complete') {
-					window.addEventListener('load', () => scrollTriggerInstance?.refresh(), { once: true });
-				}
-			}
-		} catch (e) {
-			console.warn('[IndicatorsSection] GSAP failed to load:', e);
-		}
-	}
-
 	onDestroy(() => {
+		destroyed = true;
 		if (animationFrame) cancelAnimationFrame(animationFrame);
-		// Kill only ScrollTriggers associated with this section
-		if (scrollTriggerInstance && sectionRef) {
-			const section = sectionRef;
-			scrollTriggerInstance.getAll().forEach((st) => {
-				// `st.trigger` is `Element | undefined`; `contains` rejects undefined.
-				const trigger = st.trigger;
-				if (!trigger) return;
-				if (trigger === section || section.contains(trigger)) {
-					st.kill();
-				}
-			});
-		}
 	});
 
 	// ============================================================================
@@ -473,7 +427,7 @@
 	}
 </script>
 
-<section {@attach captureSection} class="indicators-section">
+<section {@attach captureSection} {@attach scrollReveal} class="indicators-section">
 	<!-- Ambient Background -->
 	<div class="indicator-ambient" aria-hidden="true">
 		<!-- Gradient orbs - smaller on mobile -->

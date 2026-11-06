@@ -79,7 +79,7 @@
 <div class="flex flex-col gap-0">
 	<!-- Tab bar -->
 	<div
-		class="relative flex border-b"
+		class="relative flex border-b overflow-x-auto max-w-full min-w-0"
 		style="border-color: var(--calc-border);"
 		role="tablist"
 		aria-label="Charts"
