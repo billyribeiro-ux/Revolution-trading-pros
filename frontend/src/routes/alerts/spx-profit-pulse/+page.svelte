@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import { slide } from 'svelte/transition';
+	import { scrollReveal } from '#lib/animations/scroll-reveal.js';
+	import { motionSlide as slide } from '#lib/animations/motion.js';
 	import { cubicOut } from 'svelte/easing';
 
 	// --- SSOT: Pricing Plans ---
@@ -82,97 +82,9 @@
 	let openFaq: number | null = $state(null);
 	const toggleFaq = (index: number) => (openFaq = openFaq === index ? null : index);
 
-	// --- GSAP ScrollTrigger Animations ---
-	import { browser } from '$app/env';
 	import IconBolt from '@tabler/icons-svelte-runes/icons/bolt';
 	import IconTrendingUp from '@tabler/icons-svelte-runes/icons/trending-up';
 	import IconLock from '@tabler/icons-svelte-runes/icons/lock';
-	let gsapContext: ReturnType<typeof import('gsap').gsap.context> | null = null;
-	let isComponentMounted = false;
-	let scrollRefreshRaf = 0;
-
-	onMount(() => {
-		if (!browser) return;
-		isComponentMounted = true;
-		initGSAP();
-		return () => {
-			isComponentMounted = false;
-			cancelAnimationFrame(scrollRefreshRaf);
-			if (gsapContext) gsapContext.revert();
-		};
-	});
-
-	async function initGSAP() {
-		try {
-			const { gsap } = await import('gsap');
-			const { ScrollTrigger } = await import('gsap/ScrollTrigger');
-			if (!isComponentMounted) return;
-
-			gsap.registerPlugin(ScrollTrigger);
-
-			const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-			if (prefersReducedMotion) {
-				gsap.set('[data-gsap]', { opacity: 1, y: 0 });
-				return;
-			}
-
-			gsapContext = gsap.context(() => {
-				const all = Array.from(document.querySelectorAll('[data-gsap]'));
-				gsap.set(all, { opacity: 0, y: 30 });
-
-				// Elements visible in viewport on mount get an immediate
-				// staggered entrance — ScrollTrigger.batch's onEnter does not
-				// fire for elements already past the trigger position at
-				// registration time, which would otherwise leave hero
-				// elements stuck invisible.
-				const visible: Element[] = [];
-				const hidden: Element[] = [];
-				all.forEach((el) => {
-					const r = el.getBoundingClientRect();
-					if (r.top < window.innerHeight && r.bottom > 0) visible.push(el);
-					else hidden.push(el);
-				});
-
-				if (visible.length > 0) {
-					gsap.to(visible, {
-						opacity: 1,
-						y: 0,
-						duration: 0.9,
-						ease: 'power3.out',
-						stagger: 0.1
-					});
-				}
-
-				if (hidden.length > 0) {
-					ScrollTrigger.batch(hidden, {
-						onEnter: (batch) => {
-							gsap.to(batch, {
-								opacity: 1,
-								y: 0,
-								duration: 0.8,
-								ease: 'power3.out',
-								stagger: 0.1,
-								overwrite: true
-							});
-						},
-						start: 'top 85%',
-						once: true
-					});
-				}
-			});
-
-			const refreshTrigger = document.fonts?.ready ?? Promise.resolve();
-			refreshTrigger.then(() => {
-				if (!isComponentMounted) return;
-				scrollRefreshRaf = requestAnimationFrame(() => {
-					scrollRefreshRaf = 0;
-					ScrollTrigger.refresh();
-				});
-			});
-		} catch (error) {
-			console.error('[SPX] GSAP initialization failed:', error);
-		}
-	}
 
 	// SEO schemas emitted via +page.ts (page.data.seo). FAQ list kept locally
 	// for the on-page accordion UI (the JSON-LD is owned by the loader).
@@ -230,7 +142,7 @@
 	];
 </script>
 
-<main class="spx">
+<div class="spx" {@attach scrollReveal}>
 	<!-- ─────────────────────────────────────────────────────────────
 	     Hero
 	     ───────────────────────────────────────────────────────────── -->
@@ -820,7 +732,7 @@
 			<p class="bottom-cta__legal">30-Day Money Back Guarantee on Annual Plans</p>
 		</div>
 	</section>
-</main>
+</div>
 
 <style>
 	/* ─────────────────────────────────────────────────────────────────
@@ -2445,5 +2357,24 @@
 		margin-block-start: 2rem;
 		font-size: 0.875rem;
 		color: color-mix(in oklab, #fff 60%, transparent);
+	}
+
+	.hero__cta-primary,
+	.pricing__toggle-btn--active,
+	.plan__ribbon,
+	.plan__cta--primary {
+		background: var(--rtp-primary-action);
+	}
+	.plan__ribbon--emerald {
+		background: var(--rtp-emerald-action);
+	}
+	.plan--dim {
+		opacity: 1;
+	}
+	.hero__preview-badge-value {
+		color: #047857;
+	}
+	.bottom-cta__button {
+		color: var(--rtp-primary-action);
 	}
 </style>

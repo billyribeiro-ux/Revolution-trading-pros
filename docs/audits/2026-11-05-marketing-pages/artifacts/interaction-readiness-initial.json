@@ -1,0 +1,17 @@
+{
+	"keyboard": [
+		{
+			"path": "/about",
+			"skip": {
+				"hash": "#main-content",
+				"focused": "main-content"
+			}
+		}
+	],
+	"anchors": [],
+	"links": [],
+	"text": [],
+	"listeners": [],
+	"exceptions": [],
+	"error": "locator.waitFor: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('dialog') to be detached\u001b[22m\n\u001b[2m    64 × locator resolved to visible <div role=\"dialog\" id=\"mobile-nav\" aria-modal=\"true\" aria-labelledby=\"mobile-title\" class=\"mobile-panel svelte-2r4noc\">…</div>\u001b[22m\n\n    at /Users/billyribeiro/dev/revolution-trading-pros/docs/audits/2026-11-05-marketing-pages/interactions.mjs:22:73"
+}

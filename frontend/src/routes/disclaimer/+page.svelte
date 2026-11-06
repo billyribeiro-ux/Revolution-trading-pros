@@ -156,7 +156,7 @@
 		color: var(--rtp-text);
 	}
 	.legal-body :global(a) {
-		color: var(--rtp-indigo);
+		color: #a5b4fc;
 		text-decoration: underline;
 		text-underline-offset: 3px;
 	}
@@ -180,7 +180,7 @@
 		color: var(--rtp-text);
 	}
 	a {
-		color: var(--rtp-indigo);
+		color: #a5b4fc;
 		text-decoration: underline;
 		text-underline-offset: 3px;
 	}

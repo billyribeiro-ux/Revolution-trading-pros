@@ -318,7 +318,7 @@
 
 	.solve-button {
 		border-radius: 0.5rem;
-		background: var(--calc-accent);
+		background: #4f46e5;
 		color: white;
 		font-size: 0.75rem;
 		font-weight: 500;

@@ -1,5 +1,5 @@
 import type { SEOInput } from '#lib/seo/types.js';
-import { buildBreadcrumb, buildCourse, buildVideoObject } from '#lib/seo/schemas.js';
+import { buildBreadcrumb, buildCourse } from '#lib/seo/schemas.js';
 
 import { PRODUCTION_ORIGIN } from '#lib/seo/config.js';
 
@@ -29,20 +29,6 @@ export const load = () => ({
 				provider: { name: 'Revolution Trading Pros', url: SITE },
 				hasCourseInstance: {
 					courseMode: 'Online'
-				}
-			}),
-			buildVideoObject({
-				name: 'Tax Loss Harvest Strategy Class',
-				description:
-					'Recorded multi-session workshop on tax-loss harvesting strategies for active traders.',
-				thumbnailUrl: `${SITE}/revolution-trading-pros.png`,
-				uploadDate: '2025-12-31T00:00:00Z',
-				contentUrl:
-					'https://cloud-streaming.s3.amazonaws.com/chatrecordings/STWebinars/6941b999d4e2e95d75e7ddfb_Tax_Loss_Harvest_2025_JC_12-31-2025__03.00.276_PM.mp4',
-				creator: {
-					name: 'Revolution Trading Pros',
-					url: SITE,
-					type: 'Organization'
 				}
 			})
 		]

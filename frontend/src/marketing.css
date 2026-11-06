@@ -31,6 +31,11 @@
    ═══════════════════════════════════════════════════════════════════════════ */
 
 .marketing-shell {
+	--rtp-primary-action: #1d4ed8;
+	--rtp-emerald-action: #047857;
+	--rtp-indigo-action: #4f46e5;
+	/* Long headings and contact addresses must reflow when text is enlarged. */
+	overflow-wrap: anywhere;
 	/* ── Canvas / surface stack ─────────────────────────────────────────── */
 	--rtp-bg: #0a0a0a; /* primary page background */
 	--rtp-bg-deep: #050505; /* hero halo backdrops, deeper sections */
@@ -238,7 +243,18 @@
    ═══════════════════════════════════════════════════════════════════════════ */
 @media (prefers-reduced-motion: reduce) {
 	.marketing-shell {
+		--rtp-primary-action: #1d4ed8;
+		--rtp-emerald-action: #047857;
+		--rtp-indigo-action: #4f46e5;
 		scroll-behavior: auto !important;
+	}
+	/* Component selectors must not override a user's motion preference. Svelte's
+	   Web Animations transitions are handled by animations/motion.ts separately. */
+	.marketing-shell *,
+	.marketing-shell *::before,
+	.marketing-shell *::after {
+		animation: none !important;
+		transition: none !important;
 	}
 }
 

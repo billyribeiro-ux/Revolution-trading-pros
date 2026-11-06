@@ -3,8 +3,8 @@
 	 * CoursesSection - Apple/Netflix Cinematic Design
 	 * Upgraded with ICT9+ Layout, Motion, and Interaction Physics
 	 */
-	import { onMount, tick } from 'svelte';
-	import { browser } from '$app/env';
+	import { prefersReducedMotion as motionPreference } from 'svelte/motion';
+	import { scrollReveal } from '#lib/animations/scroll-reveal.js';
 	import { cubicOut } from 'svelte/easing';
 
 	// Tabler Icons (Preserving sub-path imports for tree-shaking)
@@ -125,29 +125,10 @@
 	// ============================================================================
 	// STATE & REFS
 	// ============================================================================
-	let sectionRef = $state<HTMLElement | null>(null);
 	let cardsRef = $state<HTMLElement | null>(null);
 	// January 2026 motion: content is revealed lazily as the section scrolls into view.
-	let isVisible = $state(false);
-	interface ScrollTriggerLike {
-		trigger?: Element;
-		kill(): void;
-	}
-	interface ScrollTriggerStatic {
-		getAll(): ScrollTriggerLike[];
-		refresh(): void;
-	}
-	let scrollTriggerInstance: ScrollTriggerStatic | null = null;
-	let prefersReducedMotion = $state(false);
-	let visibilityObserver: IntersectionObserver | null = null;
-
-	const captureSection: Attachment<HTMLElement> = (node) => {
-		sectionRef = node;
-
-		return () => {
-			if (sectionRef === node) sectionRef = null;
-		};
-	};
+	let isVisible = $state(true);
+	const prefersReducedMotion = $derived(motionPreference.current);
 
 	const captureCards: Attachment<HTMLElement> = (node) => {
 		cardsRef = node;
@@ -164,56 +145,6 @@
 	// ============================================================================
 	// LIFECYCLE
 	// ============================================================================
-	onMount(() => {
-		if (!browser) return;
-
-		// Check for reduced motion preference
-		prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-		// Trigger entrance animations when section scrolls into viewport
-		queueMicrotask(() => {
-			if (sectionRef) {
-				const observer = new IntersectionObserver(
-					(entries) => {
-						if (entries[0]?.isIntersecting) {
-							isVisible = true;
-							observer.disconnect();
-						}
-					},
-					{ threshold: 0.1, rootMargin: '50px' }
-				);
-				visibilityObserver = observer;
-				visibilityObserver.observe(sectionRef);
-			} else {
-				isVisible = true;
-			}
-		});
-
-		// Load GSAP asynchronously
-		if (!prefersReducedMotion) {
-			loadGSAP();
-		}
-
-		return () => {
-			visibilityObserver?.disconnect();
-			// ICT11+ Fix: Kill only ScrollTriggers scoped to this component
-			// Previously used killAll() which destroyed ALL ScrollTriggers globally,
-			// causing layout breaks when scrolling to bottom of page
-			if (scrollTriggerInstance && (cardsRef || sectionRef)) {
-				scrollTriggerInstance.getAll().forEach((st) => {
-					if (
-						st.trigger === cardsRef ||
-						st.trigger === sectionRef ||
-						cardsRef?.contains(st.trigger ?? null) ||
-						sectionRef?.contains(st.trigger ?? null)
-					) {
-						st.kill();
-					}
-				});
-			}
-		};
-	});
-
 	function handleMouseMove(e: MouseEvent) {
 		if (cardsRef) {
 			const rect = cardsRef.getBoundingClientRect();
@@ -222,63 +153,13 @@
 		}
 	}
 
-	async function loadGSAP() {
-		try {
-			const gsapModule = await import('gsap');
-			const scrollTriggerModule = await import('gsap/ScrollTrigger');
-			const gsap = gsapModule.gsap || gsapModule.default;
-			const ScrollTrigger = scrollTriggerModule.ScrollTrigger || scrollTriggerModule.default;
-			gsap.registerPlugin(ScrollTrigger);
-			scrollTriggerInstance = ScrollTrigger;
-
-			// Wait for cards to render
-			await tick();
-
-			// Animate cards on scroll with staggered parallax
-			const cards = cardsRef?.querySelectorAll('.course-card');
-			if (cards && cards.length > 0) {
-				// Main Entrance
-				gsap.fromTo(
-					cards,
-					{ y: 100, opacity: 0, scale: 0.95 },
-					{
-						y: 0,
-						opacity: 1,
-						scale: 1,
-						duration: 1,
-						stagger: 0.1,
-						ease: 'power3.out', // More cinematic ease
-						scrollTrigger: {
-							trigger: cardsRef,
-							start: 'top 85%',
-							toggleActions: 'play none none reverse'
-						}
-					}
-				);
-
-				// fromTo applies the opacity:0 from-state immediately, and
-				// ScrollTrigger computes start positions now — before the
-				// hero/lazy images and web fonts have loaded. Without a
-				// post-load refresh those positions are stale and the
-				// trigger can never fire, leaving the cards permanently
-				// invisible on a real (image-heavy) marketing page.
-				ScrollTrigger.refresh();
-				if (document.readyState !== 'complete') {
-					window.addEventListener('load', () => scrollTriggerInstance?.refresh(), { once: true });
-				}
-			}
-		} catch (e) {
-			console.warn('[CoursesSection] GSAP failed to load:', e);
-		}
-	}
-
 	// ============================================================================
 	// TRANSITIONS
 	// ============================================================================
 	function slideUp(_node: Element, { delay = 0, duration = 800 }) {
 		return {
-			delay,
-			duration,
+			delay: prefersReducedMotion ? 0 : delay,
+			duration: prefersReducedMotion ? 0 : duration,
 			css: (t: number) => {
 				const eased = cubicOut(t);
 				return `opacity: ${eased}; transform: translateY(${(1 - eased) * 40}px);`;
@@ -289,7 +170,7 @@
 
 <svelte:window onmousemove={handleMouseMove} />
 
-<section {@attach captureSection} class="courses-section">
+<section {@attach scrollReveal} class="courses-section">
 	<div class="ambient-layers" aria-hidden="true">
 		<div class="noise-layer"></div>
 
@@ -340,7 +221,7 @@
 			<div class="cursor-spotlight" aria-hidden="true"></div>
 
 			{#each courses as course (course.id)}
-				<a href={course.href} class="course-card">
+				<a data-gsap href={course.href} class="course-card">
 					<div
 						class="course-pattern"
 						style:background={course.imagePattern}

@@ -5,9 +5,9 @@
 	 * Features: BlurHash images, Link prefetching, $state/$derived/$effect runes
 	 * Updated: CSS layers, oklch colors, container queries, modern image optimization
 	 */
-	import { preloadData } from '$app/navigation';
+	import { preloadData, invalidateAll } from '$app/navigation';
+	import { SvelteSet } from 'svelte/reactivity';
 	import BlurHashImage from '#lib/components/ui/BlurHashImage.svelte';
-	import { apiFetch, API_ENDPOINTS } from '#lib/api/config.js';
 	import type { Post } from '#lib/types/post.js';
 	import type { PageData } from './$types';
 
@@ -40,118 +40,20 @@
 		featured_image_blurhash?: string | null;
 	}
 
-	interface PaginatedResponse {
-		data: BlogPost[];
-		current_page: number;
-		last_page: number;
-		per_page: number;
-		total: number;
-	}
-
-	// ============================================================================
-	// State Management - Svelte 5 Runes (SSR initialized from load data)
-	// ============================================================================
-
-	let clientPosts = $state<BlogPost[] | null>(null);
-	let clientPage = $state<number | null>(null);
-	let clientLastPage = $state<number | null>(null);
+	const posts = $derived<BlogPost[]>(props.data.posts);
+	const currentPage = $derived(props.data.pagination.currentPage);
+	const lastPage = $derived(props.data.pagination.lastPage);
 	let loading = $state(false);
-	let error = $state('');
-	let abortController = $state<AbortController | null>(null);
-	let prefetchedSlugs = $state(new Set<string>());
-
-	const posts = $derived<BlogPost[]>(clientPosts ?? (props.data?.posts as BlogPost[]) ?? []);
-	const currentPage = $derived(clientPage ?? props.data?.pagination?.currentPage ?? 1);
-	const lastPage = $derived(clientLastPage ?? props.data?.pagination?.lastPage ?? 1);
-
-	const MAX_RETRIES = 3;
-	const RETRY_DELAY = 2000;
-
-	// ============================================================================
-	// Derived Values
-	// ============================================================================
-
-	let hasNextPage = $derived(currentPage < lastPage);
-	let hasPrevPage = $derived(currentPage > 1);
-	let showPagination = $derived(lastPage > 1);
-	let isEmpty = $derived(!loading && !error && posts.length === 0);
-
-	// ============================================================================
-	// Performance & Error Handling
-	// ============================================================================
-
-	async function loadPosts(page: number = 1, retry = 0): Promise<void> {
-		try {
-			loading = true;
-			error = '';
-
-			if (abortController) {
-				abortController.abort();
-			}
-
-			abortController = new AbortController();
-			const timeoutId = setTimeout(() => abortController?.abort(), 10000);
-
-			try {
-				const response = await apiFetch<PaginatedResponse>(
-					`${API_ENDPOINTS.posts.list}?page=${page}`
-				);
-
-				clearTimeout(timeoutId);
-
-				if (!response.data || !Array.isArray(response.data)) {
-					throw new Error('Invalid response format from server');
-				}
-
-				clientPosts = response.data.map((post) => ({
-					...post,
-					title: sanitizeText(post.title),
-					excerpt: sanitizeText(post.excerpt || ''),
-					categories: post.categories || [],
-					tags: post.tags || []
-				}));
-
-				clientPage = response.current_page || 1;
-				clientLastPage = response.last_page || 1;
-			} catch (fetchError) {
-				clearTimeout(timeoutId);
-
-				if (fetchError instanceof Error && fetchError.name === 'AbortError') {
-					if (retry < MAX_RETRIES) {
-						const delay = RETRY_DELAY * Math.pow(2, retry);
-						await new Promise((resolve) => setTimeout(resolve, delay));
-						return loadPosts(page, retry + 1);
-					} else {
-						throw new Error('Request timed out. Please check your connection and try again.', {
-							cause: fetchError
-						});
-					}
-				}
-
-				throw fetchError;
-			}
-		} catch (err) {
-			if (retry < MAX_RETRIES && err instanceof TypeError && err.message.includes('fetch')) {
-				const delay = RETRY_DELAY * Math.pow(2, retry);
-				await new Promise((resolve) => setTimeout(resolve, delay));
-				return loadPosts(page, retry + 1);
-			}
-
-			error = err instanceof Error ? err.message : 'An unexpected error occurred';
-			console.error('Error loading posts:', err);
-		} finally {
-			loading = false;
-			abortController = null;
-		}
-	}
-
-	function sanitizeText(text: string): string {
-		if (typeof document === 'undefined') return text;
-		const div = document.createElement('div');
-		div.textContent = text;
-		return div.innerHTML;
-	}
-
+	const error = $derived(
+		props.data.postsUnavailable
+			? 'Published posts are temporarily unavailable. Please try again.'
+			: ''
+	);
+	const prefetchedSlugs = new SvelteSet<string>();
+	const hasNextPage = $derived(currentPage < lastPage);
+	const hasPrevPage = $derived(currentPage > 1);
+	const showPagination = $derived(lastPage > 1);
+	const isEmpty = $derived(!loading && !error && posts.length === 0);
 	function formatDate(dateString: string): string {
 		const date = new Date(dateString);
 		return date.toLocaleDateString('en-US', {
@@ -161,8 +63,13 @@
 		});
 	}
 
-	function retryLoad() {
-		loadPosts(currentPage);
+	async function retryLoad() {
+		loading = true;
+		try {
+			await invalidateAll();
+		} finally {
+			loading = false;
+		}
 	}
 
 	function prefetchPost(slug: string) {
@@ -210,7 +117,7 @@
 				<line x1="12" y1="8" x2="12" y2="12"></line>
 				<line x1="12" y1="16" x2="12.01" y2="16"></line>
 			</svg>
-			<h3>Oops! Something went wrong</h3>
+			<h2>Posts temporarily unavailable</h2>
 			<p>{error}</p>
 			<button class="btn-retry" onclick={retryLoad}>
 				<svg
@@ -378,11 +285,7 @@
 				</span>
 
 				{#if hasNextPage}
-					<a
-						class="btn-pagination"
-						href="/blog?page={currentPage + 1}"
-						aria-label="Next page"
-					>
+					<a class="btn-pagination" href="/blog?page={currentPage + 1}" aria-label="Next page">
 						Next
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
@@ -749,7 +652,7 @@
 		margin-bottom: 1.5rem;
 	}
 
-	.error h3 {
+	.error h2 {
 		color: var(--error-color-light);
 		font-size: 1.5rem;
 		font-weight: 700;

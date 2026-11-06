@@ -1,16 +1,16 @@
-import type { Load } from '@sveltejs/kit';
+import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
-import { apiFetch, API_ENDPOINTS } from '#lib/api/config.js';
+import { readPublicPost } from '#lib/server/public-posts.js';
 import type { Post } from '#lib/types/post.js';
 import type { SEOInput } from '#lib/seo/types.js';
 import { articleSchema } from '#lib/seo/jsonld.js';
 import { authors } from '#lib/authors/authors.js';
 import { PRODUCTION_ORIGIN } from '#lib/seo/config.js';
 export const prerender = false;
-export const load: Load = async ({ params, fetch }) => {
+export const load: PageServerLoad = async ({ params }) => {
 	let post: Post;
 	try {
-		post = await apiFetch<Post>(API_ENDPOINTS.posts.single(params.slug ?? ''), { fetch });
+		post = await readPublicPost(params.slug ?? '');
 	} catch (cause) {
 		if (cause instanceof Error && 'status' in cause && cause.status === 404)
 			error(404, 'Blog post not found');

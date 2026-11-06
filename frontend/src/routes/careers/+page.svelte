@@ -334,4 +334,7 @@
 			flex-wrap: wrap;
 		}
 	}
+	.general-cta__btn {
+		background: var(--rtp-emerald-action);
+	}
 </style>

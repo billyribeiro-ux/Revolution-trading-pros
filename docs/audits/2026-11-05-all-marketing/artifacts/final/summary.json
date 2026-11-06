@@ -1,0 +1,9601 @@
+{
+	"origin": "http://127.0.0.1:4185",
+	"label": "final",
+	"routes": [
+		{
+			"path": "/about",
+			"console": [],
+			"exceptions": [],
+			"network": [],
+			"viewports": [
+				{
+					"width": 320,
+					"viewport": 320,
+					"documentWidth": 320,
+					"problems": []
+				},
+				{
+					"width": 390,
+					"viewport": 390,
+					"documentWidth": 382,
+					"problems": []
+				},
+				{
+					"width": 639,
+					"viewport": 639,
+					"documentWidth": 631,
+					"problems": []
+				},
+				{
+					"width": 640,
+					"viewport": 640,
+					"documentWidth": 632,
+					"problems": []
+				},
+				{
+					"width": 767,
+					"viewport": 767,
+					"documentWidth": 759,
+					"problems": []
+				},
+				{
+					"width": 768,
+					"viewport": 768,
+					"documentWidth": 760,
+					"problems": []
+				},
+				{
+					"width": 1023,
+					"viewport": 1023,
+					"documentWidth": 1015,
+					"problems": []
+				},
+				{
+					"width": 1024,
+					"viewport": 1024,
+					"documentWidth": 1016,
+					"problems": []
+				},
+				{
+					"width": 1151,
+					"viewport": 1151,
+					"documentWidth": 1143,
+					"problems": []
+				},
+				{
+					"width": 1152,
+					"viewport": 1152,
+					"documentWidth": 1144,
+					"problems": []
+				},
+				{
+					"width": 1279,
+					"viewport": 1279,
+					"documentWidth": 1271,
+					"problems": []
+				},
+				{
+					"width": 1280,
+					"viewport": 1280,
+					"documentWidth": 1272,
+					"problems": []
+				},
+				{
+					"width": 1439,
+					"viewport": 1439,
+					"documentWidth": 1431,
+					"problems": []
+				},
+				{
+					"width": 1440,
+					"viewport": 1440,
+					"documentWidth": 1432,
+					"problems": []
+				},
+				{
+					"width": 1535,
+					"viewport": 1535,
+					"documentWidth": 1527,
+					"problems": []
+				},
+				{
+					"width": 1536,
+					"viewport": 1536,
+					"documentWidth": 1528,
+					"problems": []
+				},
+				{
+					"width": 1920,
+					"viewport": 1920,
+					"documentWidth": 1912,
+					"problems": []
+				}
+			],
+			"controls": [
+				{
+					"type": "expanded",
+					"name": "Is this suitable for beginners?",
+					"before": "false",
+					"after": "true"
+				},
+				{
+					"type": "expanded",
+					"name": "Do you just give buy/sell alerts?",
+					"before": "false",
+					"after": "true"
+				},
+				{
+					"type": "expanded",
+					"name": "What makes this different from other Discords?",
+					"before": "false",
+					"after": "true"
+				},
+				{
+					"type": "expanded",
+					"name": "Do I need a large account to start?",
+					"before": "false",
+					"after": "true"
+				}
+			],
+			"navigation": ["/", "/about", "/", "/about"],
+			"status": 200,
+			"destination": "/about",
+			"title": "About Our Trading Desk & Educators | Revolution Trading Pros",
+			"h1": ["Trade Real Capital. Real Mentors. Real Time."],
+			"mainCount": 1,
+			"links": [
+				"#main-content",
+				"/",
+				"/mentorship",
+				"/our-mission",
+				"/about",
+				"/blog",
+				"/pricing",
+				"/login",
+				"#how-it-works",
+				"https://facebook.com/revolutiontradingpros",
+				"https://twitter.com/revtradingpros",
+				"https://instagram.com/revolutiontradingpros",
+				"https://youtube.com/@RevolutionTradingPros",
+				"/live-trading-rooms",
+				"/alerts",
+				"/courses",
+				"/classes",
+				"/indicators",
+				"/store/scanners",
+				"/tools/options-calculator",
+				"/team",
+				"/resources",
+				"/tutorials",
+				"/contact",
+				"/careers",
+				"/terms",
+				"/privacy",
+				"/cookie-policy",
+				"/disclaimer",
+				"/refund"
+			],
+			"forms": [],
+			"motion": [],
+			"axe": [],
+			"largeText": {
+				"viewport": 390,
+				"documentWidth": 382,
+				"problems": []
+			}
+		},
+		{
+			"path": "/alerts/explosive-swings",
+			"console": [],
+			"exceptions": [],
+			"network": [],
+			"viewports": [
+				{
+					"width": 320,
+					"viewport": 320,
+					"documentWidth": 320,
+					"problems": []
+				},
+				{
+					"width": 390,
+					"viewport": 390,
+					"documentWidth": 382,
+					"problems": []
+				},
+				{
+					"width": 639,
+					"viewport": 639,
+					"documentWidth": 631,
+					"problems": []
+				},
+				{
+					"width": 640,
+					"viewport": 640,
+					"documentWidth": 632,
+					"problems": []
+				},
+				{
+					"width": 767,
+					"viewport": 767,
+					"documentWidth": 759,
+					"problems": []
+				},
+				{
+					"width": 768,
+					"viewport": 768,
+					"documentWidth": 760,
+					"problems": []
+				},
+				{
+					"width": 1023,
+					"viewport": 1023,
+					"documentWidth": 1015,
+					"problems": []
+				},
+				{
+					"width": 1024,
+					"viewport": 1024,
+					"documentWidth": 1016,
+					"problems": []
+				},
+				{
+					"width": 1151,
+					"viewport": 1151,
+					"documentWidth": 1143,
+					"problems": []
+				},
+				{
+					"width": 1152,
+					"viewport": 1152,
+					"documentWidth": 1144,
+					"problems": []
+				},
+				{
+					"width": 1279,
+					"viewport": 1279,
+					"documentWidth": 1271,
+					"problems": []
+				},
+				{
+					"width": 1280,
+					"viewport": 1280,
+					"documentWidth": 1272,
+					"problems": []
+				},
+				{
+					"width": 1439,
+					"viewport": 1439,
+					"documentWidth": 1431,
+					"problems": []
+				},
+				{
+					"width": 1440,
+					"viewport": 1440,
+					"documentWidth": 1432,
+					"problems": []
+				},
+				{
+					"width": 1535,
+					"viewport": 1535,
+					"documentWidth": 1527,
+					"problems": []
+				},
+				{
+					"width": 1536,
+					"viewport": 1536,
+					"documentWidth": 1528,
+					"problems": []
+				},
+				{
+					"width": 1920,
+					"viewport": 1920,
+					"documentWidth": 1912,
+					"problems": []
+				}
+			],
+			"controls": [
+				{
+					"type": "expanded",
+					"name": "How much capital do I need for swing trading?",
+					"before": "false",
+					"after": "true"
+				},
+				{
+					"type": "expanded",
+					"name": "Does this trigger the PDT (Pattern Day Trader) rule?",
+					"before": "false",
+					"after": "true"
+				},
+				{
+					"type": "expanded",
+					"name": "Do I need to sit at my computer all day?",
+					"before": "false",
+					"after": "true"
+				},
+				{
+					"type": "expanded",
+					"name": "What specific markets and instruments do you trade?",
+					"before": "false",
+					"after": "true"
+				},
+				{
+					"type": "expanded",
+					"name": "How do I receive the alerts?",
+					"before": "false",
+					"after": "true"
+				},
+				{
+					"type": "expanded",
+					"name": "What is your historical win rate and risk profile?",
+					"before": "false",
+					"after": "true"
+				},
+				{
+					"type": "expanded",
+					"name": "Is this suitable for beginners?",
+					"before": "false",
+					"after": "true"
+				},
+				{
+					"type": "expanded",
+					"name": "What happens if I miss an entry price?",
+					"before": "false",
+					"after": "true"
+				},
+				{
+					"type": "expanded",
+					"name": "Do you trade through earnings reports?",
+					"before": "false",
+					"after": "true"
+				},
+				{
+					"type": "expanded",
+					"name": "Can I use Robinhood, Webull, or ThinkOrSwim?",
+					"before": "false",
+					"after": "true"
+				},
+				{
+					"type": "expanded",
+					"name": "What is the refund policy?",
+					"before": "false",
+					"after": "true"
+				},
+				{
+					"type": "expanded",
+					"name": "Do you offer short selling signals?",
+					"before": "false",
+					"after": "true"
+				}
+			],
+			"navigation": ["/", "/alerts/explosive-swings", "/", "/alerts/explosive-swings"],
+			"status": 200,
+			"destination": "/alerts/explosive-swings",
+			"title": "Explosive Swings Trading Alerts | Revolution Trading Pros",
+			"h1": ["Catch the  Institutional Moves."],
+			"mainCount": 1,
+			"links": [
+				"#main-content",
+				"/",
+				"/mentorship",
+				"/our-mission",
+				"/about",
+				"/blog",
+				"/pricing",
+				"/login",
+				"/alerts",
+				"#pricing",
+				"#methodology",
+				"/contact",
+				"https://facebook.com/revolutiontradingpros",
+				"https://twitter.com/revtradingpros",
+				"https://instagram.com/revolutiontradingpros",
+				"https://youtube.com/@RevolutionTradingPros",
+				"/live-trading-rooms",
+				"/courses",
+				"/classes",
+				"/indicators",
+				"/store/scanners",
+				"/tools/options-calculator",
+				"/team",
+				"/resources",
+				"/tutorials",
+				"/careers",
+				"/terms",
+				"/privacy",
+				"/cookie-policy",
+				"/disclaimer",
+				"/refund"
+			],
+			"forms": [],
+			"motion": [],
+			"axe": [],
+			"largeText": {
+				"viewport": 390,
+				"documentWidth": 382,
+				"problems": []
+			}
+		},
+		{
+			"path": "/alerts",
+			"console": [],
+			"exceptions": [],
+			"network": [],
+			"viewports": [
+				{
+					"width": 320,
+					"viewport": 320,
+					"documentWidth": 320,
+					"problems": []
+				},
+				{
+					"width": 390,
+					"viewport": 390,
+					"documentWidth": 382,
+					"problems": []
+				},
+				{
+					"width": 639,
+					"viewport": 639,
+					"documentWidth": 631,
+					"problems": []
+				},
+				{
+					"width": 640,
+					"viewport": 640,
+					"documentWidth": 632,
+					"problems": []
+				},
+				{
+					"width": 767,
+					"viewport": 767,
+					"documentWidth": 759,
+					"problems": []
+				},
+				{
+					"width": 768,
+					"viewport": 768,
+					"documentWidth": 760,
+					"problems": []
+				},
+				{
+					"width": 1023,
+					"viewport": 1023,
+					"documentWidth": 1015,
+					"problems": []
+				},
+				{
+					"width": 1024,
+					"viewport": 1024,
+					"documentWidth": 1016,
+					"problems": []
+				},
+				{
+					"width": 1151,
+					"viewport": 1151,
+					"documentWidth": 1143,
+					"problems": []
+				},
+				{
+					"width": 1152,
+					"viewport": 1152,
+					"documentWidth": 1144,
+					"problems": []
+				},
+				{
+					"width": 1279,
+					"viewport": 1279,
+					"documentWidth": 1271,
+					"problems": []
+				},
+				{
+					"width": 1280,
+					"viewport": 1280,
+					"documentWidth": 1272,
+					"problems": []
+				},
+				{
+					"width": 1439,
+					"viewport": 1439,
+					"documentWidth": 1431,
+					"problems": []
+				},
+				{
+					"width": 1440,
+					"viewport": 1440,
+					"documentWidth": 1432,
+					"problems": []
+				},
+				{
+					"width": 1535,
+					"viewport": 1535,
+					"documentWidth": 1527,
+					"problems": []
+				},
+				{
+					"width": 1536,
+					"viewport": 1536,
+					"documentWidth": 1528,
+					"problems": []
+				},
+				{
+					"width": 1920,
+					"viewport": 1920,
+					"documentWidth": 1912,
+					"problems": []
+				}
+			],
+			"controls": [],
+			"navigation": ["/", "/alerts", "/", "/alerts"],
+			"status": 200,
+			"destination": "/alerts",
+			"title": "Trading Alert Services | Revolution Trading Pros",
+			"h1": ["Trade Alerts Delivered."],
+			"mainCount": 1,
+			"links": [
+				"#main-content",
+				"/",
+				"/mentorship",
+				"/our-mission",
+				"/about",
+				"/blog",
+				"/pricing",
+				"/login",
+				"/alerts/explosive-swings",
+				"/alerts/spx-profit-pulse",
+				"https://facebook.com/revolutiontradingpros",
+				"https://twitter.com/revtradingpros",
+				"https://instagram.com/revolutiontradingpros",
+				"https://youtube.com/@RevolutionTradingPros",
+				"/live-trading-rooms",
+				"/alerts",
+				"/courses",
+				"/classes",
+				"/indicators",
+				"/store/scanners",
+				"/tools/options-calculator",
+				"/team",
+				"/resources",
+				"/tutorials",
+				"/contact",
+				"/careers",
+				"/terms",
+				"/privacy",
+				"/cookie-policy",
+				"/disclaimer",
+				"/refund"
+			],
+			"forms": [],
+			"motion": [],
+			"axe": [],
+			"largeText": {
+				"viewport": 390,
+				"documentWidth": 382,
+				"problems": []
+			}
+		},
+		{
+			"path": "/authors/billy-ribeiro",
+			"console": [],
+			"exceptions": [],
+			"network": [],
+			"viewports": [
+				{
+					"width": 320,
+					"viewport": 320,
+					"documentWidth": 320,
+					"problems": []
+				},
+				{
+					"width": 390,
+					"viewport": 390,
+					"documentWidth": 382,
+					"problems": []
+				},
+				{
+					"width": 639,
+					"viewport": 639,
+					"documentWidth": 631,
+					"problems": []
+				},
+				{
+					"width": 640,
+					"viewport": 640,
+					"documentWidth": 632,
+					"problems": []
+				},
+				{
+					"width": 767,
+					"viewport": 767,
+					"documentWidth": 759,
+					"problems": []
+				},
+				{
+					"width": 768,
+					"viewport": 768,
+					"documentWidth": 760,
+					"problems": []
+				},
+				{
+					"width": 1023,
+					"viewport": 1023,
+					"documentWidth": 1015,
+					"problems": []
+				},
+				{
+					"width": 1024,
+					"viewport": 1024,
+					"documentWidth": 1016,
+					"problems": []
+				},
+				{
+					"width": 1151,
+					"viewport": 1151,
+					"documentWidth": 1143,
+					"problems": []
+				},
+				{
+					"width": 1152,
+					"viewport": 1152,
+					"documentWidth": 1144,
+					"problems": []
+				},
+				{
+					"width": 1279,
+					"viewport": 1279,
+					"documentWidth": 1271,
+					"problems": []
+				},
+				{
+					"width": 1280,
+					"viewport": 1280,
+					"documentWidth": 1272,
+					"problems": []
+				},
+				{
+					"width": 1439,
+					"viewport": 1439,
+					"documentWidth": 1431,
+					"problems": []
+				},
+				{
+					"width": 1440,
+					"viewport": 1440,
+					"documentWidth": 1432,
+					"problems": []
+				},
+				{
+					"width": 1535,
+					"viewport": 1535,
+					"documentWidth": 1527,
+					"problems": []
+				},
+				{
+					"width": 1536,
+					"viewport": 1536,
+					"documentWidth": 1528,
+					"problems": []
+				},
+				{
+					"width": 1920,
+					"viewport": 1920,
+					"documentWidth": 1912,
+					"problems": []
+				}
+			],
+			"controls": [],
+			"navigation": ["/", "/authors/billy-ribeiro", "/", "/authors/billy-ribeiro"],
+			"status": 200,
+			"destination": "/authors/billy-ribeiro",
+			"title": "Billy Ribeiro \u2014 Founder & Head Trader | RTP",
+			"h1": ["Billy Ribeiro"],
+			"mainCount": 1,
+			"links": [
+				"#main-content",
+				"/",
+				"/mentorship",
+				"/our-mission",
+				"/about",
+				"/blog",
+				"/pricing",
+				"/login",
+				"/team",
+				"/guides/risk-management",
+				"/guides/position-sizing",
+				"/courses",
+				"/live-trading-rooms",
+				"https://facebook.com/revolutiontradingpros",
+				"https://twitter.com/revtradingpros",
+				"https://instagram.com/revolutiontradingpros",
+				"https://youtube.com/@RevolutionTradingPros",
+				"/alerts",
+				"/classes",
+				"/indicators",
+				"/store/scanners",
+				"/tools/options-calculator",
+				"/resources",
+				"/tutorials",
+				"/contact",
+				"/careers",
+				"/terms",
+				"/privacy",
+				"/cookie-policy",
+				"/disclaimer",
+				"/refund"
+			],
+			"forms": [],
+			"motion": [],
+			"axe": [],
+			"largeText": {
+				"viewport": 390,
+				"documentWidth": 382,
+				"problems": []
+			}
+		},
+		{
+			"path": "/authors/freddie-ferber",
+			"console": [],
+			"exceptions": [],
+			"network": [],
+			"viewports": [
+				{
+					"width": 320,
+					"viewport": 320,
+					"documentWidth": 320,
+					"problems": []
+				},
+				{
+					"width": 390,
+					"viewport": 390,
+					"documentWidth": 382,
+					"problems": []
+				},
+				{
+					"width": 639,
+					"viewport": 639,
+					"documentWidth": 631,
+					"problems": []
+				},
+				{
+					"width": 640,
+					"viewport": 640,
+					"documentWidth": 632,
+					"problems": []
+				},
+				{
+					"width": 767,
+					"viewport": 767,
+					"documentWidth": 759,
+					"problems": []
+				},
+				{
+					"width": 768,
+					"viewport": 768,
+					"documentWidth": 760,
+					"problems": []
+				},
+				{
+					"width": 1023,
+					"viewport": 1023,
+					"documentWidth": 1015,
+					"problems": []
+				},
+				{
+					"width": 1024,
+					"viewport": 1024,
+					"documentWidth": 1016,
+					"problems": []
+				},
+				{
+					"width": 1151,
+					"viewport": 1151,
+					"documentWidth": 1143,
+					"problems": []
+				},
+				{
+					"width": 1152,
+					"viewport": 1152,
+					"documentWidth": 1144,
+					"problems": []
+				},
+				{
+					"width": 1279,
+					"viewport": 1279,
+					"documentWidth": 1271,
+					"problems": []
+				},
+				{
+					"width": 1280,
+					"viewport": 1280,
+					"documentWidth": 1272,
+					"problems": []
+				},
+				{
+					"width": 1439,
+					"viewport": 1439,
+					"documentWidth": 1431,
+					"problems": []
+				},
+				{
+					"width": 1440,
+					"viewport": 1440,
+					"documentWidth": 1432,
+					"problems": []
+				},
+				{
+					"width": 1535,
+					"viewport": 1535,
+					"documentWidth": 1527,
+					"problems": []
+				},
+				{
+					"width": 1536,
+					"viewport": 1536,
+					"documentWidth": 1528,
+					"problems": []
+				},
+				{
+					"width": 1920,
+					"viewport": 1920,
+					"documentWidth": 1912,
+					"problems": []
+				}
+			],
+			"controls": [],
+			"navigation": ["/", "/authors/freddie-ferber", "/", "/authors/freddie-ferber"],
+			"status": 200,
+			"destination": "/authors/freddie-ferber",
+			"title": "Freddie Ferber \u2014 Co-Founder & Options Mentor | RTP",
+			"h1": ["Freddie Ferber"],
+			"mainCount": 1,
+			"links": [
+				"#main-content",
+				"/",
+				"/mentorship",
+				"/our-mission",
+				"/about",
+				"/blog",
+				"/pricing",
+				"/login",
+				"/team",
+				"/guides/risk-management",
+				"/guides/position-sizing",
+				"/courses",
+				"/live-trading-rooms",
+				"https://facebook.com/revolutiontradingpros",
+				"https://twitter.com/revtradingpros",
+				"https://instagram.com/revolutiontradingpros",
+				"https://youtube.com/@RevolutionTradingPros",
+				"/alerts",
+				"/classes",
+				"/indicators",
+				"/store/scanners",
+				"/tools/options-calculator",
+				"/resources",
+				"/tutorials",
+				"/contact",
+				"/careers",
+				"/terms",
+				"/privacy",
+				"/cookie-policy",
+				"/disclaimer",
+				"/refund"
+			],
+			"forms": [],
+			"motion": [],
+			"axe": [],
+			"largeText": {
+				"viewport": 390,
+				"documentWidth": 382,
+				"problems": []
+			}
+		},
+		{
+			"path": "/alerts/spx-profit-pulse",
+			"console": [],
+			"exceptions": [],
+			"network": [],
+			"viewports": [
+				{
+					"width": 320,
+					"viewport": 320,
+					"documentWidth": 320,
+					"problems": []
+				},
+				{
+					"width": 390,
+					"viewport": 390,
+					"documentWidth": 382,
+					"problems": []
+				},
+				{
+					"width": 639,
+					"viewport": 639,
+					"documentWidth": 631,
+					"problems": []
+				},
+				{
+					"width": 640,
+					"viewport": 640,
+					"documentWidth": 632,
+					"problems": []
+				},
+				{
+					"width": 767,
+					"viewport": 767,
+					"documentWidth": 759,
+					"problems": []
+				},
+				{
+					"width": 768,
+					"viewport": 768,
+					"documentWidth": 760,
+					"problems": []
+				},
+				{
+					"width": 1023,
+					"viewport": 1023,
+					"documentWidth": 1015,
+					"problems": []
+				},
+				{
+					"width": 1024,
+					"viewport": 1024,
+					"documentWidth": 1016,
+					"problems": []
+				},
+				{
+					"width": 1151,
+					"viewport": 1151,
+					"documentWidth": 1143,
+					"problems": []
+				},
+				{
+					"width": 1152,
+					"viewport": 1152,
+					"documentWidth": 1144,
+					"problems": []
+				},
+				{
+					"width": 1279,
+					"viewport": 1279,
+					"documentWidth": 1271,
+					"problems": []
+				},
+				{
+					"width": 1280,
+					"viewport": 1280,
+					"documentWidth": 1272,
+					"problems": []
+				},
+				{
+					"width": 1439,
+					"viewport": 1439,
+					"documentWidth": 1431,
+					"problems": []
+				},
+				{
+					"width": 1440,
+					"viewport": 1440,
+					"documentWidth": 1432,
+					"problems": []
+				},
+				{
+					"width": 1535,
+					"viewport": 1535,
+					"documentWidth": 1527,
+					"problems": []
+				},
+				{
+					"width": 1536,
+					"viewport": 1536,
+					"documentWidth": 1528,
+					"problems": []
+				},
+				{
+					"width": 1920,
+					"viewport": 1920,
+					"documentWidth": 1912,
+					"problems": []
+				}
+			],
+			"controls": [
+				{
+					"type": "expanded",
+					"name": "What is SPX 0DTE?",
+					"before": "false",
+					"after": "true"
+				},
+				{
+					"type": "expanded",
+					"name": "How fast are the alerts?",
+					"before": "false",
+					"after": "true"
+				},
+				{
+					"type": "expanded",
+					"name": "What account size do I need?",
+					"before": "false",
+					"after": "true"
+				}
+			],
+			"navigation": ["/", "/alerts/spx-profit-pulse", "/", "/alerts/spx-profit-pulse"],
+			"status": 200,
+			"destination": "/alerts/spx-profit-pulse",
+			"title": "SPX Profit Pulse \u2014 0DTE Options Alerts | RTP",
+			"h1": ["Conquer Volatility with SPX 0DTE"],
+			"mainCount": 1,
+			"links": [
+				"#main-content",
+				"/",
+				"/mentorship",
+				"/our-mission",
+				"/about",
+				"/blog",
+				"/pricing",
+				"/login",
+				"/alerts",
+				"#pricing",
+				"#performance",
+				"/checkout/monthly-spx",
+				"/checkout/quarterly-spx",
+				"/checkout/annual-spx",
+				"https://facebook.com/revolutiontradingpros",
+				"https://twitter.com/revtradingpros",
+				"https://instagram.com/revolutiontradingpros",
+				"https://youtube.com/@RevolutionTradingPros",
+				"/live-trading-rooms",
+				"/courses",
+				"/classes",
+				"/indicators",
+				"/store/scanners",
+				"/tools/options-calculator",
+				"/team",
+				"/resources",
+				"/tutorials",
+				"/contact",
+				"/careers",
+				"/terms",
+				"/privacy",
+				"/cookie-policy",
+				"/disclaimer",
+				"/refund"
+			],
+			"forms": [],
+			"motion": [],
+			"axe": [],
+			"largeText": {
+				"viewport": 390,
+				"documentWidth": 382,
+				"problems": []
+			}
+		},
+		{
+			"path": "/authors/shao-wen",
+			"console": [],
+			"exceptions": [],
+			"network": [],
+			"viewports": [
+				{
+					"width": 320,
+					"viewport": 320,
+					"documentWidth": 320,
+					"problems": []
+				},
+				{
+					"width": 390,
+					"viewport": 390,
+					"documentWidth": 382,
+					"problems": []
+				},
+				{
+					"width": 639,
+					"viewport": 639,
+					"documentWidth": 631,
+					"problems": []
+				},
+				{
+					"width": 640,
+					"viewport": 640,
+					"documentWidth": 632,
+					"problems": []
+				},
+				{
+					"width": 767,
+					"viewport": 767,
+					"documentWidth": 759,
+					"problems": []
+				},
+				{
+					"width": 768,
+					"viewport": 768,
+					"documentWidth": 760,
+					"problems": []
+				},
+				{
+					"width": 1023,
+					"viewport": 1023,
+					"documentWidth": 1015,
+					"problems": []
+				},
+				{
+					"width": 1024,
+					"viewport": 1024,
+					"documentWidth": 1016,
+					"problems": []
+				},
+				{
+					"width": 1151,
+					"viewport": 1151,
+					"documentWidth": 1143,
+					"problems": []
+				},
+				{
+					"width": 1152,
+					"viewport": 1152,
+					"documentWidth": 1144,
+					"problems": []
+				},
+				{
+					"width": 1279,
+					"viewport": 1279,
+					"documentWidth": 1271,
+					"problems": []
+				},
+				{
+					"width": 1280,
+					"viewport": 1280,
+					"documentWidth": 1272,
+					"problems": []
+				},
+				{
+					"width": 1439,
+					"viewport": 1439,
+					"documentWidth": 1431,
+					"problems": []
+				},
+				{
+					"width": 1440,
+					"viewport": 1440,
+					"documentWidth": 1432,
+					"problems": []
+				},
+				{
+					"width": 1535,
+					"viewport": 1535,
+					"documentWidth": 1527,
+					"problems": []
+				},
+				{
+					"width": 1536,
+					"viewport": 1536,
+					"documentWidth": 1528,
+					"problems": []
+				},
+				{
+					"width": 1920,
+					"viewport": 1920,
+					"documentWidth": 1912,
+					"problems": []
+				}
+			],
+			"controls": [],
+			"navigation": ["/", "/authors/shao-wen", "/", "/authors/shao-wen"],
+			"status": 200,
+			"destination": "/authors/shao-wen",
+			"title": "Shao Wen \u2014 Mentor & Chart Master | Revolution Trading Pros",
+			"h1": ["Shao Wen"],
+			"mainCount": 1,
+			"links": [
+				"#main-content",
+				"/",
+				"/mentorship",
+				"/our-mission",
+				"/about",
+				"/blog",
+				"/pricing",
+				"/login",
+				"/team",
+				"/guides/risk-management",
+				"/guides/position-sizing",
+				"/courses",
+				"/live-trading-rooms",
+				"https://facebook.com/revolutiontradingpros",
+				"https://twitter.com/revtradingpros",
+				"https://instagram.com/revolutiontradingpros",
+				"https://youtube.com/@RevolutionTradingPros",
+				"/alerts",
+				"/classes",
+				"/indicators",
+				"/store/scanners",
+				"/tools/options-calculator",
+				"/resources",
+				"/tutorials",
+				"/contact",
+				"/careers",
+				"/terms",
+				"/privacy",
+				"/cookie-policy",
+				"/disclaimer",
+				"/refund"
+			],
+			"forms": [],
+			"motion": [],
+			"axe": [],
+			"largeText": {
+				"viewport": 390,
+				"documentWidth": 382,
+				"problems": []
+			}
+		},
+		{
+			"path": "/blog",
+			"console": [],
+			"exceptions": [],
+			"network": [],
+			"viewports": [
+				{
+					"width": 320,
+					"viewport": 320,
+					"documentWidth": 320,
+					"problems": []
+				},
+				{
+					"width": 390,
+					"viewport": 390,
+					"documentWidth": 382,
+					"problems": []
+				},
+				{
+					"width": 639,
+					"viewport": 639,
+					"documentWidth": 631,
+					"problems": []
+				},
+				{
+					"width": 640,
+					"viewport": 640,
+					"documentWidth": 632,
+					"problems": []
+				},
+				{
+					"width": 767,
+					"viewport": 767,
+					"documentWidth": 759,
+					"problems": []
+				},
+				{
+					"width": 768,
+					"viewport": 768,
+					"documentWidth": 760,
+					"problems": []
+				},
+				{
+					"width": 1023,
+					"viewport": 1023,
+					"documentWidth": 1015,
+					"problems": []
+				},
+				{
+					"width": 1024,
+					"viewport": 1024,
+					"documentWidth": 1016,
+					"problems": []
+				},
+				{
+					"width": 1151,
+					"viewport": 1151,
+					"documentWidth": 1143,
+					"problems": []
+				},
+				{
+					"width": 1152,
+					"viewport": 1152,
+					"documentWidth": 1144,
+					"problems": []
+				},
+				{
+					"width": 1279,
+					"viewport": 1279,
+					"documentWidth": 1271,
+					"problems": []
+				},
+				{
+					"width": 1280,
+					"viewport": 1280,
+					"documentWidth": 1272,
+					"problems": []
+				},
+				{
+					"width": 1439,
+					"viewport": 1439,
+					"documentWidth": 1431,
+					"problems": []
+				},
+				{
+					"width": 1440,
+					"viewport": 1440,
+					"documentWidth": 1432,
+					"problems": []
+				},
+				{
+					"width": 1535,
+					"viewport": 1535,
+					"documentWidth": 1527,
+					"problems": []
+				},
+				{
+					"width": 1536,
+					"viewport": 1536,
+					"documentWidth": 1528,
+					"problems": []
+				},
+				{
+					"width": 1920,
+					"viewport": 1920,
+					"documentWidth": 1912,
+					"problems": []
+				}
+			],
+			"controls": [],
+			"navigation": ["/", "/blog", "/", "/blog"],
+			"status": 200,
+			"destination": "/blog",
+			"title": "Trading Blog \u2014 Insights & Tutorials | RTP",
+			"h1": ["Blog"],
+			"mainCount": 1,
+			"links": [
+				"#main-content",
+				"/",
+				"/mentorship",
+				"/our-mission",
+				"/about",
+				"/blog",
+				"/pricing",
+				"/login",
+				"/guides/risk-management",
+				"/guides/position-sizing",
+				"/guides/swing-entry",
+				"/guides/exit-strategies",
+				"/resources/etf-stocks-list",
+				"/resources/stock-indexes-list",
+				"https://facebook.com/revolutiontradingpros",
+				"https://twitter.com/revtradingpros",
+				"https://instagram.com/revolutiontradingpros",
+				"https://youtube.com/@RevolutionTradingPros",
+				"/live-trading-rooms",
+				"/alerts",
+				"/courses",
+				"/classes",
+				"/indicators",
+				"/store/scanners",
+				"/tools/options-calculator",
+				"/team",
+				"/resources",
+				"/tutorials",
+				"/contact",
+				"/careers",
+				"/terms",
+				"/privacy",
+				"/cookie-policy",
+				"/disclaimer",
+				"/refund"
+			],
+			"forms": [],
+			"motion": [],
+			"axe": [],
+			"largeText": {
+				"viewport": 390,
+				"documentWidth": 382,
+				"problems": []
+			}
+		},
+		{
+			"path": "/careers",
+			"console": [],
+			"exceptions": [],
+			"network": [],
+			"viewports": [
+				{
+					"width": 320,
+					"viewport": 320,
+					"documentWidth": 320,
+					"problems": []
+				},
+				{
+					"width": 390,
+					"viewport": 390,
+					"documentWidth": 382,
+					"problems": []
+				},
+				{
+					"width": 639,
+					"viewport": 639,
+					"documentWidth": 631,
+					"problems": []
+				},
+				{
+					"width": 640,
+					"viewport": 640,
+					"documentWidth": 632,
+					"problems": []
+				},
+				{
+					"width": 767,
+					"viewport": 767,
+					"documentWidth": 759,
+					"problems": []
+				},
+				{
+					"width": 768,
+					"viewport": 768,
+					"documentWidth": 760,
+					"problems": []
+				},
+				{
+					"width": 1023,
+					"viewport": 1023,
+					"documentWidth": 1015,
+					"problems": []
+				},
+				{
+					"width": 1024,
+					"viewport": 1024,
+					"documentWidth": 1016,
+					"problems": []
+				},
+				{
+					"width": 1151,
+					"viewport": 1151,
+					"documentWidth": 1143,
+					"problems": []
+				},
+				{
+					"width": 1152,
+					"viewport": 1152,
+					"documentWidth": 1144,
+					"problems": []
+				},
+				{
+					"width": 1279,
+					"viewport": 1279,
+					"documentWidth": 1271,
+					"problems": []
+				},
+				{
+					"width": 1280,
+					"viewport": 1280,
+					"documentWidth": 1272,
+					"problems": []
+				},
+				{
+					"width": 1439,
+					"viewport": 1439,
+					"documentWidth": 1431,
+					"problems": []
+				},
+				{
+					"width": 1440,
+					"viewport": 1440,
+					"documentWidth": 1432,
+					"problems": []
+				},
+				{
+					"width": 1535,
+					"viewport": 1535,
+					"documentWidth": 1527,
+					"problems": []
+				},
+				{
+					"width": 1536,
+					"viewport": 1536,
+					"documentWidth": 1528,
+					"problems": []
+				},
+				{
+					"width": 1920,
+					"viewport": 1920,
+					"documentWidth": 1912,
+					"problems": []
+				}
+			],
+			"controls": [],
+			"navigation": ["/", "/careers", "/", "/careers"],
+			"status": 200,
+			"destination": "/careers",
+			"title": "Careers \u2014 Build the Future of Trading Education | RTP",
+			"h1": ["Build the Future of Trading Education"],
+			"mainCount": 1,
+			"links": [
+				"#main-content",
+				"/",
+				"/mentorship",
+				"/our-mission",
+				"/about",
+				"/blog",
+				"/pricing",
+				"/login",
+				"mailto:careers@revolutiontradingpros.com?subject=Senior Trading Educator",
+				"mailto:careers@revolutiontradingpros.com?subject=Community Manager",
+				"mailto:careers@revolutiontradingpros.com?subject=Full-Stack Developer",
+				"mailto:careers@revolutiontradingpros.com?subject=Video Producer",
+				"mailto:careers@revolutiontradingpros.com",
+				"https://facebook.com/revolutiontradingpros",
+				"https://twitter.com/revtradingpros",
+				"https://instagram.com/revolutiontradingpros",
+				"https://youtube.com/@RevolutionTradingPros",
+				"/live-trading-rooms",
+				"/alerts",
+				"/courses",
+				"/classes",
+				"/indicators",
+				"/store/scanners",
+				"/tools/options-calculator",
+				"/team",
+				"/resources",
+				"/tutorials",
+				"/contact",
+				"/careers",
+				"/terms",
+				"/privacy",
+				"/cookie-policy",
+				"/disclaimer",
+				"/refund"
+			],
+			"forms": [],
+			"motion": [],
+			"axe": [],
+			"largeText": {
+				"viewport": 390,
+				"documentWidth": 382,
+				"problems": []
+			}
+		},
+		{
+			"path": "/classes",
+			"console": [],
+			"exceptions": [],
+			"network": [],
+			"viewports": [
+				{
+					"width": 320,
+					"viewport": 320,
+					"documentWidth": 320,
+					"problems": []
+				},
+				{
+					"width": 390,
+					"viewport": 390,
+					"documentWidth": 382,
+					"problems": []
+				},
+				{
+					"width": 639,
+					"viewport": 639,
+					"documentWidth": 631,
+					"problems": []
+				},
+				{
+					"width": 640,
+					"viewport": 640,
+					"documentWidth": 632,
+					"problems": []
+				},
+				{
+					"width": 767,
+					"viewport": 767,
+					"documentWidth": 759,
+					"problems": []
+				},
+				{
+					"width": 768,
+					"viewport": 768,
+					"documentWidth": 760,
+					"problems": []
+				},
+				{
+					"width": 1023,
+					"viewport": 1023,
+					"documentWidth": 1015,
+					"problems": []
+				},
+				{
+					"width": 1024,
+					"viewport": 1024,
+					"documentWidth": 1016,
+					"problems": []
+				},
+				{
+					"width": 1151,
+					"viewport": 1151,
+					"documentWidth": 1143,
+					"problems": []
+				},
+				{
+					"width": 1152,
+					"viewport": 1152,
+					"documentWidth": 1144,
+					"problems": []
+				},
+				{
+					"width": 1279,
+					"viewport": 1279,
+					"documentWidth": 1271,
+					"problems": []
+				},
+				{
+					"width": 1280,
+					"viewport": 1280,
+					"documentWidth": 1272,
+					"problems": []
+				},
+				{
+					"width": 1439,
+					"viewport": 1439,
+					"documentWidth": 1431,
+					"problems": []
+				},
+				{
+					"width": 1440,
+					"viewport": 1440,
+					"documentWidth": 1432,
+					"problems": []
+				},
+				{
+					"width": 1535,
+					"viewport": 1535,
+					"documentWidth": 1527,
+					"problems": []
+				},
+				{
+					"width": 1536,
+					"viewport": 1536,
+					"documentWidth": 1528,
+					"problems": []
+				},
+				{
+					"width": 1920,
+					"viewport": 1920,
+					"documentWidth": 1912,
+					"problems": []
+				}
+			],
+			"controls": [],
+			"navigation": ["/", "/classes", "/", "/classes"],
+			"status": 200,
+			"destination": "/classes",
+			"title": "Trading Classes & Courses | Revolution Trading Pros",
+			"h1": ["Trading Classes"],
+			"mainCount": 1,
+			"links": [
+				"#main-content",
+				"/",
+				"/mentorship",
+				"/our-mission",
+				"/about",
+				"/blog",
+				"/pricing",
+				"/login",
+				"/classes/quickstart-precision-trading-c",
+				"/classes/tax-loss-harvest-c",
+				"https://facebook.com/revolutiontradingpros",
+				"https://twitter.com/revtradingpros",
+				"https://instagram.com/revolutiontradingpros",
+				"https://youtube.com/@RevolutionTradingPros",
+				"/live-trading-rooms",
+				"/alerts",
+				"/courses",
+				"/classes",
+				"/indicators",
+				"/store/scanners",
+				"/tools/options-calculator",
+				"/team",
+				"/resources",
+				"/tutorials",
+				"/contact",
+				"/careers",
+				"/terms",
+				"/privacy",
+				"/cookie-policy",
+				"/disclaimer",
+				"/refund"
+			],
+			"forms": [],
+			"motion": [],
+			"axe": [],
+			"largeText": {
+				"viewport": 390,
+				"documentWidth": 382,
+				"problems": []
+			}
+		},
+		{
+			"path": "/classes/quickstart-precision-trading-c",
+			"console": [],
+			"exceptions": [],
+			"network": [
+				{
+					"url": "https://simpler-options.s3.amazonaws.com/Moxie/MoxieQuickstart_A1.mp4",
+					"failure": "net::ERR_ABORTED"
+				},
+				{
+					"url": "https://simpler-options.s3.amazonaws.com/Moxie/MoxieQuickstart_A1.mp4",
+					"failure": "net::ERR_ABORTED"
+				},
+				{
+					"url": "https://simpler-options.s3.amazonaws.com/Moxie/MoxieQuickstart_A1.mp4",
+					"failure": "net::ERR_ABORTED"
+				},
+				{
+					"url": "https://simpler-options.s3.amazonaws.com/Moxie/MoxieQuickstart_A1.mp4",
+					"failure": "net::ERR_ABORTED"
+				},
+				{
+					"url": "https://simpler-options.s3.amazonaws.com/Moxie/MoxieQuickstart_A1.mp4",
+					"failure": "net::ERR_ABORTED"
+				}
+			],
+			"viewports": [
+				{
+					"width": 320,
+					"viewport": 320,
+					"documentWidth": 320,
+					"problems": []
+				},
+				{
+					"width": 390,
+					"viewport": 390,
+					"documentWidth": 382,
+					"problems": []
+				},
+				{
+					"width": 639,
+					"viewport": 639,
+					"documentWidth": 631,
+					"problems": []
+				},
+				{
+					"width": 640,
+					"viewport": 640,
+					"documentWidth": 632,
+					"problems": []
+				},
+				{
+					"width": 767,
+					"viewport": 767,
+					"documentWidth": 759,
+					"problems": []
+				},
+				{
+					"width": 768,
+					"viewport": 768,
+					"documentWidth": 760,
+					"problems": []
+				},
+				{
+					"width": 1023,
+					"viewport": 1023,
+					"documentWidth": 1015,
+					"problems": []
+				},
+				{
+					"width": 1024,
+					"viewport": 1024,
+					"documentWidth": 1016,
+					"problems": []
+				},
+				{
+					"width": 1151,
+					"viewport": 1151,
+					"documentWidth": 1143,
+					"problems": []
+				},
+				{
+					"width": 1152,
+					"viewport": 1152,
+					"documentWidth": 1144,
+					"problems": []
+				},
+				{
+					"width": 1279,
+					"viewport": 1279,
+					"documentWidth": 1271,
+					"problems": []
+				},
+				{
+					"width": 1280,
+					"viewport": 1280,
+					"documentWidth": 1272,
+					"problems": []
+				},
+				{
+					"width": 1439,
+					"viewport": 1439,
+					"documentWidth": 1431,
+					"problems": []
+				},
+				{
+					"width": 1440,
+					"viewport": 1440,
+					"documentWidth": 1432,
+					"problems": []
+				},
+				{
+					"width": 1535,
+					"viewport": 1535,
+					"documentWidth": 1527,
+					"problems": []
+				},
+				{
+					"width": 1536,
+					"viewport": 1536,
+					"documentWidth": 1528,
+					"problems": []
+				},
+				{
+					"width": 1920,
+					"viewport": 1920,
+					"documentWidth": 1912,
+					"problems": []
+				}
+			],
+			"controls": [],
+			"navigation": [
+				"/",
+				"/classes/quickstart-precision-trading-c",
+				"/",
+				"/classes/quickstart-precision-trading-c"
+			],
+			"status": 200,
+			"destination": "/classes/quickstart-precision-trading-c",
+			"title": "Quickstart To Precision Trading | Revolution Trading Pros",
+			"h1": ["Quickstart To Precision Trading"],
+			"mainCount": 1,
+			"links": [
+				"#main-content",
+				"/",
+				"/mentorship",
+				"/our-mission",
+				"/about",
+				"/blog",
+				"/pricing",
+				"/login",
+				"/classes",
+				"/login?redirect=/classes/quickstart-precision-trading-c",
+				"mailto:support@revolutiontradingpros.com",
+				"https://facebook.com/revolutiontradingpros",
+				"https://twitter.com/revtradingpros",
+				"https://instagram.com/revolutiontradingpros",
+				"https://youtube.com/@RevolutionTradingPros",
+				"/live-trading-rooms",
+				"/alerts",
+				"/courses",
+				"/indicators",
+				"/store/scanners",
+				"/tools/options-calculator",
+				"/team",
+				"/resources",
+				"/tutorials",
+				"/contact",
+				"/careers",
+				"/terms",
+				"/privacy",
+				"/cookie-policy",
+				"/disclaimer",
+				"/refund"
+			],
+			"forms": [],
+			"motion": [],
+			"axe": [],
+			"largeText": {
+				"viewport": 390,
+				"documentWidth": 382,
+				"problems": []
+			}
+		},
+		{
+			"path": "/classes/tax-loss-harvest-c",
+			"console": [],
+			"exceptions": [],
+			"network": [
+				{
+					"url": "https://cloud-streaming.s3.amazonaws.com/chatrecordings/STWebinars/6941b999d4e2e95d75e7ddfb_Tax_Loss_Harvest_2025_JC_12-31-2025__03.00.276_PM.mp4",
+					"failure": "net::ERR_BLOCKED_BY_ORB"
+				},
+				{
+					"url": "https://cloud-streaming.s3.amazonaws.com/chatrecordings/STWebinars/6941b999d4e2e95d75e7ddfb_Tax_Loss_Harvest_2025_JC_12-31-2025__09.23.835_AM.mp4",
+					"failure": "net::ERR_BLOCKED_BY_ORB"
+				},
+				{
+					"url": "https://cloud-streaming.s3.amazonaws.com/chatrecordings/STWebinars/6941b999d4e2e95d75e7ddfb_Tax_Loss_Harvest_2025_Taylor_Horton_12-31-2025__12.30.925_PM.mp4",
+					"failure": "net::ERR_BLOCKED_BY_ORB"
+				},
+				{
+					"url": "https://cloud-streaming.s3.amazonaws.com/chatrecordings/STWebinars/6941b999d4e2e95d75e7ddfb_Tax_Loss_Harvest_2025_JC_12-18-2025__04.02.148_PM.mp4",
+					"failure": "net::ERR_BLOCKED_BY_ORB"
+				},
+				{
+					"url": "https://cloud-streaming.s3.amazonaws.com/chatrecordings/STWebinars/6941b999d4e2e95d75e7ddfb_Tax_Loss_Harvest_2025_HG_12-31-2025__02.00.196_PM.mp4",
+					"failure": "net::ERR_BLOCKED_BY_ORB"
+				},
+				{
+					"url": "https://cloud-streaming.s3.amazonaws.com/chatrecordings/STWebinars/6941b999d4e2e95d75e7ddfb_Tax_Loss_Harvest_2025_JC_12-31-2025__03.00.276_PM.mp4",
+					"failure": "net::ERR_BLOCKED_BY_ORB"
+				},
+				{
+					"url": "https://cloud-streaming.s3.amazonaws.com/chatrecordings/STWebinars/6941b999d4e2e95d75e7ddfb_Tax_Loss_Harvest_2025_JC_12-18-2025__04.02.148_PM.mp4",
+					"failure": "net::ERR_BLOCKED_BY_ORB"
+				},
+				{
+					"url": "https://cloud-streaming.s3.amazonaws.com/chatrecordings/STWebinars/6941b999d4e2e95d75e7ddfb_Tax_Loss_Harvest_2025_HG_12-31-2025__02.00.196_PM.mp4",
+					"failure": "net::ERR_BLOCKED_BY_ORB"
+				},
+				{
+					"url": "https://cloud-streaming.s3.amazonaws.com/chatrecordings/STWebinars/6941b999d4e2e95d75e7ddfb_Tax_Loss_Harvest_2025_Taylor_Horton_12-31-2025__12.30.925_PM.mp4",
+					"failure": "net::ERR_BLOCKED_BY_ORB"
+				},
+				{
+					"url": "https://cloud-streaming.s3.amazonaws.com/chatrecordings/STWebinars/6941b999d4e2e95d75e7ddfb_Tax_Loss_Harvest_2025_JC_12-31-2025__09.23.835_AM.mp4",
+					"failure": "net::ERR_BLOCKED_BY_ORB"
+				},
+				{
+					"url": "https://cloud-streaming.s3.amazonaws.com/chatrecordings/STWebinars/6941b999d4e2e95d75e7ddfb_Tax_Loss_Harvest_2025_JC_12-31-2025__03.00.276_PM.mp4",
+					"failure": "net::ERR_BLOCKED_BY_ORB"
+				},
+				{
+					"url": "https://cloud-streaming.s3.amazonaws.com/chatrecordings/STWebinars/6941b999d4e2e95d75e7ddfb_Tax_Loss_Harvest_2025_JC_12-18-2025__04.02.148_PM.mp4",
+					"failure": "net::ERR_BLOCKED_BY_ORB"
+				},
+				{
+					"url": "https://cloud-streaming.s3.amazonaws.com/chatrecordings/STWebinars/6941b999d4e2e95d75e7ddfb_Tax_Loss_Harvest_2025_HG_12-31-2025__02.00.196_PM.mp4",
+					"failure": "net::ERR_BLOCKED_BY_ORB"
+				},
+				{
+					"url": "https://cloud-streaming.s3.amazonaws.com/chatrecordings/STWebinars/6941b999d4e2e95d75e7ddfb_Tax_Loss_Harvest_2025_JC_12-31-2025__09.23.835_AM.mp4",
+					"failure": "net::ERR_BLOCKED_BY_ORB"
+				},
+				{
+					"url": "https://cloud-streaming.s3.amazonaws.com/chatrecordings/STWebinars/6941b999d4e2e95d75e7ddfb_Tax_Loss_Harvest_2025_Taylor_Horton_12-31-2025__12.30.925_PM.mp4",
+					"failure": "net::ERR_BLOCKED_BY_ORB"
+				},
+				{
+					"url": "https://cloud-streaming.s3.amazonaws.com/chatrecordings/STWebinars/6941b999d4e2e95d75e7ddfb_Tax_Loss_Harvest_2025_JC_12-31-2025__09.23.835_AM.mp4",
+					"failure": "net::ERR_BLOCKED_BY_ORB"
+				},
+				{
+					"url": "https://cloud-streaming.s3.amazonaws.com/chatrecordings/STWebinars/6941b999d4e2e95d75e7ddfb_Tax_Loss_Harvest_2025_JC_12-31-2025__03.00.276_PM.mp4",
+					"failure": "net::ERR_BLOCKED_BY_ORB"
+				},
+				{
+					"url": "https://cloud-streaming.s3.amazonaws.com/chatrecordings/STWebinars/6941b999d4e2e95d75e7ddfb_Tax_Loss_Harvest_2025_JC_12-18-2025__04.02.148_PM.mp4",
+					"failure": "net::ERR_BLOCKED_BY_ORB"
+				},
+				{
+					"url": "https://cloud-streaming.s3.amazonaws.com/chatrecordings/STWebinars/6941b999d4e2e95d75e7ddfb_Tax_Loss_Harvest_2025_HG_12-31-2025__02.00.196_PM.mp4",
+					"failure": "net::ERR_BLOCKED_BY_ORB"
+				}
+			],
+			"viewports": [
+				{
+					"width": 320,
+					"viewport": 320,
+					"documentWidth": 320,
+					"problems": []
+				},
+				{
+					"width": 390,
+					"viewport": 390,
+					"documentWidth": 382,
+					"problems": []
+				},
+				{
+					"width": 639,
+					"viewport": 639,
+					"documentWidth": 631,
+					"problems": []
+				},
+				{
+					"width": 640,
+					"viewport": 640,
+					"documentWidth": 632,
+					"problems": []
+				},
+				{
+					"width": 767,
+					"viewport": 767,
+					"documentWidth": 759,
+					"problems": []
+				},
+				{
+					"width": 768,
+					"viewport": 768,
+					"documentWidth": 760,
+					"problems": []
+				},
+				{
+					"width": 1023,
+					"viewport": 1023,
+					"documentWidth": 1015,
+					"problems": []
+				},
+				{
+					"width": 1024,
+					"viewport": 1024,
+					"documentWidth": 1016,
+					"problems": []
+				},
+				{
+					"width": 1151,
+					"viewport": 1151,
+					"documentWidth": 1143,
+					"problems": []
+				},
+				{
+					"width": 1152,
+					"viewport": 1152,
+					"documentWidth": 1144,
+					"problems": []
+				},
+				{
+					"width": 1279,
+					"viewport": 1279,
+					"documentWidth": 1271,
+					"problems": []
+				},
+				{
+					"width": 1280,
+					"viewport": 1280,
+					"documentWidth": 1272,
+					"problems": []
+				},
+				{
+					"width": 1439,
+					"viewport": 1439,
+					"documentWidth": 1431,
+					"problems": []
+				},
+				{
+					"width": 1440,
+					"viewport": 1440,
+					"documentWidth": 1432,
+					"problems": []
+				},
+				{
+					"width": 1535,
+					"viewport": 1535,
+					"documentWidth": 1527,
+					"problems": []
+				},
+				{
+					"width": 1536,
+					"viewport": 1536,
+					"documentWidth": 1528,
+					"problems": []
+				},
+				{
+					"width": 1920,
+					"viewport": 1920,
+					"documentWidth": 1912,
+					"problems": []
+				}
+			],
+			"controls": [],
+			"navigation": ["/", "/classes/tax-loss-harvest-c", "/", "/classes/tax-loss-harvest-c"],
+			"status": 200,
+			"destination": "/classes/tax-loss-harvest-c",
+			"title": "Tax Loss Harvest Strategy Class | Revolution Trading Pros",
+			"h1": ["Tax Loss Harvest"],
+			"mainCount": 1,
+			"links": [
+				"#main-content",
+				"/",
+				"/mentorship",
+				"/our-mission",
+				"/about",
+				"/blog",
+				"/pricing",
+				"/login",
+				"/classes",
+				"/contact",
+				"/login?redirect=/classes/tax-loss-harvest-c",
+				"https://facebook.com/revolutiontradingpros",
+				"https://twitter.com/revtradingpros",
+				"https://instagram.com/revolutiontradingpros",
+				"https://youtube.com/@RevolutionTradingPros",
+				"/live-trading-rooms",
+				"/alerts",
+				"/courses",
+				"/indicators",
+				"/store/scanners",
+				"/tools/options-calculator",
+				"/team",
+				"/resources",
+				"/tutorials",
+				"/careers",
+				"/terms",
+				"/privacy",
+				"/cookie-policy",
+				"/disclaimer",
+				"/refund"
+			],
+			"forms": [],
+			"motion": [],
+			"axe": [],
+			"largeText": {
+				"viewport": 390,
+				"documentWidth": 382,
+				"problems": []
+			}
+		},
+		{
+			"path": "/cookie-policy",
+			"console": [],
+			"exceptions": [],
+			"network": [],
+			"viewports": [
+				{
+					"width": 320,
+					"viewport": 320,
+					"documentWidth": 320,
+					"problems": []
+				},
+				{
+					"width": 390,
+					"viewport": 390,
+					"documentWidth": 382,
+					"problems": []
+				},
+				{
+					"width": 639,
+					"viewport": 639,
+					"documentWidth": 631,
+					"problems": []
+				},
+				{
+					"width": 640,
+					"viewport": 640,
+					"documentWidth": 632,
+					"problems": []
+				},
+				{
+					"width": 767,
+					"viewport": 767,
+					"documentWidth": 759,
+					"problems": []
+				},
+				{
+					"width": 768,
+					"viewport": 768,
+					"documentWidth": 760,
+					"problems": []
+				},
+				{
+					"width": 1023,
+					"viewport": 1023,
+					"documentWidth": 1015,
+					"problems": []
+				},
+				{
+					"width": 1024,
+					"viewport": 1024,
+					"documentWidth": 1016,
+					"problems": []
+				},
+				{
+					"width": 1151,
+					"viewport": 1151,
+					"documentWidth": 1143,
+					"problems": []
+				},
+				{
+					"width": 1152,
+					"viewport": 1152,
+					"documentWidth": 1144,
+					"problems": []
+				},
+				{
+					"width": 1279,
+					"viewport": 1279,
+					"documentWidth": 1271,
+					"problems": []
+				},
+				{
+					"width": 1280,
+					"viewport": 1280,
+					"documentWidth": 1272,
+					"problems": []
+				},
+				{
+					"width": 1439,
+					"viewport": 1439,
+					"documentWidth": 1431,
+					"problems": []
+				},
+				{
+					"width": 1440,
+					"viewport": 1440,
+					"documentWidth": 1432,
+					"problems": []
+				},
+				{
+					"width": 1535,
+					"viewport": 1535,
+					"documentWidth": 1527,
+					"problems": []
+				},
+				{
+					"width": 1536,
+					"viewport": 1536,
+					"documentWidth": 1528,
+					"problems": []
+				},
+				{
+					"width": 1920,
+					"viewport": 1920,
+					"documentWidth": 1912,
+					"problems": []
+				}
+			],
+			"controls": [],
+			"navigation": ["/", "/cookie-policy", "/", "/cookie-policy"],
+			"status": 200,
+			"destination": "/cookie-policy",
+			"title": "Cookie Policy | Revolution Trading Pros",
+			"h1": ["Cookie Policy"],
+			"mainCount": 1,
+			"links": [
+				"#main-content",
+				"/",
+				"/mentorship",
+				"/our-mission",
+				"/about",
+				"/blog",
+				"/pricing",
+				"/login",
+				"https://policies.google.com/privacy",
+				"https://www.facebook.com/privacy/policy/",
+				"https://www.tiktok.com/legal/privacy-policy",
+				"https://twitter.com/en/privacy",
+				"https://www.linkedin.com/legal/privacy-policy",
+				"https://policy.pinterest.com/en/privacy-policy",
+				"https://www.reddit.com/policies/privacy-policy",
+				"mailto:privacy@revolutiontradingpros.com",
+				"https://facebook.com/revolutiontradingpros",
+				"https://twitter.com/revtradingpros",
+				"https://instagram.com/revolutiontradingpros",
+				"https://youtube.com/@RevolutionTradingPros",
+				"/live-trading-rooms",
+				"/alerts",
+				"/courses",
+				"/classes",
+				"/indicators",
+				"/store/scanners",
+				"/tools/options-calculator",
+				"/team",
+				"/resources",
+				"/tutorials",
+				"/contact",
+				"/careers",
+				"/terms",
+				"/privacy",
+				"/cookie-policy",
+				"/disclaimer",
+				"/refund"
+			],
+			"forms": [],
+			"motion": [],
+			"axe": [],
+			"largeText": {
+				"viewport": 390,
+				"documentWidth": 382,
+				"problems": []
+			}
+		},
+		{
+			"path": "/contact",
+			"console": [],
+			"exceptions": [],
+			"network": [],
+			"viewports": [
+				{
+					"width": 320,
+					"viewport": 320,
+					"documentWidth": 320,
+					"problems": []
+				},
+				{
+					"width": 390,
+					"viewport": 390,
+					"documentWidth": 382,
+					"problems": []
+				},
+				{
+					"width": 639,
+					"viewport": 639,
+					"documentWidth": 631,
+					"problems": []
+				},
+				{
+					"width": 640,
+					"viewport": 640,
+					"documentWidth": 632,
+					"problems": []
+				},
+				{
+					"width": 767,
+					"viewport": 767,
+					"documentWidth": 759,
+					"problems": []
+				},
+				{
+					"width": 768,
+					"viewport": 768,
+					"documentWidth": 760,
+					"problems": []
+				},
+				{
+					"width": 1023,
+					"viewport": 1023,
+					"documentWidth": 1015,
+					"problems": []
+				},
+				{
+					"width": 1024,
+					"viewport": 1024,
+					"documentWidth": 1016,
+					"problems": []
+				},
+				{
+					"width": 1151,
+					"viewport": 1151,
+					"documentWidth": 1143,
+					"problems": []
+				},
+				{
+					"width": 1152,
+					"viewport": 1152,
+					"documentWidth": 1144,
+					"problems": []
+				},
+				{
+					"width": 1279,
+					"viewport": 1279,
+					"documentWidth": 1271,
+					"problems": []
+				},
+				{
+					"width": 1280,
+					"viewport": 1280,
+					"documentWidth": 1272,
+					"problems": []
+				},
+				{
+					"width": 1439,
+					"viewport": 1439,
+					"documentWidth": 1431,
+					"problems": []
+				},
+				{
+					"width": 1440,
+					"viewport": 1440,
+					"documentWidth": 1432,
+					"problems": []
+				},
+				{
+					"width": 1535,
+					"viewport": 1535,
+					"documentWidth": 1527,
+					"problems": []
+				},
+				{
+					"width": 1536,
+					"viewport": 1536,
+					"documentWidth": 1528,
+					"problems": []
+				},
+				{
+					"width": 1920,
+					"viewport": 1920,
+					"documentWidth": 1912,
+					"problems": []
+				}
+			],
+			"controls": [],
+			"navigation": ["/", "/contact", "/", "/contact"],
+			"status": 200,
+			"destination": "/contact",
+			"title": "Contact Support & Trading Desk | Revolution Trading Pros",
+			"h1": ["Contact Us"],
+			"mainCount": 1,
+			"links": [
+				"#main-content",
+				"/",
+				"/mentorship",
+				"/our-mission",
+				"/about",
+				"/blog",
+				"/pricing",
+				"/login",
+				"mailto:support@revolutiontradingpros.com",
+				"https://facebook.com/revolutiontradingpros",
+				"https://twitter.com/revtradingpros",
+				"https://instagram.com/revolutiontradingpros",
+				"https://youtube.com/@RevolutionTradingPros",
+				"/live-trading-rooms",
+				"/alerts",
+				"/courses",
+				"/classes",
+				"/indicators",
+				"/store/scanners",
+				"/tools/options-calculator",
+				"/team",
+				"/resources",
+				"/tutorials",
+				"/contact",
+				"/careers",
+				"/terms",
+				"/privacy",
+				"/cookie-policy",
+				"/disclaimer",
+				"/refund"
+			],
+			"forms": [],
+			"motion": [],
+			"axe": [],
+			"largeText": {
+				"viewport": 390,
+				"documentWidth": 382,
+				"problems": []
+			}
+		},
+		{
+			"path": "/courses",
+			"console": [],
+			"exceptions": [],
+			"network": [],
+			"viewports": [
+				{
+					"width": 320,
+					"viewport": 320,
+					"documentWidth": 320,
+					"problems": []
+				},
+				{
+					"width": 390,
+					"viewport": 390,
+					"documentWidth": 382,
+					"problems": []
+				},
+				{
+					"width": 639,
+					"viewport": 639,
+					"documentWidth": 631,
+					"problems": []
+				},
+				{
+					"width": 640,
+					"viewport": 640,
+					"documentWidth": 632,
+					"problems": []
+				},
+				{
+					"width": 767,
+					"viewport": 767,
+					"documentWidth": 759,
+					"problems": []
+				},
+				{
+					"width": 768,
+					"viewport": 768,
+					"documentWidth": 760,
+					"problems": []
+				},
+				{
+					"width": 1023,
+					"viewport": 1023,
+					"documentWidth": 1015,
+					"problems": []
+				},
+				{
+					"width": 1024,
+					"viewport": 1024,
+					"documentWidth": 1016,
+					"problems": []
+				},
+				{
+					"width": 1151,
+					"viewport": 1151,
+					"documentWidth": 1143,
+					"problems": []
+				},
+				{
+					"width": 1152,
+					"viewport": 1152,
+					"documentWidth": 1144,
+					"problems": []
+				},
+				{
+					"width": 1279,
+					"viewport": 1279,
+					"documentWidth": 1271,
+					"problems": []
+				},
+				{
+					"width": 1280,
+					"viewport": 1280,
+					"documentWidth": 1272,
+					"problems": []
+				},
+				{
+					"width": 1439,
+					"viewport": 1439,
+					"documentWidth": 1431,
+					"problems": []
+				},
+				{
+					"width": 1440,
+					"viewport": 1440,
+					"documentWidth": 1432,
+					"problems": []
+				},
+				{
+					"width": 1535,
+					"viewport": 1535,
+					"documentWidth": 1527,
+					"problems": []
+				},
+				{
+					"width": 1536,
+					"viewport": 1536,
+					"documentWidth": 1528,
+					"problems": []
+				},
+				{
+					"width": 1920,
+					"viewport": 1920,
+					"documentWidth": 1912,
+					"problems": []
+				}
+			],
+			"controls": [
+				{
+					"type": "expanded",
+					"name": "Where do I start as a beginner?",
+					"before": "true",
+					"after": "false"
+				},
+				{
+					"type": "expanded",
+					"name": "Is there live mentorship?",
+					"before": "false",
+					"after": "true"
+				},
+				{
+					"type": "expanded",
+					"name": "Do I need a large account?",
+					"before": "false",
+					"after": "true"
+				},
+				{
+					"type": "expanded",
+					"name": "Lifetime access?",
+					"before": "false",
+					"after": "true"
+				}
+			],
+			"navigation": ["/", "/courses", "/", "/courses"],
+			"status": 200,
+			"destination": "/courses",
+			"title": "Trading Courses & Mentorship | Revolution Trading Pros",
+			"h1": ["EXECUTION OVER OPINION"],
+			"mainCount": 1,
+			"links": [
+				"#main-content",
+				"/",
+				"/mentorship",
+				"/our-mission",
+				"/about",
+				"/blog",
+				"/pricing",
+				"/login",
+				"#curriculum",
+				"/courses/day-trading-masterclass",
+				"/courses/swing-trading-pro",
+				"/courses/options-trading",
+				"/courses/risk-management",
+				"https://facebook.com/revolutiontradingpros",
+				"https://twitter.com/revtradingpros",
+				"https://instagram.com/revolutiontradingpros",
+				"https://youtube.com/@RevolutionTradingPros",
+				"/live-trading-rooms",
+				"/alerts",
+				"/courses",
+				"/classes",
+				"/indicators",
+				"/store/scanners",
+				"/tools/options-calculator",
+				"/team",
+				"/resources",
+				"/tutorials",
+				"/contact",
+				"/careers",
+				"/terms",
+				"/privacy",
+				"/cookie-policy",
+				"/disclaimer",
+				"/refund"
+			],
+			"forms": [],
+			"motion": [],
+			"axe": [],
+			"largeText": {
+				"viewport": 390,
+				"documentWidth": 382,
+				"problems": []
+			}
+		},
+		{
+			"path": "/courses/day-trading-masterclass",
+			"console": [],
+			"exceptions": [],
+			"network": [],
+			"viewports": [
+				{
+					"width": 320,
+					"viewport": 320,
+					"documentWidth": 320,
+					"problems": []
+				},
+				{
+					"width": 390,
+					"viewport": 390,
+					"documentWidth": 382,
+					"problems": []
+				},
+				{
+					"width": 639,
+					"viewport": 639,
+					"documentWidth": 631,
+					"problems": []
+				},
+				{
+					"width": 640,
+					"viewport": 640,
+					"documentWidth": 632,
+					"problems": []
+				},
+				{
+					"width": 767,
+					"viewport": 767,
+					"documentWidth": 759,
+					"problems": []
+				},
+				{
+					"width": 768,
+					"viewport": 768,
+					"documentWidth": 760,
+					"problems": []
+				},
+				{
+					"width": 1023,
+					"viewport": 1023,
+					"documentWidth": 1015,
+					"problems": []
+				},
+				{
+					"width": 1024,
+					"viewport": 1024,
+					"documentWidth": 1016,
+					"problems": []
+				},
+				{
+					"width": 1151,
+					"viewport": 1151,
+					"documentWidth": 1143,
+					"problems": []
+				},
+				{
+					"width": 1152,
+					"viewport": 1152,
+					"documentWidth": 1144,
+					"problems": []
+				},
+				{
+					"width": 1279,
+					"viewport": 1279,
+					"documentWidth": 1271,
+					"problems": []
+				},
+				{
+					"width": 1280,
+					"viewport": 1280,
+					"documentWidth": 1272,
+					"problems": []
+				},
+				{
+					"width": 1439,
+					"viewport": 1439,
+					"documentWidth": 1431,
+					"problems": []
+				},
+				{
+					"width": 1440,
+					"viewport": 1440,
+					"documentWidth": 1432,
+					"problems": []
+				},
+				{
+					"width": 1535,
+					"viewport": 1535,
+					"documentWidth": 1527,
+					"problems": []
+				},
+				{
+					"width": 1536,
+					"viewport": 1536,
+					"documentWidth": 1528,
+					"problems": []
+				},
+				{
+					"width": 1920,
+					"viewport": 1920,
+					"documentWidth": 1912,
+					"problems": []
+				}
+			],
+			"controls": [],
+			"navigation": [
+				"/",
+				"/courses/day-trading-masterclass",
+				"/",
+				"/courses/day-trading-masterclass"
+			],
+			"status": 200,
+			"destination": "/courses/day-trading-masterclass",
+			"title": "Day Trading Masterclass | Revolution Trading Pros",
+			"h1": ["Day Trading Masterclass"],
+			"mainCount": 1,
+			"links": [
+				"#main-content",
+				"/",
+				"/mentorship",
+				"/our-mission",
+				"/about",
+				"/blog",
+				"/pricing",
+				"/login",
+				"/courses",
+				"/register",
+				"#curriculum",
+				"https://facebook.com/revolutiontradingpros",
+				"https://twitter.com/revtradingpros",
+				"https://instagram.com/revolutiontradingpros",
+				"https://youtube.com/@RevolutionTradingPros",
+				"/live-trading-rooms",
+				"/alerts",
+				"/classes",
+				"/indicators",
+				"/store/scanners",
+				"/tools/options-calculator",
+				"/team",
+				"/resources",
+				"/tutorials",
+				"/contact",
+				"/careers",
+				"/terms",
+				"/privacy",
+				"/cookie-policy",
+				"/disclaimer",
+				"/refund"
+			],
+			"forms": [],
+			"motion": [],
+			"axe": [],
+			"largeText": {
+				"viewport": 390,
+				"documentWidth": 382,
+				"problems": []
+			}
+		},
+		{
+			"path": "/courses/options-trading",
+			"console": [],
+			"exceptions": [],
+			"network": [],
+			"viewports": [
+				{
+					"width": 320,
+					"viewport": 320,
+					"documentWidth": 320,
+					"problems": []
+				},
+				{
+					"width": 390,
+					"viewport": 390,
+					"documentWidth": 382,
+					"problems": []
+				},
+				{
+					"width": 639,
+					"viewport": 639,
+					"documentWidth": 631,
+					"problems": []
+				},
+				{
+					"width": 640,
+					"viewport": 640,
+					"documentWidth": 632,
+					"problems": []
+				},
+				{
+					"width": 767,
+					"viewport": 767,
+					"documentWidth": 759,
+					"problems": []
+				},
+				{
+					"width": 768,
+					"viewport": 768,
+					"documentWidth": 760,
+					"problems": []
+				},
+				{
+					"width": 1023,
+					"viewport": 1023,
+					"documentWidth": 1015,
+					"problems": []
+				},
+				{
+					"width": 1024,
+					"viewport": 1024,
+					"documentWidth": 1016,
+					"problems": []
+				},
+				{
+					"width": 1151,
+					"viewport": 1151,
+					"documentWidth": 1143,
+					"problems": []
+				},
+				{
+					"width": 1152,
+					"viewport": 1152,
+					"documentWidth": 1144,
+					"problems": []
+				},
+				{
+					"width": 1279,
+					"viewport": 1279,
+					"documentWidth": 1271,
+					"problems": []
+				},
+				{
+					"width": 1280,
+					"viewport": 1280,
+					"documentWidth": 1272,
+					"problems": []
+				},
+				{
+					"width": 1439,
+					"viewport": 1439,
+					"documentWidth": 1431,
+					"problems": []
+				},
+				{
+					"width": 1440,
+					"viewport": 1440,
+					"documentWidth": 1432,
+					"problems": []
+				},
+				{
+					"width": 1535,
+					"viewport": 1535,
+					"documentWidth": 1527,
+					"problems": []
+				},
+				{
+					"width": 1536,
+					"viewport": 1536,
+					"documentWidth": 1528,
+					"problems": []
+				},
+				{
+					"width": 1920,
+					"viewport": 1920,
+					"documentWidth": 1912,
+					"problems": []
+				}
+			],
+			"controls": [],
+			"navigation": ["/", "/courses/options-trading", "/", "/courses/options-trading"],
+			"status": 200,
+			"destination": "/courses/options-trading",
+			"title": "Options Trading Fundamentals | Revolution Trading Pros",
+			"h1": ["Options Trading Fundamentals"],
+			"mainCount": 1,
+			"links": [
+				"#main-content",
+				"/",
+				"/mentorship",
+				"/our-mission",
+				"/about",
+				"/blog",
+				"/pricing",
+				"/login",
+				"/courses",
+				"/register",
+				"https://facebook.com/revolutiontradingpros",
+				"https://twitter.com/revtradingpros",
+				"https://instagram.com/revolutiontradingpros",
+				"https://youtube.com/@RevolutionTradingPros",
+				"/live-trading-rooms",
+				"/alerts",
+				"/classes",
+				"/indicators",
+				"/store/scanners",
+				"/tools/options-calculator",
+				"/team",
+				"/resources",
+				"/tutorials",
+				"/contact",
+				"/careers",
+				"/terms",
+				"/privacy",
+				"/cookie-policy",
+				"/disclaimer",
+				"/refund"
+			],
+			"forms": [],
+			"motion": [],
+			"axe": [],
+			"largeText": {
+				"viewport": 390,
+				"documentWidth": 382,
+				"problems": []
+			}
+		},
+		{
+			"path": "/courses/risk-management",
+			"console": [],
+			"exceptions": [],
+			"network": [],
+			"viewports": [
+				{
+					"width": 320,
+					"viewport": 320,
+					"documentWidth": 320,
+					"problems": []
+				},
+				{
+					"width": 390,
+					"viewport": 390,
+					"documentWidth": 382,
+					"problems": []
+				},
+				{
+					"width": 639,
+					"viewport": 639,
+					"documentWidth": 631,
+					"problems": []
+				},
+				{
+					"width": 640,
+					"viewport": 640,
+					"documentWidth": 632,
+					"problems": []
+				},
+				{
+					"width": 767,
+					"viewport": 767,
+					"documentWidth": 759,
+					"problems": []
+				},
+				{
+					"width": 768,
+					"viewport": 768,
+					"documentWidth": 760,
+					"problems": []
+				},
+				{
+					"width": 1023,
+					"viewport": 1023,
+					"documentWidth": 1015,
+					"problems": []
+				},
+				{
+					"width": 1024,
+					"viewport": 1024,
+					"documentWidth": 1016,
+					"problems": []
+				},
+				{
+					"width": 1151,
+					"viewport": 1151,
+					"documentWidth": 1143,
+					"problems": []
+				},
+				{
+					"width": 1152,
+					"viewport": 1152,
+					"documentWidth": 1144,
+					"problems": []
+				},
+				{
+					"width": 1279,
+					"viewport": 1279,
+					"documentWidth": 1271,
+					"problems": []
+				},
+				{
+					"width": 1280,
+					"viewport": 1280,
+					"documentWidth": 1272,
+					"problems": []
+				},
+				{
+					"width": 1439,
+					"viewport": 1439,
+					"documentWidth": 1431,
+					"problems": []
+				},
+				{
+					"width": 1440,
+					"viewport": 1440,
+					"documentWidth": 1432,
+					"problems": []
+				},
+				{
+					"width": 1535,
+					"viewport": 1535,
+					"documentWidth": 1527,
+					"problems": []
+				},
+				{
+					"width": 1536,
+					"viewport": 1536,
+					"documentWidth": 1528,
+					"problems": []
+				},
+				{
+					"width": 1920,
+					"viewport": 1920,
+					"documentWidth": 1912,
+					"problems": []
+				}
+			],
+			"controls": [],
+			"navigation": ["/", "/courses/risk-management", "/", "/courses/risk-management"],
+			"status": 200,
+			"destination": "/courses/risk-management",
+			"title": "Risk Management Mastery | Revolution Trading Pros",
+			"h1": ["Risk Management Mastery"],
+			"mainCount": 1,
+			"links": [
+				"#main-content",
+				"/",
+				"/mentorship",
+				"/our-mission",
+				"/about",
+				"/blog",
+				"/pricing",
+				"/login",
+				"/courses",
+				"/register",
+				"https://facebook.com/revolutiontradingpros",
+				"https://twitter.com/revtradingpros",
+				"https://instagram.com/revolutiontradingpros",
+				"https://youtube.com/@RevolutionTradingPros",
+				"/live-trading-rooms",
+				"/alerts",
+				"/classes",
+				"/indicators",
+				"/store/scanners",
+				"/tools/options-calculator",
+				"/team",
+				"/resources",
+				"/tutorials",
+				"/contact",
+				"/careers",
+				"/terms",
+				"/privacy",
+				"/cookie-policy",
+				"/disclaimer",
+				"/refund"
+			],
+			"forms": [],
+			"motion": [],
+			"axe": [],
+			"largeText": {
+				"viewport": 390,
+				"documentWidth": 382,
+				"problems": []
+			}
+		},
+		{
+			"path": "/courses/swing-trading-pro",
+			"console": [],
+			"exceptions": [],
+			"network": [],
+			"viewports": [
+				{
+					"width": 320,
+					"viewport": 320,
+					"documentWidth": 320,
+					"problems": []
+				},
+				{
+					"width": 390,
+					"viewport": 390,
+					"documentWidth": 382,
+					"problems": []
+				},
+				{
+					"width": 639,
+					"viewport": 639,
+					"documentWidth": 631,
+					"problems": []
+				},
+				{
+					"width": 640,
+					"viewport": 640,
+					"documentWidth": 632,
+					"problems": []
+				},
+				{
+					"width": 767,
+					"viewport": 767,
+					"documentWidth": 759,
+					"problems": []
+				},
+				{
+					"width": 768,
+					"viewport": 768,
+					"documentWidth": 760,
+					"problems": []
+				},
+				{
+					"width": 1023,
+					"viewport": 1023,
+					"documentWidth": 1015,
+					"problems": []
+				},
+				{
+					"width": 1024,
+					"viewport": 1024,
+					"documentWidth": 1016,
+					"problems": []
+				},
+				{
+					"width": 1151,
+					"viewport": 1151,
+					"documentWidth": 1143,
+					"problems": []
+				},
+				{
+					"width": 1152,
+					"viewport": 1152,
+					"documentWidth": 1144,
+					"problems": []
+				},
+				{
+					"width": 1279,
+					"viewport": 1279,
+					"documentWidth": 1271,
+					"problems": []
+				},
+				{
+					"width": 1280,
+					"viewport": 1280,
+					"documentWidth": 1272,
+					"problems": []
+				},
+				{
+					"width": 1439,
+					"viewport": 1439,
+					"documentWidth": 1431,
+					"problems": []
+				},
+				{
+					"width": 1440,
+					"viewport": 1440,
+					"documentWidth": 1432,
+					"problems": []
+				},
+				{
+					"width": 1535,
+					"viewport": 1535,
+					"documentWidth": 1527,
+					"problems": []
+				},
+				{
+					"width": 1536,
+					"viewport": 1536,
+					"documentWidth": 1528,
+					"problems": []
+				},
+				{
+					"width": 1920,
+					"viewport": 1920,
+					"documentWidth": 1912,
+					"problems": []
+				}
+			],
+			"controls": [],
+			"navigation": ["/", "/courses/swing-trading-pro", "/", "/courses/swing-trading-pro"],
+			"status": 200,
+			"destination": "/courses/swing-trading-pro",
+			"title": "Swing Trading Pro | Revolution Trading Pros",
+			"h1": ["Swing Trading Pro"],
+			"mainCount": 1,
+			"links": [
+				"#main-content",
+				"/",
+				"/mentorship",
+				"/our-mission",
+				"/about",
+				"/blog",
+				"/pricing",
+				"/login",
+				"/courses",
+				"/register",
+				"#curriculum",
+				"https://facebook.com/revolutiontradingpros",
+				"https://twitter.com/revtradingpros",
+				"https://instagram.com/revolutiontradingpros",
+				"https://youtube.com/@RevolutionTradingPros",
+				"/live-trading-rooms",
+				"/alerts",
+				"/classes",
+				"/indicators",
+				"/store/scanners",
+				"/tools/options-calculator",
+				"/team",
+				"/resources",
+				"/tutorials",
+				"/contact",
+				"/careers",
+				"/terms",
+				"/privacy",
+				"/cookie-policy",
+				"/disclaimer",
+				"/refund"
+			],
+			"forms": [],
+			"motion": [],
+			"axe": [],
+			"largeText": {
+				"viewport": 390,
+				"documentWidth": 382,
+				"problems": []
+			}
+		},
+		{
+			"path": "/disclaimer",
+			"console": [],
+			"exceptions": [],
+			"network": [],
+			"viewports": [
+				{
+					"width": 320,
+					"viewport": 320,
+					"documentWidth": 320,
+					"problems": []
+				},
+				{
+					"width": 390,
+					"viewport": 390,
+					"documentWidth": 382,
+					"problems": []
+				},
+				{
+					"width": 639,
+					"viewport": 639,
+					"documentWidth": 631,
+					"problems": []
+				},
+				{
+					"width": 640,
+					"viewport": 640,
+					"documentWidth": 632,
+					"problems": []
+				},
+				{
+					"width": 767,
+					"viewport": 767,
+					"documentWidth": 759,
+					"problems": []
+				},
+				{
+					"width": 768,
+					"viewport": 768,
+					"documentWidth": 760,
+					"problems": []
+				},
+				{
+					"width": 1023,
+					"viewport": 1023,
+					"documentWidth": 1015,
+					"problems": []
+				},
+				{
+					"width": 1024,
+					"viewport": 1024,
+					"documentWidth": 1016,
+					"problems": []
+				},
+				{
+					"width": 1151,
+					"viewport": 1151,
+					"documentWidth": 1143,
+					"problems": []
+				},
+				{
+					"width": 1152,
+					"viewport": 1152,
+					"documentWidth": 1144,
+					"problems": []
+				},
+				{
+					"width": 1279,
+					"viewport": 1279,
+					"documentWidth": 1271,
+					"problems": []
+				},
+				{
+					"width": 1280,
+					"viewport": 1280,
+					"documentWidth": 1272,
+					"problems": []
+				},
+				{
+					"width": 1439,
+					"viewport": 1439,
+					"documentWidth": 1431,
+					"problems": []
+				},
+				{
+					"width": 1440,
+					"viewport": 1440,
+					"documentWidth": 1432,
+					"problems": []
+				},
+				{
+					"width": 1535,
+					"viewport": 1535,
+					"documentWidth": 1527,
+					"problems": []
+				},
+				{
+					"width": 1536,
+					"viewport": 1536,
+					"documentWidth": 1528,
+					"problems": []
+				},
+				{
+					"width": 1920,
+					"viewport": 1920,
+					"documentWidth": 1912,
+					"problems": []
+				}
+			],
+			"controls": [],
+			"navigation": ["/", "/disclaimer", "/", "/disclaimer"],
+			"status": 200,
+			"destination": "/disclaimer",
+			"title": "Risk Disclaimer | Revolution Trading Pros",
+			"h1": ["Risk Disclaimer"],
+			"mainCount": 1,
+			"links": [
+				"#main-content",
+				"/",
+				"/mentorship",
+				"/our-mission",
+				"/about",
+				"/blog",
+				"/pricing",
+				"/login",
+				"mailto:legal@revolutiontradingpros.com",
+				"https://facebook.com/revolutiontradingpros",
+				"https://twitter.com/revtradingpros",
+				"https://instagram.com/revolutiontradingpros",
+				"https://youtube.com/@RevolutionTradingPros",
+				"/live-trading-rooms",
+				"/alerts",
+				"/courses",
+				"/classes",
+				"/indicators",
+				"/store/scanners",
+				"/tools/options-calculator",
+				"/team",
+				"/resources",
+				"/tutorials",
+				"/contact",
+				"/careers",
+				"/terms",
+				"/privacy",
+				"/cookie-policy",
+				"/disclaimer",
+				"/refund"
+			],
+			"forms": [],
+			"motion": [],
+			"axe": [],
+			"largeText": {
+				"viewport": 390,
+				"documentWidth": 382,
+				"problems": []
+			}
+		},
+		{
+			"path": "/get-started",
+			"console": [],
+			"exceptions": [],
+			"network": [],
+			"viewports": [
+				{
+					"width": 320,
+					"viewport": 320,
+					"documentWidth": 320,
+					"problems": []
+				},
+				{
+					"width": 390,
+					"viewport": 390,
+					"documentWidth": 382,
+					"problems": []
+				},
+				{
+					"width": 639,
+					"viewport": 639,
+					"documentWidth": 631,
+					"problems": []
+				},
+				{
+					"width": 640,
+					"viewport": 640,
+					"documentWidth": 632,
+					"problems": []
+				},
+				{
+					"width": 767,
+					"viewport": 767,
+					"documentWidth": 759,
+					"problems": []
+				},
+				{
+					"width": 768,
+					"viewport": 768,
+					"documentWidth": 760,
+					"problems": []
+				},
+				{
+					"width": 1023,
+					"viewport": 1023,
+					"documentWidth": 1015,
+					"problems": []
+				},
+				{
+					"width": 1024,
+					"viewport": 1024,
+					"documentWidth": 1016,
+					"problems": []
+				},
+				{
+					"width": 1151,
+					"viewport": 1151,
+					"documentWidth": 1143,
+					"problems": []
+				},
+				{
+					"width": 1152,
+					"viewport": 1152,
+					"documentWidth": 1144,
+					"problems": []
+				},
+				{
+					"width": 1279,
+					"viewport": 1279,
+					"documentWidth": 1271,
+					"problems": []
+				},
+				{
+					"width": 1280,
+					"viewport": 1280,
+					"documentWidth": 1272,
+					"problems": []
+				},
+				{
+					"width": 1439,
+					"viewport": 1439,
+					"documentWidth": 1431,
+					"problems": []
+				},
+				{
+					"width": 1440,
+					"viewport": 1440,
+					"documentWidth": 1432,
+					"problems": []
+				},
+				{
+					"width": 1535,
+					"viewport": 1535,
+					"documentWidth": 1527,
+					"problems": []
+				},
+				{
+					"width": 1536,
+					"viewport": 1536,
+					"documentWidth": 1528,
+					"problems": []
+				},
+				{
+					"width": 1920,
+					"viewport": 1920,
+					"documentWidth": 1912,
+					"problems": []
+				}
+			],
+			"controls": [],
+			"navigation": [],
+			"status": 200,
+			"destination": "/register",
+			"title": "Register \u2014 Join Revolution Trading Pros | RTP",
+			"h1": ["Join Revolution"],
+			"mainCount": 1,
+			"links": [
+				"#main-content",
+				"/",
+				"/mentorship",
+				"/our-mission",
+				"/about",
+				"/blog",
+				"/pricing",
+				"/login",
+				"https://facebook.com/revolutiontradingpros",
+				"https://twitter.com/revtradingpros",
+				"https://instagram.com/revolutiontradingpros",
+				"https://youtube.com/@RevolutionTradingPros",
+				"/live-trading-rooms",
+				"/alerts",
+				"/courses",
+				"/classes",
+				"/indicators",
+				"/store/scanners",
+				"/tools/options-calculator",
+				"/team",
+				"/resources",
+				"/tutorials",
+				"/contact",
+				"/careers",
+				"/terms",
+				"/privacy",
+				"/cookie-policy",
+				"/disclaimer",
+				"/refund"
+			],
+			"forms": [
+				{
+					"action": null,
+					"method": "get",
+					"inputs": [
+						{
+							"name": "name",
+							"type": "text",
+							"required": true
+						},
+						{
+							"name": "email",
+							"type": "email",
+							"required": true
+						},
+						{
+							"name": "password",
+							"type": "password",
+							"required": true
+						},
+						{
+							"name": "password_confirmation",
+							"type": "password",
+							"required": true
+						}
+					]
+				}
+			],
+			"motion": [],
+			"axe": [],
+			"largeText": {
+				"viewport": 390,
+				"documentWidth": 382,
+				"problems": []
+			}
+		},
+		{
+			"path": "/guides/exit-strategies",
+			"console": [],
+			"exceptions": [],
+			"network": [],
+			"viewports": [
+				{
+					"width": 320,
+					"viewport": 320,
+					"documentWidth": 320,
+					"problems": []
+				},
+				{
+					"width": 390,
+					"viewport": 390,
+					"documentWidth": 382,
+					"problems": []
+				},
+				{
+					"width": 639,
+					"viewport": 639,
+					"documentWidth": 631,
+					"problems": []
+				},
+				{
+					"width": 640,
+					"viewport": 640,
+					"documentWidth": 632,
+					"problems": []
+				},
+				{
+					"width": 767,
+					"viewport": 767,
+					"documentWidth": 759,
+					"problems": []
+				},
+				{
+					"width": 768,
+					"viewport": 768,
+					"documentWidth": 760,
+					"problems": []
+				},
+				{
+					"width": 1023,
+					"viewport": 1023,
+					"documentWidth": 1015,
+					"problems": []
+				},
+				{
+					"width": 1024,
+					"viewport": 1024,
+					"documentWidth": 1016,
+					"problems": []
+				},
+				{
+					"width": 1151,
+					"viewport": 1151,
+					"documentWidth": 1143,
+					"problems": []
+				},
+				{
+					"width": 1152,
+					"viewport": 1152,
+					"documentWidth": 1144,
+					"problems": []
+				},
+				{
+					"width": 1279,
+					"viewport": 1279,
+					"documentWidth": 1271,
+					"problems": []
+				},
+				{
+					"width": 1280,
+					"viewport": 1280,
+					"documentWidth": 1272,
+					"problems": []
+				},
+				{
+					"width": 1439,
+					"viewport": 1439,
+					"documentWidth": 1431,
+					"problems": []
+				},
+				{
+					"width": 1440,
+					"viewport": 1440,
+					"documentWidth": 1432,
+					"problems": []
+				},
+				{
+					"width": 1535,
+					"viewport": 1535,
+					"documentWidth": 1527,
+					"problems": []
+				},
+				{
+					"width": 1536,
+					"viewport": 1536,
+					"documentWidth": 1528,
+					"problems": []
+				},
+				{
+					"width": 1920,
+					"viewport": 1920,
+					"documentWidth": 1912,
+					"problems": []
+				}
+			],
+			"controls": [],
+			"navigation": ["/", "/guides/exit-strategies", "/", "/guides/exit-strategies"],
+			"status": 200,
+			"destination": "/guides/exit-strategies",
+			"title": "Swing Trading Exit Strategies | Revolution Trading Pros",
+			"h1": ["\ud83c\udfaf Exit Strategies for Swing Trading"],
+			"mainCount": 1,
+			"links": [
+				"#main-content",
+				"/",
+				"/mentorship",
+				"/our-mission",
+				"/about",
+				"/blog",
+				"/pricing",
+				"/login",
+				"/resources",
+				"/authors/billy-ribeiro",
+				"https://www.sec.gov/investor/pubs/tradexec.htm",
+				"https://www.finra.org/investors/insights/order-types",
+				"https://facebook.com/revolutiontradingpros",
+				"https://twitter.com/revtradingpros",
+				"https://instagram.com/revolutiontradingpros",
+				"https://youtube.com/@RevolutionTradingPros",
+				"/live-trading-rooms",
+				"/alerts",
+				"/courses",
+				"/classes",
+				"/indicators",
+				"/store/scanners",
+				"/tools/options-calculator",
+				"/team",
+				"/tutorials",
+				"/contact",
+				"/careers",
+				"/terms",
+				"/privacy",
+				"/cookie-policy",
+				"/disclaimer",
+				"/refund"
+			],
+			"forms": [],
+			"motion": [],
+			"axe": [],
+			"largeText": {
+				"viewport": 390,
+				"documentWidth": 382,
+				"problems": []
+			}
+		},
+		{
+			"path": "/",
+			"console": [],
+			"exceptions": [],
+			"network": [],
+			"viewports": [
+				{
+					"width": 320,
+					"viewport": 320,
+					"documentWidth": 320,
+					"problems": []
+				},
+				{
+					"width": 390,
+					"viewport": 390,
+					"documentWidth": 382,
+					"problems": []
+				},
+				{
+					"width": 639,
+					"viewport": 639,
+					"documentWidth": 631,
+					"problems": []
+				},
+				{
+					"width": 640,
+					"viewport": 640,
+					"documentWidth": 632,
+					"problems": []
+				},
+				{
+					"width": 767,
+					"viewport": 767,
+					"documentWidth": 759,
+					"problems": []
+				},
+				{
+					"width": 768,
+					"viewport": 768,
+					"documentWidth": 760,
+					"problems": []
+				},
+				{
+					"width": 1023,
+					"viewport": 1023,
+					"documentWidth": 1015,
+					"problems": []
+				},
+				{
+					"width": 1024,
+					"viewport": 1024,
+					"documentWidth": 1016,
+					"problems": []
+				},
+				{
+					"width": 1151,
+					"viewport": 1151,
+					"documentWidth": 1143,
+					"problems": []
+				},
+				{
+					"width": 1152,
+					"viewport": 1152,
+					"documentWidth": 1144,
+					"problems": []
+				},
+				{
+					"width": 1279,
+					"viewport": 1279,
+					"documentWidth": 1271,
+					"problems": []
+				},
+				{
+					"width": 1280,
+					"viewport": 1280,
+					"documentWidth": 1272,
+					"problems": []
+				},
+				{
+					"width": 1439,
+					"viewport": 1439,
+					"documentWidth": 1431,
+					"problems": []
+				},
+				{
+					"width": 1440,
+					"viewport": 1440,
+					"documentWidth": 1432,
+					"problems": []
+				},
+				{
+					"width": 1535,
+					"viewport": 1535,
+					"documentWidth": 1527,
+					"problems": []
+				},
+				{
+					"width": 1536,
+					"viewport": 1536,
+					"documentWidth": 1528,
+					"problems": []
+				},
+				{
+					"width": 1920,
+					"viewport": 1920,
+					"documentWidth": 1912,
+					"problems": []
+				}
+			],
+			"controls": [],
+			"navigation": [],
+			"status": 200,
+			"destination": "/",
+			"title": "Revolution Trading Pros \u2014 Live Trading Rooms & Education",
+			"h1": ["Live Trading Rooms"],
+			"mainCount": 1,
+			"links": [
+				"#main-content",
+				"/",
+				"/mentorship",
+				"/our-mission",
+				"/about",
+				"/blog",
+				"/pricing",
+				"/login",
+				"https://www.tradingview.com/?utm_medium=lwc-link&utm_campaign=lwc-chart&utm_source=127.0.0.1/",
+				"/live-trading-rooms/day-trading",
+				"/register",
+				"/alerts/spx-profit-pulse",
+				"/alerts/explosive-swings",
+				"/courses",
+				"/indicators",
+				"/store/scanners",
+				"/indicators/rsi",
+				"/indicators/macd",
+				"/indicators/bollinger-bands",
+				"/indicators/vwap",
+				"/courses/day-trading-masterclass",
+				"/courses/swing-trading-pro",
+				"/courses/options-trading",
+				"/courses/risk-management",
+				"https://youtube.com/@revolutiontradingpros",
+				"https://x.com/revolutiontrading",
+				"https://facebook.com/revolutiontradingpros",
+				"https://instagram.com/revolutiontradingpros",
+				"https://discord.gg/revolutiontrading",
+				"https://twitter.com/revtradingpros",
+				"https://youtube.com/@RevolutionTradingPros",
+				"/live-trading-rooms",
+				"/alerts",
+				"/classes",
+				"/tools/options-calculator",
+				"/team",
+				"/resources",
+				"/tutorials",
+				"/contact",
+				"/careers",
+				"/terms",
+				"/privacy",
+				"/cookie-policy",
+				"/disclaimer",
+				"/refund"
+			],
+			"forms": [],
+			"motion": [],
+			"axe": [],
+			"largeText": {
+				"viewport": 390,
+				"documentWidth": 382,
+				"problems": []
+			}
+		},
+		{
+			"path": "/guides/position-sizing",
+			"console": [],
+			"exceptions": [],
+			"network": [],
+			"viewports": [
+				{
+					"width": 320,
+					"viewport": 320,
+					"documentWidth": 320,
+					"problems": []
+				},
+				{
+					"width": 390,
+					"viewport": 390,
+					"documentWidth": 382,
+					"problems": []
+				},
+				{
+					"width": 639,
+					"viewport": 639,
+					"documentWidth": 631,
+					"problems": []
+				},
+				{
+					"width": 640,
+					"viewport": 640,
+					"documentWidth": 632,
+					"problems": []
+				},
+				{
+					"width": 767,
+					"viewport": 767,
+					"documentWidth": 759,
+					"problems": []
+				},
+				{
+					"width": 768,
+					"viewport": 768,
+					"documentWidth": 760,
+					"problems": []
+				},
+				{
+					"width": 1023,
+					"viewport": 1023,
+					"documentWidth": 1015,
+					"problems": []
+				},
+				{
+					"width": 1024,
+					"viewport": 1024,
+					"documentWidth": 1016,
+					"problems": []
+				},
+				{
+					"width": 1151,
+					"viewport": 1151,
+					"documentWidth": 1143,
+					"problems": []
+				},
+				{
+					"width": 1152,
+					"viewport": 1152,
+					"documentWidth": 1144,
+					"problems": []
+				},
+				{
+					"width": 1279,
+					"viewport": 1279,
+					"documentWidth": 1271,
+					"problems": []
+				},
+				{
+					"width": 1280,
+					"viewport": 1280,
+					"documentWidth": 1272,
+					"problems": []
+				},
+				{
+					"width": 1439,
+					"viewport": 1439,
+					"documentWidth": 1431,
+					"problems": []
+				},
+				{
+					"width": 1440,
+					"viewport": 1440,
+					"documentWidth": 1432,
+					"problems": []
+				},
+				{
+					"width": 1535,
+					"viewport": 1535,
+					"documentWidth": 1527,
+					"problems": []
+				},
+				{
+					"width": 1536,
+					"viewport": 1536,
+					"documentWidth": 1528,
+					"problems": []
+				},
+				{
+					"width": 1920,
+					"viewport": 1920,
+					"documentWidth": 1912,
+					"problems": []
+				}
+			],
+			"controls": [],
+			"navigation": ["/", "/guides/position-sizing", "/", "/guides/position-sizing"],
+			"status": 200,
+			"destination": "/guides/position-sizing",
+			"title": "Position Sizing for Swing Trading | Revolution Trading Pros",
+			"h1": ["\ud83d\udcb0 Position Sizing for Swing Trading"],
+			"mainCount": 1,
+			"links": [
+				"#main-content",
+				"/",
+				"/mentorship",
+				"/our-mission",
+				"/about",
+				"/blog",
+				"/pricing",
+				"/login",
+				"/resources",
+				"/authors/billy-ribeiro",
+				"https://www.finra.org/rules-guidance/rulebooks/finra-rules/4210",
+				"https://www.cboe.com/tradable_products/equity_indices/equity_options/",
+				"https://facebook.com/revolutiontradingpros",
+				"https://twitter.com/revtradingpros",
+				"https://instagram.com/revolutiontradingpros",
+				"https://youtube.com/@RevolutionTradingPros",
+				"/live-trading-rooms",
+				"/alerts",
+				"/courses",
+				"/classes",
+				"/indicators",
+				"/store/scanners",
+				"/tools/options-calculator",
+				"/team",
+				"/tutorials",
+				"/contact",
+				"/careers",
+				"/terms",
+				"/privacy",
+				"/cookie-policy",
+				"/disclaimer",
+				"/refund"
+			],
+			"forms": [],
+			"motion": [],
+			"axe": [],
+			"largeText": {
+				"viewport": 390,
+				"documentWidth": 382,
+				"problems": []
+			}
+		},
+		{
+			"path": "/guides/risk-management",
+			"console": [],
+			"exceptions": [],
+			"network": [],
+			"viewports": [
+				{
+					"width": 320,
+					"viewport": 320,
+					"documentWidth": 320,
+					"problems": []
+				},
+				{
+					"width": 390,
+					"viewport": 390,
+					"documentWidth": 382,
+					"problems": []
+				},
+				{
+					"width": 639,
+					"viewport": 639,
+					"documentWidth": 631,
+					"problems": []
+				},
+				{
+					"width": 640,
+					"viewport": 640,
+					"documentWidth": 632,
+					"problems": []
+				},
+				{
+					"width": 767,
+					"viewport": 767,
+					"documentWidth": 759,
+					"problems": []
+				},
+				{
+					"width": 768,
+					"viewport": 768,
+					"documentWidth": 760,
+					"problems": []
+				},
+				{
+					"width": 1023,
+					"viewport": 1023,
+					"documentWidth": 1015,
+					"problems": []
+				},
+				{
+					"width": 1024,
+					"viewport": 1024,
+					"documentWidth": 1016,
+					"problems": []
+				},
+				{
+					"width": 1151,
+					"viewport": 1151,
+					"documentWidth": 1143,
+					"problems": []
+				},
+				{
+					"width": 1152,
+					"viewport": 1152,
+					"documentWidth": 1144,
+					"problems": []
+				},
+				{
+					"width": 1279,
+					"viewport": 1279,
+					"documentWidth": 1271,
+					"problems": []
+				},
+				{
+					"width": 1280,
+					"viewport": 1280,
+					"documentWidth": 1272,
+					"problems": []
+				},
+				{
+					"width": 1439,
+					"viewport": 1439,
+					"documentWidth": 1431,
+					"problems": []
+				},
+				{
+					"width": 1440,
+					"viewport": 1440,
+					"documentWidth": 1432,
+					"problems": []
+				},
+				{
+					"width": 1535,
+					"viewport": 1535,
+					"documentWidth": 1527,
+					"problems": []
+				},
+				{
+					"width": 1536,
+					"viewport": 1536,
+					"documentWidth": 1528,
+					"problems": []
+				},
+				{
+					"width": 1920,
+					"viewport": 1920,
+					"documentWidth": 1912,
+					"problems": []
+				}
+			],
+			"controls": [],
+			"navigation": ["/", "/guides/risk-management", "/", "/guides/risk-management"],
+			"status": 200,
+			"destination": "/guides/risk-management",
+			"title": "Risk Management for Swing Trading | Revolution Trading Pros",
+			"h1": ["\ud83d\udee1\ufe0f Risk Management for Swing Trading"],
+			"mainCount": 1,
+			"links": [
+				"#main-content",
+				"/",
+				"/mentorship",
+				"/our-mission",
+				"/about",
+				"/blog",
+				"/pricing",
+				"/login",
+				"/resources",
+				"/authors/billy-ribeiro",
+				"https://www.sec.gov/investor/pubs/daytips.htm",
+				"https://www.finra.org/investors/investing/investing-basics/risk",
+				"https://facebook.com/revolutiontradingpros",
+				"https://twitter.com/revtradingpros",
+				"https://instagram.com/revolutiontradingpros",
+				"https://youtube.com/@RevolutionTradingPros",
+				"/live-trading-rooms",
+				"/alerts",
+				"/courses",
+				"/classes",
+				"/indicators",
+				"/store/scanners",
+				"/tools/options-calculator",
+				"/team",
+				"/tutorials",
+				"/contact",
+				"/careers",
+				"/terms",
+				"/privacy",
+				"/cookie-policy",
+				"/disclaimer",
+				"/refund"
+			],
+			"forms": [],
+			"motion": [],
+			"axe": [],
+			"largeText": {
+				"viewport": 390,
+				"documentWidth": 382,
+				"problems": []
+			}
+		},
+		{
+			"path": "/guides/swing-entry",
+			"console": [],
+			"exceptions": [],
+			"network": [],
+			"viewports": [
+				{
+					"width": 320,
+					"viewport": 320,
+					"documentWidth": 320,
+					"problems": []
+				},
+				{
+					"width": 390,
+					"viewport": 390,
+					"documentWidth": 382,
+					"problems": []
+				},
+				{
+					"width": 639,
+					"viewport": 639,
+					"documentWidth": 631,
+					"problems": []
+				},
+				{
+					"width": 640,
+					"viewport": 640,
+					"documentWidth": 632,
+					"problems": []
+				},
+				{
+					"width": 767,
+					"viewport": 767,
+					"documentWidth": 759,
+					"problems": []
+				},
+				{
+					"width": 768,
+					"viewport": 768,
+					"documentWidth": 760,
+					"problems": []
+				},
+				{
+					"width": 1023,
+					"viewport": 1023,
+					"documentWidth": 1015,
+					"problems": []
+				},
+				{
+					"width": 1024,
+					"viewport": 1024,
+					"documentWidth": 1016,
+					"problems": []
+				},
+				{
+					"width": 1151,
+					"viewport": 1151,
+					"documentWidth": 1143,
+					"problems": []
+				},
+				{
+					"width": 1152,
+					"viewport": 1152,
+					"documentWidth": 1144,
+					"problems": []
+				},
+				{
+					"width": 1279,
+					"viewport": 1279,
+					"documentWidth": 1271,
+					"problems": []
+				},
+				{
+					"width": 1280,
+					"viewport": 1280,
+					"documentWidth": 1272,
+					"problems": []
+				},
+				{
+					"width": 1439,
+					"viewport": 1439,
+					"documentWidth": 1431,
+					"problems": []
+				},
+				{
+					"width": 1440,
+					"viewport": 1440,
+					"documentWidth": 1432,
+					"problems": []
+				},
+				{
+					"width": 1535,
+					"viewport": 1535,
+					"documentWidth": 1527,
+					"problems": []
+				},
+				{
+					"width": 1536,
+					"viewport": 1536,
+					"documentWidth": 1528,
+					"problems": []
+				},
+				{
+					"width": 1920,
+					"viewport": 1920,
+					"documentWidth": 1912,
+					"problems": []
+				}
+			],
+			"controls": [],
+			"navigation": ["/", "/guides/swing-entry", "/", "/guides/swing-entry"],
+			"status": 200,
+			"destination": "/guides/swing-entry",
+			"title": "Swing Trading Entry Strategies | Revolution Trading Pros",
+			"h1": ["\ud83d\udcd6 Entry Strategies for Swing Trading"],
+			"mainCount": 1,
+			"links": [
+				"#main-content",
+				"/",
+				"/mentorship",
+				"/our-mission",
+				"/about",
+				"/blog",
+				"/pricing",
+				"/login",
+				"/resources",
+				"/authors/billy-ribeiro",
+				"https://www.sec.gov/investor/pubs/tradexec.htm",
+				"https://www.finra.org/investors/insights/order-types",
+				"https://facebook.com/revolutiontradingpros",
+				"https://twitter.com/revtradingpros",
+				"https://instagram.com/revolutiontradingpros",
+				"https://youtube.com/@RevolutionTradingPros",
+				"/live-trading-rooms",
+				"/alerts",
+				"/courses",
+				"/classes",
+				"/indicators",
+				"/store/scanners",
+				"/tools/options-calculator",
+				"/team",
+				"/tutorials",
+				"/contact",
+				"/careers",
+				"/terms",
+				"/privacy",
+				"/cookie-policy",
+				"/disclaimer",
+				"/refund"
+			],
+			"forms": [],
+			"motion": [],
+			"axe": [],
+			"largeText": {
+				"viewport": 390,
+				"documentWidth": 382,
+				"problems": []
+			}
+		},
+		{
+			"path": "/indicators/bollinger-bands",
+			"console": [],
+			"exceptions": [],
+			"network": [],
+			"viewports": [
+				{
+					"width": 320,
+					"viewport": 320,
+					"documentWidth": 320,
+					"problems": []
+				},
+				{
+					"width": 390,
+					"viewport": 390,
+					"documentWidth": 382,
+					"problems": []
+				},
+				{
+					"width": 639,
+					"viewport": 639,
+					"documentWidth": 631,
+					"problems": []
+				},
+				{
+					"width": 640,
+					"viewport": 640,
+					"documentWidth": 632,
+					"problems": []
+				},
+				{
+					"width": 767,
+					"viewport": 767,
+					"documentWidth": 759,
+					"problems": []
+				},
+				{
+					"width": 768,
+					"viewport": 768,
+					"documentWidth": 760,
+					"problems": []
+				},
+				{
+					"width": 1023,
+					"viewport": 1023,
+					"documentWidth": 1015,
+					"problems": []
+				},
+				{
+					"width": 1024,
+					"viewport": 1024,
+					"documentWidth": 1016,
+					"problems": []
+				},
+				{
+					"width": 1151,
+					"viewport": 1151,
+					"documentWidth": 1143,
+					"problems": []
+				},
+				{
+					"width": 1152,
+					"viewport": 1152,
+					"documentWidth": 1144,
+					"problems": []
+				},
+				{
+					"width": 1279,
+					"viewport": 1279,
+					"documentWidth": 1271,
+					"problems": []
+				},
+				{
+					"width": 1280,
+					"viewport": 1280,
+					"documentWidth": 1272,
+					"problems": []
+				},
+				{
+					"width": 1439,
+					"viewport": 1439,
+					"documentWidth": 1431,
+					"problems": []
+				},
+				{
+					"width": 1440,
+					"viewport": 1440,
+					"documentWidth": 1432,
+					"problems": []
+				},
+				{
+					"width": 1535,
+					"viewport": 1535,
+					"documentWidth": 1527,
+					"problems": []
+				},
+				{
+					"width": 1536,
+					"viewport": 1536,
+					"documentWidth": 1528,
+					"problems": []
+				},
+				{
+					"width": 1920,
+					"viewport": 1920,
+					"documentWidth": 1912,
+					"problems": []
+				}
+			],
+			"controls": [],
+			"navigation": ["/", "/indicators/bollinger-bands", "/", "/indicators/bollinger-bands"],
+			"status": 200,
+			"destination": "/indicators/bollinger-bands",
+			"title": "Bollinger Bands | Revolution Trading Pros",
+			"h1": ["Bollinger Bands"],
+			"mainCount": 1,
+			"links": [
+				"#main-content",
+				"/",
+				"/mentorship",
+				"/our-mission",
+				"/about",
+				"/blog",
+				"/pricing",
+				"/login",
+				"/indicators",
+				"/contact",
+				"https://facebook.com/revolutiontradingpros",
+				"https://twitter.com/revtradingpros",
+				"https://instagram.com/revolutiontradingpros",
+				"https://youtube.com/@RevolutionTradingPros",
+				"/live-trading-rooms",
+				"/alerts",
+				"/courses",
+				"/classes",
+				"/store/scanners",
+				"/tools/options-calculator",
+				"/team",
+				"/resources",
+				"/tutorials",
+				"/careers",
+				"/terms",
+				"/privacy",
+				"/cookie-policy",
+				"/disclaimer",
+				"/refund"
+			],
+			"forms": [],
+			"motion": [],
+			"axe": [],
+			"largeText": {
+				"viewport": 390,
+				"documentWidth": 382,
+				"problems": []
+			}
+		},
+		{
+			"path": "/indicators",
+			"console": [],
+			"exceptions": [],
+			"network": [],
+			"viewports": [
+				{
+					"width": 320,
+					"viewport": 320,
+					"documentWidth": 320,
+					"problems": []
+				},
+				{
+					"width": 390,
+					"viewport": 390,
+					"documentWidth": 382,
+					"problems": []
+				},
+				{
+					"width": 639,
+					"viewport": 639,
+					"documentWidth": 631,
+					"problems": []
+				},
+				{
+					"width": 640,
+					"viewport": 640,
+					"documentWidth": 632,
+					"problems": []
+				},
+				{
+					"width": 767,
+					"viewport": 767,
+					"documentWidth": 759,
+					"problems": []
+				},
+				{
+					"width": 768,
+					"viewport": 768,
+					"documentWidth": 760,
+					"problems": []
+				},
+				{
+					"width": 1023,
+					"viewport": 1023,
+					"documentWidth": 1015,
+					"problems": []
+				},
+				{
+					"width": 1024,
+					"viewport": 1024,
+					"documentWidth": 1016,
+					"problems": []
+				},
+				{
+					"width": 1151,
+					"viewport": 1151,
+					"documentWidth": 1143,
+					"problems": []
+				},
+				{
+					"width": 1152,
+					"viewport": 1152,
+					"documentWidth": 1144,
+					"problems": []
+				},
+				{
+					"width": 1279,
+					"viewport": 1279,
+					"documentWidth": 1271,
+					"problems": []
+				},
+				{
+					"width": 1280,
+					"viewport": 1280,
+					"documentWidth": 1272,
+					"problems": []
+				},
+				{
+					"width": 1439,
+					"viewport": 1439,
+					"documentWidth": 1431,
+					"problems": []
+				},
+				{
+					"width": 1440,
+					"viewport": 1440,
+					"documentWidth": 1432,
+					"problems": []
+				},
+				{
+					"width": 1535,
+					"viewport": 1535,
+					"documentWidth": 1527,
+					"problems": []
+				},
+				{
+					"width": 1536,
+					"viewport": 1536,
+					"documentWidth": 1528,
+					"problems": []
+				},
+				{
+					"width": 1920,
+					"viewport": 1920,
+					"documentWidth": 1912,
+					"problems": []
+				}
+			],
+			"controls": [],
+			"navigation": ["/", "/indicators", "/", "/indicators"],
+			"status": 200,
+			"destination": "/indicators",
+			"title": "Best Technical Indicators for Day Trading (2026 Guide) | RTP",
+			"h1": ["Master the Tools Pro Traders Use"],
+			"mainCount": 1,
+			"links": [
+				"#main-content",
+				"/",
+				"/mentorship",
+				"/our-mission",
+				"/about",
+				"/blog",
+				"/pricing",
+				"/login",
+				"/live-trading-rooms/day-trading",
+				"#indicators-list",
+				"/indicators/rsi",
+				"/indicators/macd",
+				"/indicators/moving-averages",
+				"/indicators/bollinger-bands",
+				"/indicators/vwap",
+				"/indicators/stochastic",
+				"/register",
+				"https://facebook.com/revolutiontradingpros",
+				"https://twitter.com/revtradingpros",
+				"https://instagram.com/revolutiontradingpros",
+				"https://youtube.com/@RevolutionTradingPros",
+				"/live-trading-rooms",
+				"/alerts",
+				"/courses",
+				"/classes",
+				"/indicators",
+				"/store/scanners",
+				"/tools/options-calculator",
+				"/team",
+				"/resources",
+				"/tutorials",
+				"/contact",
+				"/careers",
+				"/terms",
+				"/privacy",
+				"/cookie-policy",
+				"/disclaimer",
+				"/refund"
+			],
+			"forms": [],
+			"motion": [],
+			"axe": [],
+			"largeText": {
+				"viewport": 390,
+				"documentWidth": 382,
+				"problems": []
+			}
+		},
+		{
+			"path": "/indicators/macd",
+			"console": [],
+			"exceptions": [],
+			"network": [],
+			"viewports": [
+				{
+					"width": 320,
+					"viewport": 320,
+					"documentWidth": 320,
+					"problems": []
+				},
+				{
+					"width": 390,
+					"viewport": 390,
+					"documentWidth": 382,
+					"problems": []
+				},
+				{
+					"width": 639,
+					"viewport": 639,
+					"documentWidth": 631,
+					"problems": []
+				},
+				{
+					"width": 640,
+					"viewport": 640,
+					"documentWidth": 632,
+					"problems": []
+				},
+				{
+					"width": 767,
+					"viewport": 767,
+					"documentWidth": 759,
+					"problems": []
+				},
+				{
+					"width": 768,
+					"viewport": 768,
+					"documentWidth": 760,
+					"problems": []
+				},
+				{
+					"width": 1023,
+					"viewport": 1023,
+					"documentWidth": 1015,
+					"problems": []
+				},
+				{
+					"width": 1024,
+					"viewport": 1024,
+					"documentWidth": 1016,
+					"problems": []
+				},
+				{
+					"width": 1151,
+					"viewport": 1151,
+					"documentWidth": 1143,
+					"problems": []
+				},
+				{
+					"width": 1152,
+					"viewport": 1152,
+					"documentWidth": 1144,
+					"problems": []
+				},
+				{
+					"width": 1279,
+					"viewport": 1279,
+					"documentWidth": 1271,
+					"problems": []
+				},
+				{
+					"width": 1280,
+					"viewport": 1280,
+					"documentWidth": 1272,
+					"problems": []
+				},
+				{
+					"width": 1439,
+					"viewport": 1439,
+					"documentWidth": 1431,
+					"problems": []
+				},
+				{
+					"width": 1440,
+					"viewport": 1440,
+					"documentWidth": 1432,
+					"problems": []
+				},
+				{
+					"width": 1535,
+					"viewport": 1535,
+					"documentWidth": 1527,
+					"problems": []
+				},
+				{
+					"width": 1536,
+					"viewport": 1536,
+					"documentWidth": 1528,
+					"problems": []
+				},
+				{
+					"width": 1920,
+					"viewport": 1920,
+					"documentWidth": 1912,
+					"problems": []
+				}
+			],
+			"controls": [],
+			"navigation": ["/", "/indicators/macd", "/", "/indicators/macd"],
+			"status": 200,
+			"destination": "/indicators/macd",
+			"title": "MACD \u2014 Moving Average Convergence Divergence | RTP",
+			"h1": ["MACD Indicator"],
+			"mainCount": 1,
+			"links": [
+				"#main-content",
+				"/",
+				"/mentorship",
+				"/our-mission",
+				"/about",
+				"/blog",
+				"/pricing",
+				"/login",
+				"/indicators",
+				"/courses",
+				"https://facebook.com/revolutiontradingpros",
+				"https://twitter.com/revtradingpros",
+				"https://instagram.com/revolutiontradingpros",
+				"https://youtube.com/@RevolutionTradingPros",
+				"/live-trading-rooms",
+				"/alerts",
+				"/classes",
+				"/store/scanners",
+				"/tools/options-calculator",
+				"/team",
+				"/resources",
+				"/tutorials",
+				"/contact",
+				"/careers",
+				"/terms",
+				"/privacy",
+				"/cookie-policy",
+				"/disclaimer",
+				"/refund"
+			],
+			"forms": [],
+			"motion": [],
+			"axe": [],
+			"largeText": {
+				"viewport": 390,
+				"documentWidth": 382,
+				"problems": []
+			}
+		},
+		{
+			"path": "/indicators/moving-averages",
+			"console": [],
+			"exceptions": [],
+			"network": [],
+			"viewports": [
+				{
+					"width": 320,
+					"viewport": 320,
+					"documentWidth": 320,
+					"problems": []
+				},
+				{
+					"width": 390,
+					"viewport": 390,
+					"documentWidth": 382,
+					"problems": []
+				},
+				{
+					"width": 639,
+					"viewport": 639,
+					"documentWidth": 631,
+					"problems": []
+				},
+				{
+					"width": 640,
+					"viewport": 640,
+					"documentWidth": 632,
+					"problems": []
+				},
+				{
+					"width": 767,
+					"viewport": 767,
+					"documentWidth": 759,
+					"problems": []
+				},
+				{
+					"width": 768,
+					"viewport": 768,
+					"documentWidth": 760,
+					"problems": []
+				},
+				{
+					"width": 1023,
+					"viewport": 1023,
+					"documentWidth": 1015,
+					"problems": []
+				},
+				{
+					"width": 1024,
+					"viewport": 1024,
+					"documentWidth": 1016,
+					"problems": []
+				},
+				{
+					"width": 1151,
+					"viewport": 1151,
+					"documentWidth": 1143,
+					"problems": []
+				},
+				{
+					"width": 1152,
+					"viewport": 1152,
+					"documentWidth": 1144,
+					"problems": []
+				},
+				{
+					"width": 1279,
+					"viewport": 1279,
+					"documentWidth": 1271,
+					"problems": []
+				},
+				{
+					"width": 1280,
+					"viewport": 1280,
+					"documentWidth": 1272,
+					"problems": []
+				},
+				{
+					"width": 1439,
+					"viewport": 1439,
+					"documentWidth": 1431,
+					"problems": []
+				},
+				{
+					"width": 1440,
+					"viewport": 1440,
+					"documentWidth": 1432,
+					"problems": []
+				},
+				{
+					"width": 1535,
+					"viewport": 1535,
+					"documentWidth": 1527,
+					"problems": []
+				},
+				{
+					"width": 1536,
+					"viewport": 1536,
+					"documentWidth": 1528,
+					"problems": []
+				},
+				{
+					"width": 1920,
+					"viewport": 1920,
+					"documentWidth": 1912,
+					"problems": []
+				}
+			],
+			"controls": [],
+			"navigation": ["/", "/indicators/moving-averages", "/", "/indicators/moving-averages"],
+			"status": 200,
+			"destination": "/indicators/moving-averages",
+			"title": "Moving Averages (SMA/EMA) | Revolution Trading Pros",
+			"h1": ["Moving Averages (SMA/EMA)"],
+			"mainCount": 1,
+			"links": [
+				"#main-content",
+				"/",
+				"/mentorship",
+				"/our-mission",
+				"/about",
+				"/blog",
+				"/pricing",
+				"/login",
+				"/indicators",
+				"/contact",
+				"https://facebook.com/revolutiontradingpros",
+				"https://twitter.com/revtradingpros",
+				"https://instagram.com/revolutiontradingpros",
+				"https://youtube.com/@RevolutionTradingPros",
+				"/live-trading-rooms",
+				"/alerts",
+				"/courses",
+				"/classes",
+				"/store/scanners",
+				"/tools/options-calculator",
+				"/team",
+				"/resources",
+				"/tutorials",
+				"/careers",
+				"/terms",
+				"/privacy",
+				"/cookie-policy",
+				"/disclaimer",
+				"/refund"
+			],
+			"forms": [],
+			"motion": [],
+			"axe": [],
+			"largeText": {
+				"viewport": 390,
+				"documentWidth": 382,
+				"problems": []
+			}
+		},
+		{
+			"path": "/indicators/rsi",
+			"console": [],
+			"exceptions": [],
+			"network": [],
+			"viewports": [
+				{
+					"width": 320,
+					"viewport": 320,
+					"documentWidth": 320,
+					"problems": []
+				},
+				{
+					"width": 390,
+					"viewport": 390,
+					"documentWidth": 382,
+					"problems": []
+				},
+				{
+					"width": 639,
+					"viewport": 639,
+					"documentWidth": 631,
+					"problems": []
+				},
+				{
+					"width": 640,
+					"viewport": 640,
+					"documentWidth": 632,
+					"problems": []
+				},
+				{
+					"width": 767,
+					"viewport": 767,
+					"documentWidth": 759,
+					"problems": []
+				},
+				{
+					"width": 768,
+					"viewport": 768,
+					"documentWidth": 760,
+					"problems": []
+				},
+				{
+					"width": 1023,
+					"viewport": 1023,
+					"documentWidth": 1015,
+					"problems": []
+				},
+				{
+					"width": 1024,
+					"viewport": 1024,
+					"documentWidth": 1016,
+					"problems": []
+				},
+				{
+					"width": 1151,
+					"viewport": 1151,
+					"documentWidth": 1143,
+					"problems": []
+				},
+				{
+					"width": 1152,
+					"viewport": 1152,
+					"documentWidth": 1144,
+					"problems": []
+				},
+				{
+					"width": 1279,
+					"viewport": 1279,
+					"documentWidth": 1271,
+					"problems": []
+				},
+				{
+					"width": 1280,
+					"viewport": 1280,
+					"documentWidth": 1272,
+					"problems": []
+				},
+				{
+					"width": 1439,
+					"viewport": 1439,
+					"documentWidth": 1431,
+					"problems": []
+				},
+				{
+					"width": 1440,
+					"viewport": 1440,
+					"documentWidth": 1432,
+					"problems": []
+				},
+				{
+					"width": 1535,
+					"viewport": 1535,
+					"documentWidth": 1527,
+					"problems": []
+				},
+				{
+					"width": 1536,
+					"viewport": 1536,
+					"documentWidth": 1528,
+					"problems": []
+				},
+				{
+					"width": 1920,
+					"viewport": 1920,
+					"documentWidth": 1912,
+					"problems": []
+				}
+			],
+			"controls": [],
+			"navigation": ["/", "/indicators/rsi", "/", "/indicators/rsi"],
+			"status": 200,
+			"destination": "/indicators/rsi",
+			"title": "RSI \u2014 Relative Strength Index | Revolution Trading Pros",
+			"h1": ["RSI - Relative Strength Index"],
+			"mainCount": 1,
+			"links": [
+				"#main-content",
+				"/",
+				"/mentorship",
+				"/our-mission",
+				"/about",
+				"/blog",
+				"/pricing",
+				"/login",
+				"/indicators",
+				"/courses",
+				"https://facebook.com/revolutiontradingpros",
+				"https://twitter.com/revtradingpros",
+				"https://instagram.com/revolutiontradingpros",
+				"https://youtube.com/@RevolutionTradingPros",
+				"/live-trading-rooms",
+				"/alerts",
+				"/classes",
+				"/store/scanners",
+				"/tools/options-calculator",
+				"/team",
+				"/resources",
+				"/tutorials",
+				"/contact",
+				"/careers",
+				"/terms",
+				"/privacy",
+				"/cookie-policy",
+				"/disclaimer",
+				"/refund"
+			],
+			"forms": [],
+			"motion": [],
+			"axe": [],
+			"largeText": {
+				"viewport": 390,
+				"documentWidth": 382,
+				"problems": []
+			}
+		},
+		{
+			"path": "/indicators/stochastic",
+			"console": [],
+			"exceptions": [],
+			"network": [],
+			"viewports": [
+				{
+					"width": 320,
+					"viewport": 320,
+					"documentWidth": 320,
+					"problems": []
+				},
+				{
+					"width": 390,
+					"viewport": 390,
+					"documentWidth": 382,
+					"problems": []
+				},
+				{
+					"width": 639,
+					"viewport": 639,
+					"documentWidth": 631,
+					"problems": []
+				},
+				{
+					"width": 640,
+					"viewport": 640,
+					"documentWidth": 632,
+					"problems": []
+				},
+				{
+					"width": 767,
+					"viewport": 767,
+					"documentWidth": 759,
+					"problems": []
+				},
+				{
+					"width": 768,
+					"viewport": 768,
+					"documentWidth": 760,
+					"problems": []
+				},
+				{
+					"width": 1023,
+					"viewport": 1023,
+					"documentWidth": 1015,
+					"problems": []
+				},
+				{
+					"width": 1024,
+					"viewport": 1024,
+					"documentWidth": 1016,
+					"problems": []
+				},
+				{
+					"width": 1151,
+					"viewport": 1151,
+					"documentWidth": 1143,
+					"problems": []
+				},
+				{
+					"width": 1152,
+					"viewport": 1152,
+					"documentWidth": 1144,
+					"problems": []
+				},
+				{
+					"width": 1279,
+					"viewport": 1279,
+					"documentWidth": 1271,
+					"problems": []
+				},
+				{
+					"width": 1280,
+					"viewport": 1280,
+					"documentWidth": 1272,
+					"problems": []
+				},
+				{
+					"width": 1439,
+					"viewport": 1439,
+					"documentWidth": 1431,
+					"problems": []
+				},
+				{
+					"width": 1440,
+					"viewport": 1440,
+					"documentWidth": 1432,
+					"problems": []
+				},
+				{
+					"width": 1535,
+					"viewport": 1535,
+					"documentWidth": 1527,
+					"problems": []
+				},
+				{
+					"width": 1536,
+					"viewport": 1536,
+					"documentWidth": 1528,
+					"problems": []
+				},
+				{
+					"width": 1920,
+					"viewport": 1920,
+					"documentWidth": 1912,
+					"problems": []
+				}
+			],
+			"controls": [],
+			"navigation": ["/", "/indicators/stochastic", "/", "/indicators/stochastic"],
+			"status": 200,
+			"destination": "/indicators/stochastic",
+			"title": "Stochastic Oscillator | Revolution Trading Pros",
+			"h1": ["Stochastic Oscillator"],
+			"mainCount": 1,
+			"links": [
+				"#main-content",
+				"/",
+				"/mentorship",
+				"/our-mission",
+				"/about",
+				"/blog",
+				"/pricing",
+				"/login",
+				"/indicators",
+				"/contact",
+				"https://facebook.com/revolutiontradingpros",
+				"https://twitter.com/revtradingpros",
+				"https://instagram.com/revolutiontradingpros",
+				"https://youtube.com/@RevolutionTradingPros",
+				"/live-trading-rooms",
+				"/alerts",
+				"/courses",
+				"/classes",
+				"/store/scanners",
+				"/tools/options-calculator",
+				"/team",
+				"/resources",
+				"/tutorials",
+				"/careers",
+				"/terms",
+				"/privacy",
+				"/cookie-policy",
+				"/disclaimer",
+				"/refund"
+			],
+			"forms": [],
+			"motion": [],
+			"axe": [],
+			"largeText": {
+				"viewport": 390,
+				"documentWidth": 382,
+				"problems": []
+			}
+		},
+		{
+			"path": "/indicators/vwap",
+			"console": [],
+			"exceptions": [],
+			"network": [],
+			"viewports": [
+				{
+					"width": 320,
+					"viewport": 320,
+					"documentWidth": 320,
+					"problems": []
+				},
+				{
+					"width": 390,
+					"viewport": 390,
+					"documentWidth": 382,
+					"problems": []
+				},
+				{
+					"width": 639,
+					"viewport": 639,
+					"documentWidth": 631,
+					"problems": []
+				},
+				{
+					"width": 640,
+					"viewport": 640,
+					"documentWidth": 632,
+					"problems": []
+				},
+				{
+					"width": 767,
+					"viewport": 767,
+					"documentWidth": 759,
+					"problems": []
+				},
+				{
+					"width": 768,
+					"viewport": 768,
+					"documentWidth": 760,
+					"problems": []
+				},
+				{
+					"width": 1023,
+					"viewport": 1023,
+					"documentWidth": 1015,
+					"problems": []
+				},
+				{
+					"width": 1024,
+					"viewport": 1024,
+					"documentWidth": 1016,
+					"problems": []
+				},
+				{
+					"width": 1151,
+					"viewport": 1151,
+					"documentWidth": 1143,
+					"problems": []
+				},
+				{
+					"width": 1152,
+					"viewport": 1152,
+					"documentWidth": 1144,
+					"problems": []
+				},
+				{
+					"width": 1279,
+					"viewport": 1279,
+					"documentWidth": 1271,
+					"problems": []
+				},
+				{
+					"width": 1280,
+					"viewport": 1280,
+					"documentWidth": 1272,
+					"problems": []
+				},
+				{
+					"width": 1439,
+					"viewport": 1439,
+					"documentWidth": 1431,
+					"problems": []
+				},
+				{
+					"width": 1440,
+					"viewport": 1440,
+					"documentWidth": 1432,
+					"problems": []
+				},
+				{
+					"width": 1535,
+					"viewport": 1535,
+					"documentWidth": 1527,
+					"problems": []
+				},
+				{
+					"width": 1536,
+					"viewport": 1536,
+					"documentWidth": 1528,
+					"problems": []
+				},
+				{
+					"width": 1920,
+					"viewport": 1920,
+					"documentWidth": 1912,
+					"problems": []
+				}
+			],
+			"controls": [],
+			"navigation": ["/", "/indicators/vwap", "/", "/indicators/vwap"],
+			"status": 200,
+			"destination": "/indicators/vwap",
+			"title": "VWAP - Volume Weighted Average Price | RTP",
+			"h1": ["VWAP - Volume Weighted Average Price"],
+			"mainCount": 1,
+			"links": [
+				"#main-content",
+				"/",
+				"/mentorship",
+				"/our-mission",
+				"/about",
+				"/blog",
+				"/pricing",
+				"/login",
+				"/indicators",
+				"/contact",
+				"https://facebook.com/revolutiontradingpros",
+				"https://twitter.com/revtradingpros",
+				"https://instagram.com/revolutiontradingpros",
+				"https://youtube.com/@RevolutionTradingPros",
+				"/live-trading-rooms",
+				"/alerts",
+				"/courses",
+				"/classes",
+				"/store/scanners",
+				"/tools/options-calculator",
+				"/team",
+				"/resources",
+				"/tutorials",
+				"/careers",
+				"/terms",
+				"/privacy",
+				"/cookie-policy",
+				"/disclaimer",
+				"/refund"
+			],
+			"forms": [],
+			"motion": [],
+			"axe": [],
+			"largeText": {
+				"viewport": 390,
+				"documentWidth": 382,
+				"problems": []
+			}
+		},
+		{
+			"path": "/join",
+			"console": [],
+			"exceptions": [],
+			"network": [],
+			"viewports": [
+				{
+					"width": 320,
+					"viewport": 320,
+					"documentWidth": 320,
+					"problems": []
+				},
+				{
+					"width": 390,
+					"viewport": 390,
+					"documentWidth": 382,
+					"problems": []
+				},
+				{
+					"width": 639,
+					"viewport": 639,
+					"documentWidth": 631,
+					"problems": []
+				},
+				{
+					"width": 640,
+					"viewport": 640,
+					"documentWidth": 632,
+					"problems": []
+				},
+				{
+					"width": 767,
+					"viewport": 767,
+					"documentWidth": 759,
+					"problems": []
+				},
+				{
+					"width": 768,
+					"viewport": 768,
+					"documentWidth": 760,
+					"problems": []
+				},
+				{
+					"width": 1023,
+					"viewport": 1023,
+					"documentWidth": 1015,
+					"problems": []
+				},
+				{
+					"width": 1024,
+					"viewport": 1024,
+					"documentWidth": 1016,
+					"problems": []
+				},
+				{
+					"width": 1151,
+					"viewport": 1151,
+					"documentWidth": 1143,
+					"problems": []
+				},
+				{
+					"width": 1152,
+					"viewport": 1152,
+					"documentWidth": 1144,
+					"problems": []
+				},
+				{
+					"width": 1279,
+					"viewport": 1279,
+					"documentWidth": 1271,
+					"problems": []
+				},
+				{
+					"width": 1280,
+					"viewport": 1280,
+					"documentWidth": 1272,
+					"problems": []
+				},
+				{
+					"width": 1439,
+					"viewport": 1439,
+					"documentWidth": 1431,
+					"problems": []
+				},
+				{
+					"width": 1440,
+					"viewport": 1440,
+					"documentWidth": 1432,
+					"problems": []
+				},
+				{
+					"width": 1535,
+					"viewport": 1535,
+					"documentWidth": 1527,
+					"problems": []
+				},
+				{
+					"width": 1536,
+					"viewport": 1536,
+					"documentWidth": 1528,
+					"problems": []
+				},
+				{
+					"width": 1920,
+					"viewport": 1920,
+					"documentWidth": 1912,
+					"problems": []
+				}
+			],
+			"controls": [],
+			"navigation": ["/", "/pricing", "/", "/pricing"],
+			"status": 200,
+			"destination": "/pricing",
+			"title": "Pricing \u2014 Membership Plans | Revolution Trading Pros",
+			"h1": ["Invest in Your Trading Edge"],
+			"mainCount": 1,
+			"links": [
+				"#main-content",
+				"/",
+				"/mentorship",
+				"/our-mission",
+				"/about",
+				"/blog",
+				"/pricing",
+				"/login",
+				"/register",
+				"/register?plan=pro",
+				"/register?plan=elite",
+				"https://facebook.com/revolutiontradingpros",
+				"https://twitter.com/revtradingpros",
+				"https://instagram.com/revolutiontradingpros",
+				"https://youtube.com/@RevolutionTradingPros",
+				"/live-trading-rooms",
+				"/alerts",
+				"/courses",
+				"/classes",
+				"/indicators",
+				"/store/scanners",
+				"/tools/options-calculator",
+				"/team",
+				"/resources",
+				"/tutorials",
+				"/contact",
+				"/careers",
+				"/terms",
+				"/privacy",
+				"/cookie-policy",
+				"/disclaimer",
+				"/refund"
+			],
+			"forms": [],
+			"motion": [],
+			"axe": [],
+			"largeText": {
+				"viewport": 390,
+				"documentWidth": 382,
+				"problems": []
+			}
+		},
+		{
+			"path": "/learning-center",
+			"console": [],
+			"exceptions": [],
+			"network": [],
+			"viewports": [
+				{
+					"width": 320,
+					"viewport": 320,
+					"documentWidth": 320,
+					"problems": []
+				},
+				{
+					"width": 390,
+					"viewport": 390,
+					"documentWidth": 382,
+					"problems": []
+				},
+				{
+					"width": 639,
+					"viewport": 639,
+					"documentWidth": 631,
+					"problems": []
+				},
+				{
+					"width": 640,
+					"viewport": 640,
+					"documentWidth": 632,
+					"problems": []
+				},
+				{
+					"width": 767,
+					"viewport": 767,
+					"documentWidth": 759,
+					"problems": []
+				},
+				{
+					"width": 768,
+					"viewport": 768,
+					"documentWidth": 760,
+					"problems": []
+				},
+				{
+					"width": 1023,
+					"viewport": 1023,
+					"documentWidth": 1015,
+					"problems": []
+				},
+				{
+					"width": 1024,
+					"viewport": 1024,
+					"documentWidth": 1016,
+					"problems": []
+				},
+				{
+					"width": 1151,
+					"viewport": 1151,
+					"documentWidth": 1143,
+					"problems": []
+				},
+				{
+					"width": 1152,
+					"viewport": 1152,
+					"documentWidth": 1144,
+					"problems": []
+				},
+				{
+					"width": 1279,
+					"viewport": 1279,
+					"documentWidth": 1271,
+					"problems": []
+				},
+				{
+					"width": 1280,
+					"viewport": 1280,
+					"documentWidth": 1272,
+					"problems": []
+				},
+				{
+					"width": 1439,
+					"viewport": 1439,
+					"documentWidth": 1431,
+					"problems": []
+				},
+				{
+					"width": 1440,
+					"viewport": 1440,
+					"documentWidth": 1432,
+					"problems": []
+				},
+				{
+					"width": 1535,
+					"viewport": 1535,
+					"documentWidth": 1527,
+					"problems": []
+				},
+				{
+					"width": 1536,
+					"viewport": 1536,
+					"documentWidth": 1528,
+					"problems": []
+				},
+				{
+					"width": 1920,
+					"viewport": 1920,
+					"documentWidth": 1912,
+					"problems": []
+				}
+			],
+			"controls": [],
+			"navigation": ["/", "/learning-center", "/", "/learning-center"],
+			"status": 200,
+			"destination": "/learning-center",
+			"title": "Public Trading Video Learning Center | RTP",
+			"h1": ["Public Video Learning Center"],
+			"mainCount": 1,
+			"links": [
+				"#main-content",
+				"/",
+				"/mentorship",
+				"/our-mission",
+				"/about",
+				"/blog",
+				"/pricing",
+				"/login",
+				"https://facebook.com/revolutiontradingpros",
+				"https://twitter.com/revtradingpros",
+				"https://instagram.com/revolutiontradingpros",
+				"https://youtube.com/@RevolutionTradingPros",
+				"/live-trading-rooms",
+				"/alerts",
+				"/courses",
+				"/classes",
+				"/indicators",
+				"/store/scanners",
+				"/tools/options-calculator",
+				"/team",
+				"/resources",
+				"/tutorials",
+				"/contact",
+				"/careers",
+				"/terms",
+				"/privacy",
+				"/cookie-policy",
+				"/disclaimer",
+				"/refund"
+			],
+			"forms": [],
+			"motion": [],
+			"axe": [],
+			"largeText": {
+				"viewport": 390,
+				"documentWidth": 382,
+				"problems": []
+			}
+		},
+		{
+			"path": "/live-trading-rooms",
+			"console": [],
+			"exceptions": [],
+			"network": [],
+			"viewports": [
+				{
+					"width": 320,
+					"viewport": 320,
+					"documentWidth": 320,
+					"problems": []
+				},
+				{
+					"width": 390,
+					"viewport": 390,
+					"documentWidth": 382,
+					"problems": []
+				},
+				{
+					"width": 639,
+					"viewport": 639,
+					"documentWidth": 631,
+					"problems": []
+				},
+				{
+					"width": 640,
+					"viewport": 640,
+					"documentWidth": 632,
+					"problems": []
+				},
+				{
+					"width": 767,
+					"viewport": 767,
+					"documentWidth": 759,
+					"problems": []
+				},
+				{
+					"width": 768,
+					"viewport": 768,
+					"documentWidth": 760,
+					"problems": []
+				},
+				{
+					"width": 1023,
+					"viewport": 1023,
+					"documentWidth": 1015,
+					"problems": []
+				},
+				{
+					"width": 1024,
+					"viewport": 1024,
+					"documentWidth": 1016,
+					"problems": []
+				},
+				{
+					"width": 1151,
+					"viewport": 1151,
+					"documentWidth": 1143,
+					"problems": []
+				},
+				{
+					"width": 1152,
+					"viewport": 1152,
+					"documentWidth": 1144,
+					"problems": []
+				},
+				{
+					"width": 1279,
+					"viewport": 1279,
+					"documentWidth": 1271,
+					"problems": []
+				},
+				{
+					"width": 1280,
+					"viewport": 1280,
+					"documentWidth": 1272,
+					"problems": []
+				},
+				{
+					"width": 1439,
+					"viewport": 1439,
+					"documentWidth": 1431,
+					"problems": []
+				},
+				{
+					"width": 1440,
+					"viewport": 1440,
+					"documentWidth": 1432,
+					"problems": []
+				},
+				{
+					"width": 1535,
+					"viewport": 1535,
+					"documentWidth": 1527,
+					"problems": []
+				},
+				{
+					"width": 1536,
+					"viewport": 1536,
+					"documentWidth": 1528,
+					"problems": []
+				},
+				{
+					"width": 1920,
+					"viewport": 1920,
+					"documentWidth": 1912,
+					"problems": []
+				}
+			],
+			"controls": [],
+			"navigation": ["/", "/live-trading-rooms", "/", "/live-trading-rooms"],
+			"status": 200,
+			"destination": "/live-trading-rooms",
+			"title": "Live Trading Rooms \u2014 Real-Time Mentorship | RTP",
+			"h1": ["Market Intelligence"],
+			"mainCount": 1,
+			"links": [
+				"#main-content",
+				"/",
+				"/mentorship",
+				"/our-mission",
+				"/about",
+				"/blog",
+				"/pricing",
+				"/login",
+				"/live-trading-rooms/day-trading",
+				"/live-trading-rooms/swing-trading",
+				"/live-trading-rooms/small-accounts",
+				"/alerts/spx-profit-pulse",
+				"/indicators",
+				"#rooms-section",
+				"https://facebook.com/revolutiontradingpros",
+				"https://twitter.com/revtradingpros",
+				"https://instagram.com/revolutiontradingpros",
+				"https://youtube.com/@RevolutionTradingPros",
+				"/live-trading-rooms",
+				"/alerts",
+				"/courses",
+				"/classes",
+				"/store/scanners",
+				"/tools/options-calculator",
+				"/team",
+				"/resources",
+				"/tutorials",
+				"/contact",
+				"/careers",
+				"/terms",
+				"/privacy",
+				"/cookie-policy",
+				"/disclaimer",
+				"/refund"
+			],
+			"forms": [],
+			"motion": [],
+			"axe": [],
+			"largeText": {
+				"viewport": 390,
+				"documentWidth": 382,
+				"problems": []
+			}
+		},
+		{
+			"path": "/live-trading-rooms/day-trading",
+			"console": [],
+			"exceptions": [],
+			"network": [],
+			"viewports": [
+				{
+					"width": 320,
+					"viewport": 320,
+					"documentWidth": 320,
+					"problems": []
+				},
+				{
+					"width": 390,
+					"viewport": 390,
+					"documentWidth": 382,
+					"problems": []
+				},
+				{
+					"width": 639,
+					"viewport": 639,
+					"documentWidth": 631,
+					"problems": []
+				},
+				{
+					"width": 640,
+					"viewport": 640,
+					"documentWidth": 632,
+					"problems": []
+				},
+				{
+					"width": 767,
+					"viewport": 767,
+					"documentWidth": 759,
+					"problems": []
+				},
+				{
+					"width": 768,
+					"viewport": 768,
+					"documentWidth": 760,
+					"problems": []
+				},
+				{
+					"width": 1023,
+					"viewport": 1023,
+					"documentWidth": 1015,
+					"problems": []
+				},
+				{
+					"width": 1024,
+					"viewport": 1024,
+					"documentWidth": 1016,
+					"problems": []
+				},
+				{
+					"width": 1151,
+					"viewport": 1151,
+					"documentWidth": 1143,
+					"problems": []
+				},
+				{
+					"width": 1152,
+					"viewport": 1152,
+					"documentWidth": 1144,
+					"problems": []
+				},
+				{
+					"width": 1279,
+					"viewport": 1279,
+					"documentWidth": 1271,
+					"problems": []
+				},
+				{
+					"width": 1280,
+					"viewport": 1280,
+					"documentWidth": 1272,
+					"problems": []
+				},
+				{
+					"width": 1439,
+					"viewport": 1439,
+					"documentWidth": 1431,
+					"problems": []
+				},
+				{
+					"width": 1440,
+					"viewport": 1440,
+					"documentWidth": 1432,
+					"problems": []
+				},
+				{
+					"width": 1535,
+					"viewport": 1535,
+					"documentWidth": 1527,
+					"problems": []
+				},
+				{
+					"width": 1536,
+					"viewport": 1536,
+					"documentWidth": 1528,
+					"problems": []
+				},
+				{
+					"width": 1920,
+					"viewport": 1920,
+					"documentWidth": 1912,
+					"problems": []
+				}
+			],
+			"controls": [
+				{
+					"type": "expanded",
+					"name": "Do I need to be an expert to join?",
+					"before": "false",
+					"after": "true"
+				},
+				{
+					"type": "expanded",
+					"name": "What platform is the room hosted on?",
+					"before": "false",
+					"after": "true"
+				},
+				{
+					"type": "expanded",
+					"name": "What specific instruments do you trade?",
+					"before": "false",
+					"after": "true"
+				},
+				{
+					"type": "expanded",
+					"name": "How much capital do I need to start?",
+					"before": "false",
+					"after": "true"
+				},
+				{
+					"type": "expanded",
+					"name": "Do you offer a free trial?",
+					"before": "false",
+					"after": "true"
+				},
+				{
+					"type": "expanded",
+					"name": "Is this just copy-trading or signals?",
+					"before": "false",
+					"after": "true"
+				},
+				{
+					"type": "expanded",
+					"name": "What happens if I miss the live session?",
+					"before": "false",
+					"after": "true"
+				},
+				{
+					"type": "expanded",
+					"name": "Can I trade on my phone?",
+					"before": "false",
+					"after": "true"
+				},
+				{
+					"type": "expanded",
+					"name": "What is the win rate of the room?",
+					"before": "false",
+					"after": "true"
+				},
+				{
+					"type": "expanded",
+					"name": "How do I cancel my subscription?",
+					"before": "false",
+					"after": "true"
+				}
+			],
+			"navigation": [
+				"/",
+				"/live-trading-rooms/day-trading",
+				"/",
+				"/live-trading-rooms/day-trading"
+			],
+			"status": 200,
+			"destination": "/live-trading-rooms/day-trading",
+			"title": "Live SPX 0DTE Day Trading Room | Revolution Trading Pros",
+			"h1": ["Never Trade  Alone Again."],
+			"mainCount": 1,
+			"links": [
+				"#main-content",
+				"/",
+				"/mentorship",
+				"/our-mission",
+				"/about",
+				"/blog",
+				"/pricing",
+				"/login",
+				"/live-trading-rooms",
+				"#pricing",
+				"#schedule",
+				"/checkout/monthly-room",
+				"/checkout/quarterly-room",
+				"/checkout/annual-room",
+				"https://facebook.com/revolutiontradingpros",
+				"https://twitter.com/revtradingpros",
+				"https://instagram.com/revolutiontradingpros",
+				"https://youtube.com/@RevolutionTradingPros",
+				"/alerts",
+				"/courses",
+				"/classes",
+				"/indicators",
+				"/store/scanners",
+				"/tools/options-calculator",
+				"/team",
+				"/resources",
+				"/tutorials",
+				"/contact",
+				"/careers",
+				"/terms",
+				"/privacy",
+				"/cookie-policy",
+				"/disclaimer",
+				"/refund"
+			],
+			"forms": [],
+			"motion": [],
+			"axe": [],
+			"largeText": {
+				"viewport": 390,
+				"documentWidth": 382,
+				"problems": []
+			}
+		},
+		{
+			"path": "/live-trading-rooms/small-accounts",
+			"console": [],
+			"exceptions": [],
+			"network": [],
+			"viewports": [
+				{
+					"width": 320,
+					"viewport": 320,
+					"documentWidth": 320,
+					"problems": []
+				},
+				{
+					"width": 390,
+					"viewport": 390,
+					"documentWidth": 382,
+					"problems": []
+				},
+				{
+					"width": 639,
+					"viewport": 639,
+					"documentWidth": 631,
+					"problems": []
+				},
+				{
+					"width": 640,
+					"viewport": 640,
+					"documentWidth": 632,
+					"problems": []
+				},
+				{
+					"width": 767,
+					"viewport": 767,
+					"documentWidth": 759,
+					"problems": []
+				},
+				{
+					"width": 768,
+					"viewport": 768,
+					"documentWidth": 760,
+					"problems": []
+				},
+				{
+					"width": 1023,
+					"viewport": 1023,
+					"documentWidth": 1015,
+					"problems": []
+				},
+				{
+					"width": 1024,
+					"viewport": 1024,
+					"documentWidth": 1016,
+					"problems": []
+				},
+				{
+					"width": 1151,
+					"viewport": 1151,
+					"documentWidth": 1143,
+					"problems": []
+				},
+				{
+					"width": 1152,
+					"viewport": 1152,
+					"documentWidth": 1144,
+					"problems": []
+				},
+				{
+					"width": 1279,
+					"viewport": 1279,
+					"documentWidth": 1271,
+					"problems": []
+				},
+				{
+					"width": 1280,
+					"viewport": 1280,
+					"documentWidth": 1272,
+					"problems": []
+				},
+				{
+					"width": 1439,
+					"viewport": 1439,
+					"documentWidth": 1431,
+					"problems": []
+				},
+				{
+					"width": 1440,
+					"viewport": 1440,
+					"documentWidth": 1432,
+					"problems": []
+				},
+				{
+					"width": 1535,
+					"viewport": 1535,
+					"documentWidth": 1527,
+					"problems": []
+				},
+				{
+					"width": 1536,
+					"viewport": 1536,
+					"documentWidth": 1528,
+					"problems": []
+				},
+				{
+					"width": 1920,
+					"viewport": 1920,
+					"documentWidth": 1912,
+					"problems": []
+				}
+			],
+			"controls": [
+				{
+					"type": "expanded",
+					"name": "Do I need $25,000 to join this room?",
+					"before": "false",
+					"after": "true"
+				},
+				{
+					"type": "expanded",
+					"name": "What is the minimum recommended capital?",
+					"before": "false",
+					"after": "true"
+				},
+				{
+					"type": "expanded",
+					"name": "How do you avoid the PDT rule?",
+					"before": "false",
+					"after": "true"
+				},
+				{
+					"type": "expanded",
+					"name": "What specific instruments do you trade?",
+					"before": "false",
+					"after": "true"
+				},
+				{
+					"type": "expanded",
+					"name": "Is this room beginner friendly?",
+					"before": "false",
+					"after": "true"
+				},
+				{
+					"type": "expanded",
+					"name": "Do you trade Futures (ES/NQ)?",
+					"before": "false",
+					"after": "true"
+				},
+				{
+					"type": "expanded",
+					"name": "What is the win rate?",
+					"before": "false",
+					"after": "true"
+				},
+				{
+					"type": "expanded",
+					"name": "Can I trade on mobile?",
+					"before": "false",
+					"after": "true"
+				},
+				{
+					"type": "expanded",
+					"name": "How many trades do you take per day?",
+					"before": "false",
+					"after": "true"
+				},
+				{
+					"type": "expanded",
+					"name": "What happens if I blow up my account?",
+					"before": "false",
+					"after": "true"
+				}
+			],
+			"navigation": [
+				"/",
+				"/live-trading-rooms/small-accounts",
+				"/",
+				"/live-trading-rooms/small-accounts"
+			],
+			"status": 200,
+			"destination": "/live-trading-rooms/small-accounts",
+			"title": "Small Account Options Trading Room | Revolution Trading Pros",
+			"h1": ["Master 0DTE Options Without The PDT Rule."],
+			"mainCount": 1,
+			"links": [
+				"#main-content",
+				"/",
+				"/mentorship",
+				"/our-mission",
+				"/about",
+				"/blog",
+				"/pricing",
+				"/login",
+				"/live-trading-rooms",
+				"#pricing",
+				"#daily-routine",
+				"/checkout/monthly-small-accounts",
+				"/checkout/quarterly-small-accounts",
+				"/checkout/annual-small-accounts",
+				"https://facebook.com/revolutiontradingpros",
+				"https://twitter.com/revtradingpros",
+				"https://instagram.com/revolutiontradingpros",
+				"https://youtube.com/@RevolutionTradingPros",
+				"/alerts",
+				"/courses",
+				"/classes",
+				"/indicators",
+				"/store/scanners",
+				"/tools/options-calculator",
+				"/team",
+				"/resources",
+				"/tutorials",
+				"/contact",
+				"/careers",
+				"/terms",
+				"/privacy",
+				"/cookie-policy",
+				"/disclaimer",
+				"/refund"
+			],
+			"forms": [],
+			"motion": [],
+			"axe": [],
+			"largeText": {
+				"viewport": 390,
+				"documentWidth": 382,
+				"problems": []
+			}
+		},
+		{
+			"path": "/live-trading-rooms/swing-trading",
+			"console": [],
+			"exceptions": [],
+			"network": [],
+			"viewports": [
+				{
+					"width": 320,
+					"viewport": 320,
+					"documentWidth": 320,
+					"problems": []
+				},
+				{
+					"width": 390,
+					"viewport": 390,
+					"documentWidth": 382,
+					"problems": []
+				},
+				{
+					"width": 639,
+					"viewport": 639,
+					"documentWidth": 631,
+					"problems": []
+				},
+				{
+					"width": 640,
+					"viewport": 640,
+					"documentWidth": 632,
+					"problems": []
+				},
+				{
+					"width": 767,
+					"viewport": 767,
+					"documentWidth": 759,
+					"problems": []
+				},
+				{
+					"width": 768,
+					"viewport": 768,
+					"documentWidth": 760,
+					"problems": []
+				},
+				{
+					"width": 1023,
+					"viewport": 1023,
+					"documentWidth": 1015,
+					"problems": []
+				},
+				{
+					"width": 1024,
+					"viewport": 1024,
+					"documentWidth": 1016,
+					"problems": []
+				},
+				{
+					"width": 1151,
+					"viewport": 1151,
+					"documentWidth": 1143,
+					"problems": []
+				},
+				{
+					"width": 1152,
+					"viewport": 1152,
+					"documentWidth": 1144,
+					"problems": []
+				},
+				{
+					"width": 1279,
+					"viewport": 1279,
+					"documentWidth": 1271,
+					"problems": []
+				},
+				{
+					"width": 1280,
+					"viewport": 1280,
+					"documentWidth": 1272,
+					"problems": []
+				},
+				{
+					"width": 1439,
+					"viewport": 1439,
+					"documentWidth": 1431,
+					"problems": []
+				},
+				{
+					"width": 1440,
+					"viewport": 1440,
+					"documentWidth": 1432,
+					"problems": []
+				},
+				{
+					"width": 1535,
+					"viewport": 1535,
+					"documentWidth": 1527,
+					"problems": []
+				},
+				{
+					"width": 1536,
+					"viewport": 1536,
+					"documentWidth": 1528,
+					"problems": []
+				},
+				{
+					"width": 1920,
+					"viewport": 1920,
+					"documentWidth": 1912,
+					"problems": []
+				}
+			],
+			"controls": [
+				{
+					"type": "expanded",
+					"name": "How much capital do I need for swing trading?",
+					"before": "false",
+					"after": "true"
+				},
+				{
+					"type": "expanded",
+					"name": "Are these day trades?",
+					"before": "false",
+					"after": "true"
+				},
+				{
+					"type": "expanded",
+					"name": "Do I need to be at my computer all day?",
+					"before": "false",
+					"after": "true"
+				},
+				{
+					"type": "expanded",
+					"name": "What instruments do you trade?",
+					"before": "false",
+					"after": "true"
+				},
+				{
+					"type": "expanded",
+					"name": "How are the alerts delivered?",
+					"before": "false",
+					"after": "true"
+				},
+				{
+					"type": "expanded",
+					"name": "Do you trade both long and short?",
+					"before": "false",
+					"after": "true"
+				},
+				{
+					"type": "expanded",
+					"name": "What is your risk management strategy?",
+					"before": "false",
+					"after": "true"
+				},
+				{
+					"type": "expanded",
+					"name": "Is this suitable for beginners?",
+					"before": "false",
+					"after": "true"
+				},
+				{
+					"type": "expanded",
+					"name": "Can I cancel my subscription?",
+					"before": "false",
+					"after": "true"
+				},
+				{
+					"type": "expanded",
+					"name": "What happens if I miss an entry?",
+					"before": "false",
+					"after": "true"
+				}
+			],
+			"navigation": [
+				"/",
+				"/live-trading-rooms/swing-trading",
+				"/",
+				"/live-trading-rooms/swing-trading"
+			],
+			"status": 200,
+			"destination": "/live-trading-rooms/swing-trading",
+			"title": "Swing Trading Room \u2014 Multi-Day Signals | RTP",
+			"h1": ["Catch the  Big Moves."],
+			"mainCount": 1,
+			"links": [
+				"#main-content",
+				"/",
+				"/mentorship",
+				"/our-mission",
+				"/about",
+				"/blog",
+				"/pricing",
+				"/login",
+				"/live-trading-rooms",
+				"#pricing",
+				"#process",
+				"/alerts/explosive-swings",
+				"/checkout/monthly-swings",
+				"/checkout/quarterly-swings",
+				"/checkout/annual-swings",
+				"https://facebook.com/revolutiontradingpros",
+				"https://twitter.com/revtradingpros",
+				"https://instagram.com/revolutiontradingpros",
+				"https://youtube.com/@RevolutionTradingPros",
+				"/alerts",
+				"/courses",
+				"/classes",
+				"/indicators",
+				"/store/scanners",
+				"/tools/options-calculator",
+				"/team",
+				"/resources",
+				"/tutorials",
+				"/contact",
+				"/careers",
+				"/terms",
+				"/privacy",
+				"/cookie-policy",
+				"/disclaimer",
+				"/refund"
+			],
+			"forms": [],
+			"motion": [],
+			"axe": [],
+			"largeText": {
+				"viewport": 390,
+				"documentWidth": 382,
+				"problems": []
+			}
+		},
+		{
+			"path": "/mentorship",
+			"console": [],
+			"exceptions": [],
+			"network": [],
+			"viewports": [
+				{
+					"width": 320,
+					"viewport": 320,
+					"documentWidth": 320,
+					"problems": []
+				},
+				{
+					"width": 390,
+					"viewport": 390,
+					"documentWidth": 382,
+					"problems": []
+				},
+				{
+					"width": 639,
+					"viewport": 639,
+					"documentWidth": 631,
+					"problems": []
+				},
+				{
+					"width": 640,
+					"viewport": 640,
+					"documentWidth": 632,
+					"problems": []
+				},
+				{
+					"width": 767,
+					"viewport": 767,
+					"documentWidth": 759,
+					"problems": []
+				},
+				{
+					"width": 768,
+					"viewport": 768,
+					"documentWidth": 760,
+					"problems": []
+				},
+				{
+					"width": 1023,
+					"viewport": 1023,
+					"documentWidth": 1015,
+					"problems": []
+				},
+				{
+					"width": 1024,
+					"viewport": 1024,
+					"documentWidth": 1016,
+					"problems": []
+				},
+				{
+					"width": 1151,
+					"viewport": 1151,
+					"documentWidth": 1143,
+					"problems": []
+				},
+				{
+					"width": 1152,
+					"viewport": 1152,
+					"documentWidth": 1144,
+					"problems": []
+				},
+				{
+					"width": 1279,
+					"viewport": 1279,
+					"documentWidth": 1271,
+					"problems": []
+				},
+				{
+					"width": 1280,
+					"viewport": 1280,
+					"documentWidth": 1272,
+					"problems": []
+				},
+				{
+					"width": 1439,
+					"viewport": 1439,
+					"documentWidth": 1431,
+					"problems": []
+				},
+				{
+					"width": 1440,
+					"viewport": 1440,
+					"documentWidth": 1432,
+					"problems": []
+				},
+				{
+					"width": 1535,
+					"viewport": 1535,
+					"documentWidth": 1527,
+					"problems": []
+				},
+				{
+					"width": 1536,
+					"viewport": 1536,
+					"documentWidth": 1528,
+					"problems": []
+				},
+				{
+					"width": 1920,
+					"viewport": 1920,
+					"documentWidth": 1912,
+					"problems": []
+				}
+			],
+			"controls": [
+				{
+					"type": "expanded",
+					"name": "CONFIDENTIALITY & DATA SOVEREIGNTY",
+					"before": "true",
+					"after": "false"
+				},
+				{
+					"type": "expanded",
+					"name": "CONFLICT OF INTEREST",
+					"before": "false",
+					"after": "true"
+				},
+				{
+					"type": "expanded",
+					"name": "LOGISTICS & EXPENSING",
+					"before": "false",
+					"after": "true"
+				}
+			],
+			"navigation": ["/", "/mentorship", "/", "/mentorship"],
+			"status": 200,
+			"destination": "/mentorship",
+			"title": "1-on-1 Institutional Trading Mentorship | RTP",
+			"h1": ["Strategic Alpha Audit."],
+			"mainCount": 1,
+			"links": [
+				"#main-content",
+				"/",
+				"/mentorship",
+				"/our-mission",
+				"/about",
+				"/blog",
+				"/pricing",
+				"/login",
+				"mailto:institutional@revolutiontradingpros.com?subject=Institutional%20Audit%20Application",
+				"https://facebook.com/revolutiontradingpros",
+				"https://twitter.com/revtradingpros",
+				"https://instagram.com/revolutiontradingpros",
+				"https://youtube.com/@RevolutionTradingPros",
+				"/live-trading-rooms",
+				"/alerts",
+				"/courses",
+				"/classes",
+				"/indicators",
+				"/store/scanners",
+				"/tools/options-calculator",
+				"/team",
+				"/resources",
+				"/tutorials",
+				"/contact",
+				"/careers",
+				"/terms",
+				"/privacy",
+				"/cookie-policy",
+				"/disclaimer",
+				"/refund"
+			],
+			"forms": [],
+			"motion": [],
+			"axe": [],
+			"largeText": {
+				"viewport": 390,
+				"documentWidth": 382,
+				"problems": []
+			}
+		},
+		{
+			"path": "/methodology",
+			"console": [],
+			"exceptions": [],
+			"network": [],
+			"viewports": [
+				{
+					"width": 320,
+					"viewport": 320,
+					"documentWidth": 320,
+					"problems": []
+				},
+				{
+					"width": 390,
+					"viewport": 390,
+					"documentWidth": 382,
+					"problems": []
+				},
+				{
+					"width": 639,
+					"viewport": 639,
+					"documentWidth": 631,
+					"problems": []
+				},
+				{
+					"width": 640,
+					"viewport": 640,
+					"documentWidth": 632,
+					"problems": []
+				},
+				{
+					"width": 767,
+					"viewport": 767,
+					"documentWidth": 759,
+					"problems": []
+				},
+				{
+					"width": 768,
+					"viewport": 768,
+					"documentWidth": 760,
+					"problems": []
+				},
+				{
+					"width": 1023,
+					"viewport": 1023,
+					"documentWidth": 1015,
+					"problems": []
+				},
+				{
+					"width": 1024,
+					"viewport": 1024,
+					"documentWidth": 1016,
+					"problems": []
+				},
+				{
+					"width": 1151,
+					"viewport": 1151,
+					"documentWidth": 1143,
+					"problems": []
+				},
+				{
+					"width": 1152,
+					"viewport": 1152,
+					"documentWidth": 1144,
+					"problems": []
+				},
+				{
+					"width": 1279,
+					"viewport": 1279,
+					"documentWidth": 1271,
+					"problems": []
+				},
+				{
+					"width": 1280,
+					"viewport": 1280,
+					"documentWidth": 1272,
+					"problems": []
+				},
+				{
+					"width": 1439,
+					"viewport": 1439,
+					"documentWidth": 1431,
+					"problems": []
+				},
+				{
+					"width": 1440,
+					"viewport": 1440,
+					"documentWidth": 1432,
+					"problems": []
+				},
+				{
+					"width": 1535,
+					"viewport": 1535,
+					"documentWidth": 1527,
+					"problems": []
+				},
+				{
+					"width": 1536,
+					"viewport": 1536,
+					"documentWidth": 1528,
+					"problems": []
+				},
+				{
+					"width": 1920,
+					"viewport": 1920,
+					"documentWidth": 1912,
+					"problems": []
+				}
+			],
+			"controls": [
+				{
+					"type": "expanded",
+					"name": "Is this a \"Get Rich Quick\" scheme?",
+					"before": "false",
+					"after": "true"
+				},
+				{
+					"type": "expanded",
+					"name": "Do I need a large account to start?",
+					"before": "false",
+					"after": "true"
+				},
+				{
+					"type": "expanded",
+					"name": "What trading style do you teach?",
+					"before": "false",
+					"after": "true"
+				}
+			],
+			"navigation": ["/", "/our-mission", "/", "/our-mission"],
+			"status": 200,
+			"destination": "/our-mission",
+			"title": "Our Mission \u2014 The Institutional Bridge | RTP",
+			"h1": ["We Don't Sell Dreams. We Build Careers."],
+			"mainCount": 1,
+			"links": [
+				"#main-content",
+				"/",
+				"/mentorship",
+				"/our-mission",
+				"/about",
+				"/blog",
+				"/pricing",
+				"/login",
+				"https://facebook.com/revolutiontradingpros",
+				"https://twitter.com/revtradingpros",
+				"https://instagram.com/revolutiontradingpros",
+				"https://youtube.com/@RevolutionTradingPros",
+				"/live-trading-rooms",
+				"/alerts",
+				"/courses",
+				"/classes",
+				"/indicators",
+				"/store/scanners",
+				"/tools/options-calculator",
+				"/team",
+				"/resources",
+				"/tutorials",
+				"/contact",
+				"/careers",
+				"/terms",
+				"/privacy",
+				"/cookie-policy",
+				"/disclaimer",
+				"/refund"
+			],
+			"forms": [],
+			"motion": [],
+			"axe": [],
+			"largeText": {
+				"viewport": 390,
+				"documentWidth": 382,
+				"problems": []
+			}
+		},
+		{
+			"path": "/our-mission",
+			"console": [],
+			"exceptions": [],
+			"network": [],
+			"viewports": [
+				{
+					"width": 320,
+					"viewport": 320,
+					"documentWidth": 320,
+					"problems": []
+				},
+				{
+					"width": 390,
+					"viewport": 390,
+					"documentWidth": 382,
+					"problems": []
+				},
+				{
+					"width": 639,
+					"viewport": 639,
+					"documentWidth": 631,
+					"problems": []
+				},
+				{
+					"width": 640,
+					"viewport": 640,
+					"documentWidth": 632,
+					"problems": []
+				},
+				{
+					"width": 767,
+					"viewport": 767,
+					"documentWidth": 759,
+					"problems": []
+				},
+				{
+					"width": 768,
+					"viewport": 768,
+					"documentWidth": 760,
+					"problems": []
+				},
+				{
+					"width": 1023,
+					"viewport": 1023,
+					"documentWidth": 1015,
+					"problems": []
+				},
+				{
+					"width": 1024,
+					"viewport": 1024,
+					"documentWidth": 1016,
+					"problems": []
+				},
+				{
+					"width": 1151,
+					"viewport": 1151,
+					"documentWidth": 1143,
+					"problems": []
+				},
+				{
+					"width": 1152,
+					"viewport": 1152,
+					"documentWidth": 1144,
+					"problems": []
+				},
+				{
+					"width": 1279,
+					"viewport": 1279,
+					"documentWidth": 1271,
+					"problems": []
+				},
+				{
+					"width": 1280,
+					"viewport": 1280,
+					"documentWidth": 1272,
+					"problems": []
+				},
+				{
+					"width": 1439,
+					"viewport": 1439,
+					"documentWidth": 1431,
+					"problems": []
+				},
+				{
+					"width": 1440,
+					"viewport": 1440,
+					"documentWidth": 1432,
+					"problems": []
+				},
+				{
+					"width": 1535,
+					"viewport": 1535,
+					"documentWidth": 1527,
+					"problems": []
+				},
+				{
+					"width": 1536,
+					"viewport": 1536,
+					"documentWidth": 1528,
+					"problems": []
+				},
+				{
+					"width": 1920,
+					"viewport": 1920,
+					"documentWidth": 1912,
+					"problems": []
+				}
+			],
+			"controls": [
+				{
+					"type": "expanded",
+					"name": "Is this a \"Get Rich Quick\" scheme?",
+					"before": "false",
+					"after": "true"
+				},
+				{
+					"type": "expanded",
+					"name": "Do I need a large account to start?",
+					"before": "false",
+					"after": "true"
+				},
+				{
+					"type": "expanded",
+					"name": "What trading style do you teach?",
+					"before": "false",
+					"after": "true"
+				}
+			],
+			"navigation": ["/", "/our-mission", "/", "/our-mission"],
+			"status": 200,
+			"destination": "/our-mission",
+			"title": "Our Mission \u2014 The Institutional Bridge | RTP",
+			"h1": ["We Don't Sell Dreams. We Build Careers."],
+			"mainCount": 1,
+			"links": [
+				"#main-content",
+				"/",
+				"/mentorship",
+				"/our-mission",
+				"/about",
+				"/blog",
+				"/pricing",
+				"/login",
+				"https://facebook.com/revolutiontradingpros",
+				"https://twitter.com/revtradingpros",
+				"https://instagram.com/revolutiontradingpros",
+				"https://youtube.com/@RevolutionTradingPros",
+				"/live-trading-rooms",
+				"/alerts",
+				"/courses",
+				"/classes",
+				"/indicators",
+				"/store/scanners",
+				"/tools/options-calculator",
+				"/team",
+				"/resources",
+				"/tutorials",
+				"/contact",
+				"/careers",
+				"/terms",
+				"/privacy",
+				"/cookie-policy",
+				"/disclaimer",
+				"/refund"
+			],
+			"forms": [],
+			"motion": [],
+			"axe": [],
+			"largeText": {
+				"viewport": 390,
+				"documentWidth": 382,
+				"problems": []
+			}
+		},
+		{
+			"path": "/performance",
+			"console": [],
+			"exceptions": [],
+			"network": [],
+			"viewports": [
+				{
+					"width": 320,
+					"viewport": 320,
+					"documentWidth": 320,
+					"problems": []
+				},
+				{
+					"width": 390,
+					"viewport": 390,
+					"documentWidth": 382,
+					"problems": []
+				},
+				{
+					"width": 639,
+					"viewport": 639,
+					"documentWidth": 631,
+					"problems": []
+				},
+				{
+					"width": 640,
+					"viewport": 640,
+					"documentWidth": 632,
+					"problems": []
+				},
+				{
+					"width": 767,
+					"viewport": 767,
+					"documentWidth": 759,
+					"problems": []
+				},
+				{
+					"width": 768,
+					"viewport": 768,
+					"documentWidth": 760,
+					"problems": []
+				},
+				{
+					"width": 1023,
+					"viewport": 1023,
+					"documentWidth": 1015,
+					"problems": []
+				},
+				{
+					"width": 1024,
+					"viewport": 1024,
+					"documentWidth": 1016,
+					"problems": []
+				},
+				{
+					"width": 1151,
+					"viewport": 1151,
+					"documentWidth": 1143,
+					"problems": []
+				},
+				{
+					"width": 1152,
+					"viewport": 1152,
+					"documentWidth": 1144,
+					"problems": []
+				},
+				{
+					"width": 1279,
+					"viewport": 1279,
+					"documentWidth": 1271,
+					"problems": []
+				},
+				{
+					"width": 1280,
+					"viewport": 1280,
+					"documentWidth": 1272,
+					"problems": []
+				},
+				{
+					"width": 1439,
+					"viewport": 1439,
+					"documentWidth": 1431,
+					"problems": []
+				},
+				{
+					"width": 1440,
+					"viewport": 1440,
+					"documentWidth": 1432,
+					"problems": []
+				},
+				{
+					"width": 1535,
+					"viewport": 1535,
+					"documentWidth": 1527,
+					"problems": []
+				},
+				{
+					"width": 1536,
+					"viewport": 1536,
+					"documentWidth": 1528,
+					"problems": []
+				},
+				{
+					"width": 1920,
+					"viewport": 1920,
+					"documentWidth": 1912,
+					"problems": []
+				}
+			],
+			"controls": [],
+			"navigation": ["/", "/pricing", "/", "/pricing"],
+			"status": 200,
+			"destination": "/pricing",
+			"title": "Pricing \u2014 Membership Plans | Revolution Trading Pros",
+			"h1": ["Invest in Your Trading Edge"],
+			"mainCount": 1,
+			"links": [
+				"#main-content",
+				"/",
+				"/mentorship",
+				"/our-mission",
+				"/about",
+				"/blog",
+				"/pricing",
+				"/login",
+				"/register",
+				"/register?plan=pro",
+				"/register?plan=elite",
+				"https://facebook.com/revolutiontradingpros",
+				"https://twitter.com/revtradingpros",
+				"https://instagram.com/revolutiontradingpros",
+				"https://youtube.com/@RevolutionTradingPros",
+				"/live-trading-rooms",
+				"/alerts",
+				"/courses",
+				"/classes",
+				"/indicators",
+				"/store/scanners",
+				"/tools/options-calculator",
+				"/team",
+				"/resources",
+				"/tutorials",
+				"/contact",
+				"/careers",
+				"/terms",
+				"/privacy",
+				"/cookie-policy",
+				"/disclaimer",
+				"/refund"
+			],
+			"forms": [],
+			"motion": [],
+			"axe": [],
+			"largeText": {
+				"viewport": 390,
+				"documentWidth": 382,
+				"problems": []
+			}
+		},
+		{
+			"path": "/pricing",
+			"console": [],
+			"exceptions": [],
+			"network": [],
+			"viewports": [
+				{
+					"width": 320,
+					"viewport": 320,
+					"documentWidth": 320,
+					"problems": []
+				},
+				{
+					"width": 390,
+					"viewport": 390,
+					"documentWidth": 382,
+					"problems": []
+				},
+				{
+					"width": 639,
+					"viewport": 639,
+					"documentWidth": 631,
+					"problems": []
+				},
+				{
+					"width": 640,
+					"viewport": 640,
+					"documentWidth": 632,
+					"problems": []
+				},
+				{
+					"width": 767,
+					"viewport": 767,
+					"documentWidth": 759,
+					"problems": []
+				},
+				{
+					"width": 768,
+					"viewport": 768,
+					"documentWidth": 760,
+					"problems": []
+				},
+				{
+					"width": 1023,
+					"viewport": 1023,
+					"documentWidth": 1015,
+					"problems": []
+				},
+				{
+					"width": 1024,
+					"viewport": 1024,
+					"documentWidth": 1016,
+					"problems": []
+				},
+				{
+					"width": 1151,
+					"viewport": 1151,
+					"documentWidth": 1143,
+					"problems": []
+				},
+				{
+					"width": 1152,
+					"viewport": 1152,
+					"documentWidth": 1144,
+					"problems": []
+				},
+				{
+					"width": 1279,
+					"viewport": 1279,
+					"documentWidth": 1271,
+					"problems": []
+				},
+				{
+					"width": 1280,
+					"viewport": 1280,
+					"documentWidth": 1272,
+					"problems": []
+				},
+				{
+					"width": 1439,
+					"viewport": 1439,
+					"documentWidth": 1431,
+					"problems": []
+				},
+				{
+					"width": 1440,
+					"viewport": 1440,
+					"documentWidth": 1432,
+					"problems": []
+				},
+				{
+					"width": 1535,
+					"viewport": 1535,
+					"documentWidth": 1527,
+					"problems": []
+				},
+				{
+					"width": 1536,
+					"viewport": 1536,
+					"documentWidth": 1528,
+					"problems": []
+				},
+				{
+					"width": 1920,
+					"viewport": 1920,
+					"documentWidth": 1912,
+					"problems": []
+				}
+			],
+			"controls": [],
+			"navigation": ["/", "/pricing", "/", "/pricing"],
+			"status": 200,
+			"destination": "/pricing",
+			"title": "Pricing \u2014 Membership Plans | Revolution Trading Pros",
+			"h1": ["Invest in Your Trading Edge"],
+			"mainCount": 1,
+			"links": [
+				"#main-content",
+				"/",
+				"/mentorship",
+				"/our-mission",
+				"/about",
+				"/blog",
+				"/pricing",
+				"/login",
+				"/register",
+				"/register?plan=pro",
+				"/register?plan=elite",
+				"https://facebook.com/revolutiontradingpros",
+				"https://twitter.com/revtradingpros",
+				"https://instagram.com/revolutiontradingpros",
+				"https://youtube.com/@RevolutionTradingPros",
+				"/live-trading-rooms",
+				"/alerts",
+				"/courses",
+				"/classes",
+				"/indicators",
+				"/store/scanners",
+				"/tools/options-calculator",
+				"/team",
+				"/resources",
+				"/tutorials",
+				"/contact",
+				"/careers",
+				"/terms",
+				"/privacy",
+				"/cookie-policy",
+				"/disclaimer",
+				"/refund"
+			],
+			"forms": [],
+			"motion": [],
+			"axe": [],
+			"largeText": {
+				"viewport": 390,
+				"documentWidth": 382,
+				"problems": []
+			}
+		},
+		{
+			"path": "/privacy",
+			"console": [],
+			"exceptions": [],
+			"network": [],
+			"viewports": [
+				{
+					"width": 320,
+					"viewport": 320,
+					"documentWidth": 320,
+					"problems": []
+				},
+				{
+					"width": 390,
+					"viewport": 390,
+					"documentWidth": 382,
+					"problems": []
+				},
+				{
+					"width": 639,
+					"viewport": 639,
+					"documentWidth": 631,
+					"problems": []
+				},
+				{
+					"width": 640,
+					"viewport": 640,
+					"documentWidth": 632,
+					"problems": []
+				},
+				{
+					"width": 767,
+					"viewport": 767,
+					"documentWidth": 759,
+					"problems": []
+				},
+				{
+					"width": 768,
+					"viewport": 768,
+					"documentWidth": 760,
+					"problems": []
+				},
+				{
+					"width": 1023,
+					"viewport": 1023,
+					"documentWidth": 1015,
+					"problems": []
+				},
+				{
+					"width": 1024,
+					"viewport": 1024,
+					"documentWidth": 1016,
+					"problems": []
+				},
+				{
+					"width": 1151,
+					"viewport": 1151,
+					"documentWidth": 1143,
+					"problems": []
+				},
+				{
+					"width": 1152,
+					"viewport": 1152,
+					"documentWidth": 1144,
+					"problems": []
+				},
+				{
+					"width": 1279,
+					"viewport": 1279,
+					"documentWidth": 1271,
+					"problems": []
+				},
+				{
+					"width": 1280,
+					"viewport": 1280,
+					"documentWidth": 1272,
+					"problems": []
+				},
+				{
+					"width": 1439,
+					"viewport": 1439,
+					"documentWidth": 1431,
+					"problems": []
+				},
+				{
+					"width": 1440,
+					"viewport": 1440,
+					"documentWidth": 1432,
+					"problems": []
+				},
+				{
+					"width": 1535,
+					"viewport": 1535,
+					"documentWidth": 1527,
+					"problems": []
+				},
+				{
+					"width": 1536,
+					"viewport": 1536,
+					"documentWidth": 1528,
+					"problems": []
+				},
+				{
+					"width": 1920,
+					"viewport": 1920,
+					"documentWidth": 1912,
+					"problems": []
+				}
+			],
+			"controls": [],
+			"navigation": ["/", "/privacy", "/", "/privacy"],
+			"status": 200,
+			"destination": "/privacy",
+			"title": "Privacy Policy | Revolution Trading Pros",
+			"h1": ["Privacy Policy"],
+			"mainCount": 1,
+			"links": [
+				"#main-content",
+				"/",
+				"/mentorship",
+				"/our-mission",
+				"/about",
+				"/blog",
+				"/pricing",
+				"/login",
+				"https://facebook.com/revolutiontradingpros",
+				"https://twitter.com/revtradingpros",
+				"https://instagram.com/revolutiontradingpros",
+				"https://youtube.com/@RevolutionTradingPros",
+				"/live-trading-rooms",
+				"/alerts",
+				"/courses",
+				"/classes",
+				"/indicators",
+				"/store/scanners",
+				"/tools/options-calculator",
+				"/team",
+				"/resources",
+				"/tutorials",
+				"/contact",
+				"/careers",
+				"/terms",
+				"/privacy",
+				"/cookie-policy",
+				"/disclaimer",
+				"/refund"
+			],
+			"forms": [],
+			"motion": [],
+			"axe": [],
+			"largeText": {
+				"viewport": 390,
+				"documentWidth": 382,
+				"problems": []
+			}
+		},
+		{
+			"path": "/refund",
+			"console": [],
+			"exceptions": [],
+			"network": [],
+			"viewports": [
+				{
+					"width": 320,
+					"viewport": 320,
+					"documentWidth": 320,
+					"problems": []
+				},
+				{
+					"width": 390,
+					"viewport": 390,
+					"documentWidth": 382,
+					"problems": []
+				},
+				{
+					"width": 639,
+					"viewport": 639,
+					"documentWidth": 631,
+					"problems": []
+				},
+				{
+					"width": 640,
+					"viewport": 640,
+					"documentWidth": 632,
+					"problems": []
+				},
+				{
+					"width": 767,
+					"viewport": 767,
+					"documentWidth": 759,
+					"problems": []
+				},
+				{
+					"width": 768,
+					"viewport": 768,
+					"documentWidth": 760,
+					"problems": []
+				},
+				{
+					"width": 1023,
+					"viewport": 1023,
+					"documentWidth": 1015,
+					"problems": []
+				},
+				{
+					"width": 1024,
+					"viewport": 1024,
+					"documentWidth": 1016,
+					"problems": []
+				},
+				{
+					"width": 1151,
+					"viewport": 1151,
+					"documentWidth": 1143,
+					"problems": []
+				},
+				{
+					"width": 1152,
+					"viewport": 1152,
+					"documentWidth": 1144,
+					"problems": []
+				},
+				{
+					"width": 1279,
+					"viewport": 1279,
+					"documentWidth": 1271,
+					"problems": []
+				},
+				{
+					"width": 1280,
+					"viewport": 1280,
+					"documentWidth": 1272,
+					"problems": []
+				},
+				{
+					"width": 1439,
+					"viewport": 1439,
+					"documentWidth": 1431,
+					"problems": []
+				},
+				{
+					"width": 1440,
+					"viewport": 1440,
+					"documentWidth": 1432,
+					"problems": []
+				},
+				{
+					"width": 1535,
+					"viewport": 1535,
+					"documentWidth": 1527,
+					"problems": []
+				},
+				{
+					"width": 1536,
+					"viewport": 1536,
+					"documentWidth": 1528,
+					"problems": []
+				},
+				{
+					"width": 1920,
+					"viewport": 1920,
+					"documentWidth": 1912,
+					"problems": []
+				}
+			],
+			"controls": [],
+			"navigation": ["/", "/refund", "/", "/refund"],
+			"status": 200,
+			"destination": "/refund",
+			"title": "Refund Policy | Revolution Trading Pros",
+			"h1": ["Refund Policy"],
+			"mainCount": 1,
+			"links": [
+				"#main-content",
+				"/",
+				"/mentorship",
+				"/our-mission",
+				"/about",
+				"/blog",
+				"/pricing",
+				"/login",
+				"mailto:support@revolutiontradingpros.com",
+				"/dashboard/account/billing",
+				"/terms",
+				"mailto:billing@revolutiontradingpros.com",
+				"/contact",
+				"https://facebook.com/revolutiontradingpros",
+				"https://twitter.com/revtradingpros",
+				"https://instagram.com/revolutiontradingpros",
+				"https://youtube.com/@RevolutionTradingPros",
+				"/live-trading-rooms",
+				"/alerts",
+				"/courses",
+				"/classes",
+				"/indicators",
+				"/store/scanners",
+				"/tools/options-calculator",
+				"/team",
+				"/resources",
+				"/tutorials",
+				"/careers",
+				"/privacy",
+				"/cookie-policy",
+				"/disclaimer",
+				"/refund"
+			],
+			"forms": [],
+			"motion": [],
+			"axe": [],
+			"largeText": {
+				"viewport": 390,
+				"documentWidth": 382,
+				"problems": []
+			}
+		},
+		{
+			"path": "/resources",
+			"console": [],
+			"exceptions": [],
+			"network": [],
+			"viewports": [
+				{
+					"width": 320,
+					"viewport": 320,
+					"documentWidth": 320,
+					"problems": []
+				},
+				{
+					"width": 390,
+					"viewport": 390,
+					"documentWidth": 382,
+					"problems": []
+				},
+				{
+					"width": 639,
+					"viewport": 639,
+					"documentWidth": 631,
+					"problems": []
+				},
+				{
+					"width": 640,
+					"viewport": 640,
+					"documentWidth": 632,
+					"problems": []
+				},
+				{
+					"width": 767,
+					"viewport": 767,
+					"documentWidth": 759,
+					"problems": []
+				},
+				{
+					"width": 768,
+					"viewport": 768,
+					"documentWidth": 760,
+					"problems": []
+				},
+				{
+					"width": 1023,
+					"viewport": 1023,
+					"documentWidth": 1015,
+					"problems": []
+				},
+				{
+					"width": 1024,
+					"viewport": 1024,
+					"documentWidth": 1016,
+					"problems": []
+				},
+				{
+					"width": 1151,
+					"viewport": 1151,
+					"documentWidth": 1143,
+					"problems": []
+				},
+				{
+					"width": 1152,
+					"viewport": 1152,
+					"documentWidth": 1144,
+					"problems": []
+				},
+				{
+					"width": 1279,
+					"viewport": 1279,
+					"documentWidth": 1271,
+					"problems": []
+				},
+				{
+					"width": 1280,
+					"viewport": 1280,
+					"documentWidth": 1272,
+					"problems": []
+				},
+				{
+					"width": 1439,
+					"viewport": 1439,
+					"documentWidth": 1431,
+					"problems": []
+				},
+				{
+					"width": 1440,
+					"viewport": 1440,
+					"documentWidth": 1432,
+					"problems": []
+				},
+				{
+					"width": 1535,
+					"viewport": 1535,
+					"documentWidth": 1527,
+					"problems": []
+				},
+				{
+					"width": 1536,
+					"viewport": 1536,
+					"documentWidth": 1528,
+					"problems": []
+				},
+				{
+					"width": 1920,
+					"viewport": 1920,
+					"documentWidth": 1912,
+					"problems": []
+				}
+			],
+			"controls": [],
+			"navigation": ["/", "/resources", "/", "/resources"],
+			"status": 200,
+			"destination": "/resources",
+			"title": "Free Trading Resources & Education Tools | RTP",
+			"h1": ["Free Trading Resources"],
+			"mainCount": 1,
+			"links": [
+				"#main-content",
+				"/",
+				"/mentorship",
+				"/our-mission",
+				"/about",
+				"/blog",
+				"/pricing",
+				"/login",
+				"/guides/swing-entry",
+				"/guides/exit-strategies",
+				"/guides/position-sizing",
+				"/guides/risk-management",
+				"/store/scanners",
+				"/tools/options-calculator",
+				"/indicators",
+				"/tutorials",
+				"/classes",
+				"/courses",
+				"/live-trading-rooms",
+				"/resources/etf-stocks-list",
+				"/resources/stock-indexes-list",
+				"/alerts",
+				"/disclaimer",
+				"/team",
+				"/contact",
+				"/register",
+				"https://facebook.com/revolutiontradingpros",
+				"https://twitter.com/revtradingpros",
+				"https://instagram.com/revolutiontradingpros",
+				"https://youtube.com/@RevolutionTradingPros",
+				"/resources",
+				"/careers",
+				"/terms",
+				"/privacy",
+				"/cookie-policy",
+				"/refund"
+			],
+			"forms": [],
+			"motion": [],
+			"axe": [],
+			"largeText": {
+				"viewport": 390,
+				"documentWidth": 382,
+				"problems": []
+			}
+		},
+		{
+			"path": "/resources/etf-stocks-list",
+			"console": [],
+			"exceptions": [],
+			"network": [],
+			"viewports": [
+				{
+					"width": 320,
+					"viewport": 320,
+					"documentWidth": 320,
+					"problems": []
+				},
+				{
+					"width": 390,
+					"viewport": 390,
+					"documentWidth": 382,
+					"problems": []
+				},
+				{
+					"width": 639,
+					"viewport": 639,
+					"documentWidth": 631,
+					"problems": []
+				},
+				{
+					"width": 640,
+					"viewport": 640,
+					"documentWidth": 632,
+					"problems": []
+				},
+				{
+					"width": 767,
+					"viewport": 767,
+					"documentWidth": 759,
+					"problems": []
+				},
+				{
+					"width": 768,
+					"viewport": 768,
+					"documentWidth": 760,
+					"problems": []
+				},
+				{
+					"width": 1023,
+					"viewport": 1023,
+					"documentWidth": 1015,
+					"problems": []
+				},
+				{
+					"width": 1024,
+					"viewport": 1024,
+					"documentWidth": 1016,
+					"problems": []
+				},
+				{
+					"width": 1151,
+					"viewport": 1151,
+					"documentWidth": 1143,
+					"problems": []
+				},
+				{
+					"width": 1152,
+					"viewport": 1152,
+					"documentWidth": 1144,
+					"problems": []
+				},
+				{
+					"width": 1279,
+					"viewport": 1279,
+					"documentWidth": 1271,
+					"problems": []
+				},
+				{
+					"width": 1280,
+					"viewport": 1280,
+					"documentWidth": 1272,
+					"problems": []
+				},
+				{
+					"width": 1439,
+					"viewport": 1439,
+					"documentWidth": 1431,
+					"problems": []
+				},
+				{
+					"width": 1440,
+					"viewport": 1440,
+					"documentWidth": 1432,
+					"problems": []
+				},
+				{
+					"width": 1535,
+					"viewport": 1535,
+					"documentWidth": 1527,
+					"problems": []
+				},
+				{
+					"width": 1536,
+					"viewport": 1536,
+					"documentWidth": 1528,
+					"problems": []
+				},
+				{
+					"width": 1920,
+					"viewport": 1920,
+					"documentWidth": 1912,
+					"problems": []
+				}
+			],
+			"controls": [],
+			"navigation": ["/", "/resources/etf-stocks-list", "/", "/resources/etf-stocks-list"],
+			"status": 200,
+			"destination": "/resources/etf-stocks-list",
+			"title": "ETF & Stocks Master List | Revolution Trading Pros",
+			"h1": ["ETF Stock List"],
+			"mainCount": 1,
+			"links": [
+				"#main-content",
+				"/",
+				"/mentorship",
+				"/our-mission",
+				"/about",
+				"/blog",
+				"/pricing",
+				"/login",
+				"/resources",
+				"/authors/billy-ribeiro",
+				"https://www.sec.gov/investor/alerts/etfs.pdf",
+				"https://www.tradingview.com/symbols/AMEX-SPY/",
+				"https://www.tradingview.com/symbols/AMEX-QQQ/",
+				"https://www.tradingview.com/symbols/AMEX-VTI/",
+				"https://www.tradingview.com/symbols/AMEX-EEM/",
+				"https://www.tradingview.com/symbols/AMEX-IWM/",
+				"https://www.tradingview.com/symbols/AMEX-VEA/",
+				"https://www.tradingview.com/symbols/AMEX-AGG/",
+				"https://www.tradingview.com/symbols/AMEX-VIG/",
+				"https://www.tradingview.com/symbols/AMEX-GLD/",
+				"https://www.tradingview.com/symbols/AMEX-ARKK/",
+				"https://www.tradingview.com/symbols/AMEX-EFA/",
+				"https://www.tradingview.com/symbols/AMEX-SCHB/",
+				"https://www.tradingview.com/symbols/AMEX-XLK/",
+				"https://www.tradingview.com/symbols/AMEX-VGT/",
+				"https://www.tradingview.com/symbols/AMEX-SMH/",
+				"https://www.tradingview.com/symbols/AMEX-SOXX/",
+				"https://www.tradingview.com/symbols/AMEX-PSI/",
+				"https://www.tradingview.com/symbols/AMEX-XLV/",
+				"https://www.tradingview.com/symbols/AMEX-VHT/",
+				"https://www.tradingview.com/symbols/AMEX-IHF/",
+				"https://www.tradingview.com/symbols/AMEX-IBB/",
+				"https://www.tradingview.com/symbols/AMEX-XBI/",
+				"https://www.tradingview.com/symbols/AMEX-BBH/",
+				"https://www.tradingview.com/symbols/AMEX-XLE/",
+				"https://www.tradingview.com/symbols/AMEX-VDE/",
+				"https://www.tradingview.com/symbols/AMEX-IYE/",
+				"https://www.tradingview.com/symbols/AMEX-ICLN/",
+				"https://www.tradingview.com/symbols/AMEX-TAN/",
+				"https://www.tradingview.com/symbols/AMEX-PBW/",
+				"https://www.tradingview.com/symbols/AMEX-XLF/",
+				"https://www.tradingview.com/symbols/AMEX-VFH/",
+				"https://www.tradingview.com/symbols/AMEX-IYF/",
+				"https://www.tradingview.com/symbols/AMEX-KRE/",
+				"https://www.tradingview.com/symbols/AMEX-KBE/",
+				"https://www.tradingview.com/symbols/AMEX-XLB/",
+				"https://www.tradingview.com/symbols/AMEX-VAW/",
+				"https://www.tradingview.com/symbols/AMEX-IYM/",
+				"https://www.tradingview.com/symbols/AMEX-XME/",
+				"https://www.tradingview.com/symbols/AMEX-PICK/",
+				"https://www.tradingview.com/symbols/AMEX-GDX/",
+				"https://www.tradingview.com/symbols/AMEX-XLU/",
+				"https://www.tradingview.com/symbols/AMEX-VPU/",
+				"https://www.tradingview.com/symbols/AMEX-IDU/",
+				"https://www.tradingview.com/symbols/AMEX-XLI/",
+				"https://www.tradingview.com/symbols/AMEX-VIS/",
+				"https://www.tradingview.com/symbols/AMEX-IYJ/",
+				"https://www.tradingview.com/symbols/AMEX-ITA/",
+				"https://www.tradingview.com/symbols/AMEX-XAR/",
+				"https://www.tradingview.com/symbols/AMEX-PPA/",
+				"https://www.tradingview.com/symbols/AMEX-XLP/",
+				"https://www.tradingview.com/symbols/AMEX-VDC/",
+				"https://www.tradingview.com/symbols/AMEX-KXI/",
+				"https://www.tradingview.com/symbols/AMEX-XLY/",
+				"https://www.tradingview.com/symbols/AMEX-VCR/",
+				"https://www.tradingview.com/symbols/AMEX-IYC/",
+				"https://www.tradingview.com/symbols/AMEX-ITB/",
+				"/live-trading-rooms",
+				"/resources/stock-indexes-list",
+				"https://facebook.com/revolutiontradingpros",
+				"https://twitter.com/revtradingpros",
+				"https://instagram.com/revolutiontradingpros",
+				"https://youtube.com/@RevolutionTradingPros",
+				"/alerts",
+				"/courses",
+				"/classes",
+				"/indicators",
+				"/store/scanners",
+				"/tools/options-calculator",
+				"/team",
+				"/tutorials",
+				"/contact",
+				"/careers",
+				"/terms",
+				"/privacy",
+				"/cookie-policy",
+				"/disclaimer",
+				"/refund"
+			],
+			"forms": [],
+			"motion": [],
+			"axe": [],
+			"largeText": {
+				"viewport": 390,
+				"documentWidth": 382,
+				"problems": []
+			}
+		},
+		{
+			"path": "/store/scanners",
+			"console": [],
+			"exceptions": [],
+			"network": [],
+			"viewports": [
+				{
+					"width": 320,
+					"viewport": 320,
+					"documentWidth": 320,
+					"problems": []
+				},
+				{
+					"width": 390,
+					"viewport": 390,
+					"documentWidth": 382,
+					"problems": []
+				},
+				{
+					"width": 639,
+					"viewport": 639,
+					"documentWidth": 631,
+					"problems": []
+				},
+				{
+					"width": 640,
+					"viewport": 640,
+					"documentWidth": 632,
+					"problems": []
+				},
+				{
+					"width": 767,
+					"viewport": 767,
+					"documentWidth": 759,
+					"problems": []
+				},
+				{
+					"width": 768,
+					"viewport": 768,
+					"documentWidth": 760,
+					"problems": []
+				},
+				{
+					"width": 1023,
+					"viewport": 1023,
+					"documentWidth": 1015,
+					"problems": []
+				},
+				{
+					"width": 1024,
+					"viewport": 1024,
+					"documentWidth": 1016,
+					"problems": []
+				},
+				{
+					"width": 1151,
+					"viewport": 1151,
+					"documentWidth": 1143,
+					"problems": []
+				},
+				{
+					"width": 1152,
+					"viewport": 1152,
+					"documentWidth": 1144,
+					"problems": []
+				},
+				{
+					"width": 1279,
+					"viewport": 1279,
+					"documentWidth": 1271,
+					"problems": []
+				},
+				{
+					"width": 1280,
+					"viewport": 1280,
+					"documentWidth": 1272,
+					"problems": []
+				},
+				{
+					"width": 1439,
+					"viewport": 1439,
+					"documentWidth": 1431,
+					"problems": []
+				},
+				{
+					"width": 1440,
+					"viewport": 1440,
+					"documentWidth": 1432,
+					"problems": []
+				},
+				{
+					"width": 1535,
+					"viewport": 1535,
+					"documentWidth": 1527,
+					"problems": []
+				},
+				{
+					"width": 1536,
+					"viewport": 1536,
+					"documentWidth": 1528,
+					"problems": []
+				},
+				{
+					"width": 1920,
+					"viewport": 1920,
+					"documentWidth": 1912,
+					"problems": []
+				}
+			],
+			"controls": [],
+			"navigation": ["/", "/store/scanners", "/", "/store/scanners"],
+			"status": 200,
+			"destination": "/store/scanners",
+			"title": "Trading Scanners \u2014 Options & Stock Tools | RTP",
+			"h1": ["Trading Scanners"],
+			"mainCount": 1,
+			"links": [
+				"#main-content",
+				"/",
+				"/mentorship",
+				"/our-mission",
+				"/about",
+				"/blog",
+				"/pricing",
+				"/login",
+				"/store/scanners/high-octane-scanner",
+				"https://facebook.com/revolutiontradingpros",
+				"https://twitter.com/revtradingpros",
+				"https://instagram.com/revolutiontradingpros",
+				"https://youtube.com/@RevolutionTradingPros",
+				"/live-trading-rooms",
+				"/alerts",
+				"/courses",
+				"/classes",
+				"/indicators",
+				"/store/scanners",
+				"/tools/options-calculator",
+				"/team",
+				"/resources",
+				"/tutorials",
+				"/contact",
+				"/careers",
+				"/terms",
+				"/privacy",
+				"/cookie-policy",
+				"/disclaimer",
+				"/refund"
+			],
+			"forms": [],
+			"motion": [],
+			"axe": [],
+			"largeText": {
+				"viewport": 390,
+				"documentWidth": 382,
+				"problems": []
+			}
+		},
+		{
+			"path": "/resources/stock-indexes-list",
+			"console": [],
+			"exceptions": [],
+			"network": [],
+			"viewports": [
+				{
+					"width": 320,
+					"viewport": 320,
+					"documentWidth": 320,
+					"problems": []
+				},
+				{
+					"width": 390,
+					"viewport": 390,
+					"documentWidth": 382,
+					"problems": []
+				},
+				{
+					"width": 639,
+					"viewport": 639,
+					"documentWidth": 631,
+					"problems": []
+				},
+				{
+					"width": 640,
+					"viewport": 640,
+					"documentWidth": 632,
+					"problems": []
+				},
+				{
+					"width": 767,
+					"viewport": 767,
+					"documentWidth": 759,
+					"problems": []
+				},
+				{
+					"width": 768,
+					"viewport": 768,
+					"documentWidth": 760,
+					"problems": []
+				},
+				{
+					"width": 1023,
+					"viewport": 1023,
+					"documentWidth": 1015,
+					"problems": []
+				},
+				{
+					"width": 1024,
+					"viewport": 1024,
+					"documentWidth": 1016,
+					"problems": []
+				},
+				{
+					"width": 1151,
+					"viewport": 1151,
+					"documentWidth": 1143,
+					"problems": []
+				},
+				{
+					"width": 1152,
+					"viewport": 1152,
+					"documentWidth": 1144,
+					"problems": []
+				},
+				{
+					"width": 1279,
+					"viewport": 1279,
+					"documentWidth": 1271,
+					"problems": []
+				},
+				{
+					"width": 1280,
+					"viewport": 1280,
+					"documentWidth": 1272,
+					"problems": []
+				},
+				{
+					"width": 1439,
+					"viewport": 1439,
+					"documentWidth": 1431,
+					"problems": []
+				},
+				{
+					"width": 1440,
+					"viewport": 1440,
+					"documentWidth": 1432,
+					"problems": []
+				},
+				{
+					"width": 1535,
+					"viewport": 1535,
+					"documentWidth": 1527,
+					"problems": []
+				},
+				{
+					"width": 1536,
+					"viewport": 1536,
+					"documentWidth": 1528,
+					"problems": []
+				},
+				{
+					"width": 1920,
+					"viewport": 1920,
+					"documentWidth": 1912,
+					"problems": []
+				}
+			],
+			"controls": [],
+			"navigation": ["/", "/resources/stock-indexes-list", "/", "/resources/stock-indexes-list"],
+			"status": 200,
+			"destination": "/resources/stock-indexes-list",
+			"title": "Major U.S. Stock Indexes Guide | Revolution Trading Pros",
+			"h1": ["Stock Indexes List"],
+			"mainCount": 1,
+			"links": [
+				"#main-content",
+				"/",
+				"/mentorship",
+				"/our-mission",
+				"/about",
+				"/blog",
+				"/pricing",
+				"/login",
+				"/resources",
+				"/authors/billy-ribeiro",
+				"https://www.cboe.com/tradable_products/sp_500/",
+				"https://www.tradingview.com/symbols/AMEX-SPY/",
+				"https://www.tradingview.com/symbols/AMEX-VOO/",
+				"https://www.tradingview.com/symbols/AMEX-IVV/",
+				"https://www.tradingview.com/symbols/AMEX-DIA/",
+				"https://www.tradingview.com/symbols/AMEX-QQQ/",
+				"https://www.tradingview.com/symbols/AMEX-ONEQ/",
+				"https://www.tradingview.com/symbols/AMEX-QQQM/",
+				"https://www.tradingview.com/symbols/AMEX-IWM/",
+				"https://www.tradingview.com/symbols/AMEX-VTWO/",
+				"https://www.tradingview.com/symbols/AMEX-VXX/",
+				"https://www.tradingview.com/symbols/AMEX-UVXY/",
+				"https://www.tradingview.com/symbols/AMEX-ISF/",
+				"https://www.tradingview.com/symbols/AMEX-VUKE/",
+				"https://www.tradingview.com/symbols/AMEX-EWG/",
+				"https://www.tradingview.com/symbols/AMEX-DAX/",
+				"https://www.tradingview.com/symbols/AMEX-EWJ/",
+				"https://www.tradingview.com/symbols/AMEX-DXJ/",
+				"https://www.tradingview.com/symbols/AMEX-EWH/",
+				"https://www.tradingview.com/symbols/AMEX-FXI/",
+				"/live-trading-rooms",
+				"/resources/etf-stocks-list",
+				"https://facebook.com/revolutiontradingpros",
+				"https://twitter.com/revtradingpros",
+				"https://instagram.com/revolutiontradingpros",
+				"https://youtube.com/@RevolutionTradingPros",
+				"/alerts",
+				"/courses",
+				"/classes",
+				"/indicators",
+				"/store/scanners",
+				"/tools/options-calculator",
+				"/team",
+				"/tutorials",
+				"/contact",
+				"/careers",
+				"/terms",
+				"/privacy",
+				"/cookie-policy",
+				"/disclaimer",
+				"/refund"
+			],
+			"forms": [],
+			"motion": [],
+			"axe": [],
+			"largeText": {
+				"viewport": 390,
+				"documentWidth": 382,
+				"problems": []
+			}
+		},
+		{
+			"path": "/store/scanners/high-octane-scanner",
+			"console": [],
+			"exceptions": [],
+			"network": [],
+			"viewports": [
+				{
+					"width": 320,
+					"viewport": 320,
+					"documentWidth": 320,
+					"problems": []
+				},
+				{
+					"width": 390,
+					"viewport": 390,
+					"documentWidth": 382,
+					"problems": []
+				},
+				{
+					"width": 639,
+					"viewport": 639,
+					"documentWidth": 631,
+					"problems": []
+				},
+				{
+					"width": 640,
+					"viewport": 640,
+					"documentWidth": 632,
+					"problems": []
+				},
+				{
+					"width": 767,
+					"viewport": 767,
+					"documentWidth": 759,
+					"problems": []
+				},
+				{
+					"width": 768,
+					"viewport": 768,
+					"documentWidth": 760,
+					"problems": []
+				},
+				{
+					"width": 1023,
+					"viewport": 1023,
+					"documentWidth": 1015,
+					"problems": []
+				},
+				{
+					"width": 1024,
+					"viewport": 1024,
+					"documentWidth": 1016,
+					"problems": []
+				},
+				{
+					"width": 1151,
+					"viewport": 1151,
+					"documentWidth": 1143,
+					"problems": []
+				},
+				{
+					"width": 1152,
+					"viewport": 1152,
+					"documentWidth": 1144,
+					"problems": []
+				},
+				{
+					"width": 1279,
+					"viewport": 1279,
+					"documentWidth": 1271,
+					"problems": []
+				},
+				{
+					"width": 1280,
+					"viewport": 1280,
+					"documentWidth": 1272,
+					"problems": []
+				},
+				{
+					"width": 1439,
+					"viewport": 1439,
+					"documentWidth": 1431,
+					"problems": []
+				},
+				{
+					"width": 1440,
+					"viewport": 1440,
+					"documentWidth": 1432,
+					"problems": []
+				},
+				{
+					"width": 1535,
+					"viewport": 1535,
+					"documentWidth": 1527,
+					"problems": []
+				},
+				{
+					"width": 1536,
+					"viewport": 1536,
+					"documentWidth": 1528,
+					"problems": []
+				},
+				{
+					"width": 1920,
+					"viewport": 1920,
+					"documentWidth": 1912,
+					"problems": []
+				}
+			],
+			"controls": [],
+			"navigation": [
+				"/",
+				"/store/scanners/high-octane-scanner",
+				"/",
+				"/store/scanners/high-octane-scanner"
+			],
+			"status": 200,
+			"destination": "/store/scanners/high-octane-scanner",
+			"title": "High Octane Scanner \u2014 Real-Time Options | RTP",
+			"h1": ["High Octane Scanner"],
+			"mainCount": 1,
+			"links": [
+				"#main-content",
+				"/",
+				"/mentorship",
+				"/our-mission",
+				"/about",
+				"/blog",
+				"/pricing",
+				"/login",
+				"/store/scanners",
+				"https://facebook.com/revolutiontradingpros",
+				"https://twitter.com/revtradingpros",
+				"https://instagram.com/revolutiontradingpros",
+				"https://youtube.com/@RevolutionTradingPros",
+				"/live-trading-rooms",
+				"/alerts",
+				"/courses",
+				"/classes",
+				"/indicators",
+				"/tools/options-calculator",
+				"/team",
+				"/resources",
+				"/tutorials",
+				"/contact",
+				"/careers",
+				"/terms",
+				"/privacy",
+				"/cookie-policy",
+				"/disclaimer",
+				"/refund"
+			],
+			"forms": [],
+			"motion": [],
+			"axe": [],
+			"largeText": {
+				"viewport": 390,
+				"documentWidth": 382,
+				"problems": []
+			}
+		},
+		{
+			"path": "/team",
+			"console": [],
+			"exceptions": [],
+			"network": [],
+			"viewports": [
+				{
+					"width": 320,
+					"viewport": 320,
+					"documentWidth": 320,
+					"problems": []
+				},
+				{
+					"width": 390,
+					"viewport": 390,
+					"documentWidth": 382,
+					"problems": []
+				},
+				{
+					"width": 639,
+					"viewport": 639,
+					"documentWidth": 631,
+					"problems": []
+				},
+				{
+					"width": 640,
+					"viewport": 640,
+					"documentWidth": 632,
+					"problems": []
+				},
+				{
+					"width": 767,
+					"viewport": 767,
+					"documentWidth": 759,
+					"problems": []
+				},
+				{
+					"width": 768,
+					"viewport": 768,
+					"documentWidth": 760,
+					"problems": []
+				},
+				{
+					"width": 1023,
+					"viewport": 1023,
+					"documentWidth": 1015,
+					"problems": []
+				},
+				{
+					"width": 1024,
+					"viewport": 1024,
+					"documentWidth": 1016,
+					"problems": []
+				},
+				{
+					"width": 1151,
+					"viewport": 1151,
+					"documentWidth": 1143,
+					"problems": []
+				},
+				{
+					"width": 1152,
+					"viewport": 1152,
+					"documentWidth": 1144,
+					"problems": []
+				},
+				{
+					"width": 1279,
+					"viewport": 1279,
+					"documentWidth": 1271,
+					"problems": []
+				},
+				{
+					"width": 1280,
+					"viewport": 1280,
+					"documentWidth": 1272,
+					"problems": []
+				},
+				{
+					"width": 1439,
+					"viewport": 1439,
+					"documentWidth": 1431,
+					"problems": []
+				},
+				{
+					"width": 1440,
+					"viewport": 1440,
+					"documentWidth": 1432,
+					"problems": []
+				},
+				{
+					"width": 1535,
+					"viewport": 1535,
+					"documentWidth": 1527,
+					"problems": []
+				},
+				{
+					"width": 1536,
+					"viewport": 1536,
+					"documentWidth": 1528,
+					"problems": []
+				},
+				{
+					"width": 1920,
+					"viewport": 1920,
+					"documentWidth": 1912,
+					"problems": []
+				}
+			],
+			"controls": [],
+			"navigation": ["/", "/team", "/", "/team"],
+			"status": 200,
+			"destination": "/team",
+			"title": "The Revolution Trading Pros Team | Revolution Trading Pros",
+			"h1": ["The Team"],
+			"mainCount": 1,
+			"links": [
+				"#main-content",
+				"/",
+				"/mentorship",
+				"/our-mission",
+				"/about",
+				"/blog",
+				"/pricing",
+				"/login",
+				"/authors/billy-ribeiro",
+				"/authors/freddie-ferber",
+				"/authors/shao-wen",
+				"https://facebook.com/revolutiontradingpros",
+				"https://twitter.com/revtradingpros",
+				"https://instagram.com/revolutiontradingpros",
+				"https://youtube.com/@RevolutionTradingPros",
+				"/live-trading-rooms",
+				"/alerts",
+				"/courses",
+				"/classes",
+				"/indicators",
+				"/store/scanners",
+				"/tools/options-calculator",
+				"/team",
+				"/resources",
+				"/tutorials",
+				"/contact",
+				"/careers",
+				"/terms",
+				"/privacy",
+				"/cookie-policy",
+				"/disclaimer",
+				"/refund"
+			],
+			"forms": [],
+			"motion": [],
+			"axe": [],
+			"largeText": {
+				"viewport": 390,
+				"documentWidth": 382,
+				"problems": []
+			}
+		},
+		{
+			"path": "/terms",
+			"console": [],
+			"exceptions": [],
+			"network": [],
+			"viewports": [
+				{
+					"width": 320,
+					"viewport": 320,
+					"documentWidth": 320,
+					"problems": []
+				},
+				{
+					"width": 390,
+					"viewport": 390,
+					"documentWidth": 382,
+					"problems": []
+				},
+				{
+					"width": 639,
+					"viewport": 639,
+					"documentWidth": 631,
+					"problems": []
+				},
+				{
+					"width": 640,
+					"viewport": 640,
+					"documentWidth": 632,
+					"problems": []
+				},
+				{
+					"width": 767,
+					"viewport": 767,
+					"documentWidth": 759,
+					"problems": []
+				},
+				{
+					"width": 768,
+					"viewport": 768,
+					"documentWidth": 760,
+					"problems": []
+				},
+				{
+					"width": 1023,
+					"viewport": 1023,
+					"documentWidth": 1015,
+					"problems": []
+				},
+				{
+					"width": 1024,
+					"viewport": 1024,
+					"documentWidth": 1016,
+					"problems": []
+				},
+				{
+					"width": 1151,
+					"viewport": 1151,
+					"documentWidth": 1143,
+					"problems": []
+				},
+				{
+					"width": 1152,
+					"viewport": 1152,
+					"documentWidth": 1144,
+					"problems": []
+				},
+				{
+					"width": 1279,
+					"viewport": 1279,
+					"documentWidth": 1271,
+					"problems": []
+				},
+				{
+					"width": 1280,
+					"viewport": 1280,
+					"documentWidth": 1272,
+					"problems": []
+				},
+				{
+					"width": 1439,
+					"viewport": 1439,
+					"documentWidth": 1431,
+					"problems": []
+				},
+				{
+					"width": 1440,
+					"viewport": 1440,
+					"documentWidth": 1432,
+					"problems": []
+				},
+				{
+					"width": 1535,
+					"viewport": 1535,
+					"documentWidth": 1527,
+					"problems": []
+				},
+				{
+					"width": 1536,
+					"viewport": 1536,
+					"documentWidth": 1528,
+					"problems": []
+				},
+				{
+					"width": 1920,
+					"viewport": 1920,
+					"documentWidth": 1912,
+					"problems": []
+				}
+			],
+			"controls": [],
+			"navigation": ["/", "/terms", "/", "/terms"],
+			"status": 200,
+			"destination": "/terms",
+			"title": "Terms of Service | Revolution Trading Pros",
+			"h1": ["Terms of Service"],
+			"mainCount": 1,
+			"links": [
+				"#main-content",
+				"/",
+				"/mentorship",
+				"/our-mission",
+				"/about",
+				"/blog",
+				"/pricing",
+				"/login",
+				"https://facebook.com/revolutiontradingpros",
+				"https://twitter.com/revtradingpros",
+				"https://instagram.com/revolutiontradingpros",
+				"https://youtube.com/@RevolutionTradingPros",
+				"/live-trading-rooms",
+				"/alerts",
+				"/courses",
+				"/classes",
+				"/indicators",
+				"/store/scanners",
+				"/tools/options-calculator",
+				"/team",
+				"/resources",
+				"/tutorials",
+				"/contact",
+				"/careers",
+				"/terms",
+				"/privacy",
+				"/cookie-policy",
+				"/disclaimer",
+				"/refund"
+			],
+			"forms": [],
+			"motion": [],
+			"axe": [],
+			"largeText": {
+				"viewport": 390,
+				"documentWidth": 382,
+				"problems": []
+			}
+		},
+		{
+			"path": "/tools/options-calculator/shared",
+			"console": [],
+			"exceptions": [],
+			"network": [],
+			"viewports": [
+				{
+					"width": 320,
+					"viewport": 320,
+					"documentWidth": 320,
+					"problems": []
+				},
+				{
+					"width": 390,
+					"viewport": 390,
+					"documentWidth": 382,
+					"problems": []
+				},
+				{
+					"width": 639,
+					"viewport": 639,
+					"documentWidth": 631,
+					"problems": []
+				},
+				{
+					"width": 640,
+					"viewport": 640,
+					"documentWidth": 632,
+					"problems": []
+				},
+				{
+					"width": 767,
+					"viewport": 767,
+					"documentWidth": 759,
+					"problems": []
+				},
+				{
+					"width": 768,
+					"viewport": 768,
+					"documentWidth": 760,
+					"problems": []
+				},
+				{
+					"width": 1023,
+					"viewport": 1023,
+					"documentWidth": 1015,
+					"problems": []
+				},
+				{
+					"width": 1024,
+					"viewport": 1024,
+					"documentWidth": 1016,
+					"problems": []
+				},
+				{
+					"width": 1151,
+					"viewport": 1151,
+					"documentWidth": 1143,
+					"problems": []
+				},
+				{
+					"width": 1152,
+					"viewport": 1152,
+					"documentWidth": 1144,
+					"problems": []
+				},
+				{
+					"width": 1279,
+					"viewport": 1279,
+					"documentWidth": 1271,
+					"problems": []
+				},
+				{
+					"width": 1280,
+					"viewport": 1280,
+					"documentWidth": 1272,
+					"problems": []
+				},
+				{
+					"width": 1439,
+					"viewport": 1439,
+					"documentWidth": 1431,
+					"problems": []
+				},
+				{
+					"width": 1440,
+					"viewport": 1440,
+					"documentWidth": 1432,
+					"problems": []
+				},
+				{
+					"width": 1535,
+					"viewport": 1535,
+					"documentWidth": 1527,
+					"problems": []
+				},
+				{
+					"width": 1536,
+					"viewport": 1536,
+					"documentWidth": 1528,
+					"problems": []
+				},
+				{
+					"width": 1920,
+					"viewport": 1920,
+					"documentWidth": 1912,
+					"problems": []
+				}
+			],
+			"controls": [
+				{
+					"type": "expanded",
+					"name": "Data source:\nNo Data",
+					"before": "false",
+					"after": "true"
+				},
+				{
+					"type": "expanded",
+					"name": "Export",
+					"before": "false",
+					"after": "true"
+				},
+				{
+					"type": "expanded",
+					"name": "Show Parameters",
+					"before": "true",
+					"after": "false"
+				},
+				{
+					"type": "expanded",
+					"name": "Hide Second-Order Greeks",
+					"before": "false",
+					"after": "true"
+				}
+			],
+			"navigation": [],
+			"status": 200,
+			"destination": "/tools/options-calculator/shared",
+			"title": "Shared Options Analysis | Revolution Trading Pros",
+			"h1": ["Black-Scholes Calculator"],
+			"mainCount": 1,
+			"links": [
+				"#main-content",
+				"/",
+				"/mentorship",
+				"/our-mission",
+				"/about",
+				"/blog",
+				"/pricing",
+				"/login",
+				"/tools/options-calculator",
+				"https://revolutiontradingpros.com",
+				"https://facebook.com/revolutiontradingpros",
+				"https://twitter.com/revtradingpros",
+				"https://instagram.com/revolutiontradingpros",
+				"https://youtube.com/@RevolutionTradingPros",
+				"/live-trading-rooms",
+				"/alerts",
+				"/courses",
+				"/classes",
+				"/indicators",
+				"/store/scanners",
+				"/team",
+				"/resources",
+				"/tutorials",
+				"/contact",
+				"/careers",
+				"/terms",
+				"/privacy",
+				"/cookie-policy",
+				"/disclaimer",
+				"/refund"
+			],
+			"forms": [],
+			"motion": [],
+			"axe": [],
+			"largeText": {
+				"viewport": 390,
+				"documentWidth": 382,
+				"problems": []
+			}
+		},
+		{
+			"path": "/tutorials",
+			"console": [],
+			"exceptions": [],
+			"network": [],
+			"viewports": [
+				{
+					"width": 320,
+					"viewport": 320,
+					"documentWidth": 320,
+					"problems": []
+				},
+				{
+					"width": 390,
+					"viewport": 390,
+					"documentWidth": 382,
+					"problems": []
+				},
+				{
+					"width": 639,
+					"viewport": 639,
+					"documentWidth": 631,
+					"problems": []
+				},
+				{
+					"width": 640,
+					"viewport": 640,
+					"documentWidth": 632,
+					"problems": []
+				},
+				{
+					"width": 767,
+					"viewport": 767,
+					"documentWidth": 759,
+					"problems": []
+				},
+				{
+					"width": 768,
+					"viewport": 768,
+					"documentWidth": 760,
+					"problems": []
+				},
+				{
+					"width": 1023,
+					"viewport": 1023,
+					"documentWidth": 1015,
+					"problems": []
+				},
+				{
+					"width": 1024,
+					"viewport": 1024,
+					"documentWidth": 1016,
+					"problems": []
+				},
+				{
+					"width": 1151,
+					"viewport": 1151,
+					"documentWidth": 1143,
+					"problems": []
+				},
+				{
+					"width": 1152,
+					"viewport": 1152,
+					"documentWidth": 1144,
+					"problems": []
+				},
+				{
+					"width": 1279,
+					"viewport": 1279,
+					"documentWidth": 1271,
+					"problems": []
+				},
+				{
+					"width": 1280,
+					"viewport": 1280,
+					"documentWidth": 1272,
+					"problems": []
+				},
+				{
+					"width": 1439,
+					"viewport": 1439,
+					"documentWidth": 1431,
+					"problems": []
+				},
+				{
+					"width": 1440,
+					"viewport": 1440,
+					"documentWidth": 1432,
+					"problems": []
+				},
+				{
+					"width": 1535,
+					"viewport": 1535,
+					"documentWidth": 1527,
+					"problems": []
+				},
+				{
+					"width": 1536,
+					"viewport": 1536,
+					"documentWidth": 1528,
+					"problems": []
+				},
+				{
+					"width": 1920,
+					"viewport": 1920,
+					"documentWidth": 1912,
+					"problems": []
+				}
+			],
+			"controls": [],
+			"navigation": ["/", "/tutorials", "/", "/tutorials"],
+			"status": 200,
+			"destination": "/tutorials",
+			"title": "Trading Tutorials \u2014 Public Video Library | RTP",
+			"h1": ["Trading Tutorials"],
+			"mainCount": 1,
+			"links": [
+				"#main-content",
+				"/",
+				"/mentorship",
+				"/our-mission",
+				"/about",
+				"/blog",
+				"/pricing",
+				"/login",
+				"https://facebook.com/revolutiontradingpros",
+				"https://twitter.com/revtradingpros",
+				"https://instagram.com/revolutiontradingpros",
+				"https://youtube.com/@RevolutionTradingPros",
+				"/live-trading-rooms",
+				"/alerts",
+				"/courses",
+				"/classes",
+				"/indicators",
+				"/store/scanners",
+				"/tools/options-calculator",
+				"/team",
+				"/resources",
+				"/tutorials",
+				"/contact",
+				"/careers",
+				"/terms",
+				"/privacy",
+				"/cookie-policy",
+				"/disclaimer",
+				"/refund"
+			],
+			"forms": [],
+			"motion": [],
+			"axe": [],
+			"largeText": {
+				"viewport": 390,
+				"documentWidth": 382,
+				"problems": []
+			}
+		},
+		{
+			"path": "/tools/options-calculator",
+			"console": [
+				{
+					"type": "warning",
+					"text": "[.WebGL-0x1243488ee00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+					"location": {
+						"url": "http://127.0.0.1:4185/tools/options-calculator",
+						"line": 0,
+						"column": 0,
+						"lineNumber": 0,
+						"columnNumber": 0
+					}
+				},
+				{
+					"type": "warning",
+					"text": "[.WebGL-0x1243488ee00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+					"location": {
+						"url": "http://127.0.0.1:4185/tools/options-calculator",
+						"line": 0,
+						"column": 0,
+						"lineNumber": 0,
+						"columnNumber": 0
+					}
+				},
+				{
+					"type": "warning",
+					"text": "[.WebGL-0x1243488ee00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+					"location": {
+						"url": "http://127.0.0.1:4185/tools/options-calculator",
+						"line": 0,
+						"column": 0,
+						"lineNumber": 0,
+						"columnNumber": 0
+					}
+				},
+				{
+					"type": "warning",
+					"text": "[.WebGL-0x1243488ee00]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)",
+					"location": {
+						"url": "http://127.0.0.1:4185/tools/options-calculator",
+						"line": 0,
+						"column": 0,
+						"lineNumber": 0,
+						"columnNumber": 0
+					}
+				}
+			],
+			"exceptions": [],
+			"network": [],
+			"viewports": [
+				{
+					"width": 320,
+					"viewport": 320,
+					"documentWidth": 320,
+					"problems": []
+				},
+				{
+					"width": 390,
+					"viewport": 390,
+					"documentWidth": 382,
+					"problems": []
+				},
+				{
+					"width": 639,
+					"viewport": 639,
+					"documentWidth": 631,
+					"problems": []
+				},
+				{
+					"width": 640,
+					"viewport": 640,
+					"documentWidth": 632,
+					"problems": []
+				},
+				{
+					"width": 767,
+					"viewport": 767,
+					"documentWidth": 759,
+					"problems": []
+				},
+				{
+					"width": 768,
+					"viewport": 768,
+					"documentWidth": 760,
+					"problems": []
+				},
+				{
+					"width": 1023,
+					"viewport": 1023,
+					"documentWidth": 1015,
+					"problems": []
+				},
+				{
+					"width": 1024,
+					"viewport": 1024,
+					"documentWidth": 1016,
+					"problems": []
+				},
+				{
+					"width": 1151,
+					"viewport": 1151,
+					"documentWidth": 1143,
+					"problems": []
+				},
+				{
+					"width": 1152,
+					"viewport": 1152,
+					"documentWidth": 1144,
+					"problems": []
+				},
+				{
+					"width": 1279,
+					"viewport": 1279,
+					"documentWidth": 1271,
+					"problems": []
+				},
+				{
+					"width": 1280,
+					"viewport": 1280,
+					"documentWidth": 1272,
+					"problems": []
+				},
+				{
+					"width": 1439,
+					"viewport": 1439,
+					"documentWidth": 1431,
+					"problems": []
+				},
+				{
+					"width": 1440,
+					"viewport": 1440,
+					"documentWidth": 1432,
+					"problems": []
+				},
+				{
+					"width": 1535,
+					"viewport": 1535,
+					"documentWidth": 1527,
+					"problems": []
+				},
+				{
+					"width": 1536,
+					"viewport": 1536,
+					"documentWidth": 1528,
+					"problems": []
+				},
+				{
+					"width": 1920,
+					"viewport": 1920,
+					"documentWidth": 1912,
+					"problems": []
+				}
+			],
+			"controls": [
+				{
+					"type": "expanded",
+					"name": "Data source:\nNo Data",
+					"before": "false",
+					"after": "true"
+				},
+				{
+					"type": "expanded",
+					"name": "Export",
+					"before": "false",
+					"after": "true"
+				},
+				{
+					"type": "expanded",
+					"name": "Show Parameters",
+					"before": "true",
+					"after": "false"
+				},
+				{
+					"type": "expanded",
+					"name": "Hide Second-Order Greeks",
+					"before": "false",
+					"after": "true"
+				}
+			],
+			"navigation": ["/", "/tools/options-calculator", "/", "/tools/options-calculator"],
+			"status": 200,
+			"destination": "/tools/options-calculator",
+			"title": "Black-Scholes Options Calculator | Revolution Trading Pros",
+			"h1": ["Black-Scholes Options Calculator"],
+			"mainCount": 1,
+			"links": [
+				"#main-content",
+				"/",
+				"/mentorship",
+				"/our-mission",
+				"/about",
+				"/blog",
+				"/pricing",
+				"/login",
+				"/resources",
+				"#calculator",
+				"https://revolutiontradingpros.com",
+				"https://facebook.com/revolutiontradingpros",
+				"https://twitter.com/revtradingpros",
+				"https://instagram.com/revolutiontradingpros",
+				"https://youtube.com/@RevolutionTradingPros",
+				"/live-trading-rooms",
+				"/alerts",
+				"/courses",
+				"/classes",
+				"/indicators",
+				"/store/scanners",
+				"/tools/options-calculator",
+				"/team",
+				"/tutorials",
+				"/contact",
+				"/careers",
+				"/terms",
+				"/privacy",
+				"/cookie-policy",
+				"/disclaimer",
+				"/refund"
+			],
+			"forms": [],
+			"motion": [],
+			"axe": [],
+			"largeText": {
+				"viewport": 390,
+				"documentWidth": 382,
+				"problems": []
+			}
+		}
+	],
+	"discovered": [],
+	"rechecks": [
+		{
+			"label": "class-final",
+			"paths": ["/classes/tax-loss-harvest-c", "/classes/quickstart-precision-trading-c"],
+			"reason": "Final media hydration and anonymous download heading contrast repairs"
+		}
+	]
+}

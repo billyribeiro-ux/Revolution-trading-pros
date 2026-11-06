@@ -1,19 +1,10 @@
-<script lang="ts">
-	// Contact page scaffold. Verified email / phone / address must be supplied by
-	// the user before this ships. The placeholder `support@` email below is also
-	// referenced in +page.ts JSON-LD — update both.
-</script>
-
 <article class="contact-page">
 	<h1>Contact Us</h1>
 	<p class="lead">Reach the Revolution Trading Pros team.</p>
 
 	<section class="contact-block">
 		<h2>Support</h2>
-		<p>
-			<strong>TODO — human copy.</strong> Replace this placeholder with verified support email, response-time
-			expectations, and (optionally) a contact form or Discord link.
-		</p>
+		<p>For help with your membership, courses, or trading tools, email our team.</p>
 		<p>
 			Email:
 			<a href="mailto:support@revolutiontradingpros.com"> support@revolutiontradingpros.com </a>
@@ -23,7 +14,8 @@
 	<section class="contact-block">
 		<h2>Sales &amp; Partnerships</h2>
 		<p>
-			<strong>TODO — human copy.</strong> Replace with verified sales / partnership contact channel.
+			For membership questions, sales, or partnership inquiries, email
+			<a href="mailto:support@revolutiontradingpros.com">support@revolutiontradingpros.com</a>.
 		</p>
 	</section>
 </article>

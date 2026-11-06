@@ -17,6 +17,7 @@ export const load: PageLoad = ({ data, url }) => {
 		description:
 			'Expert trading insights, tutorials, and market analysis from Revolution Trading Pros. Learn day trading, swing trading, options strategies, and more.',
 		canonical: canonicalUrl,
+		robots: { index: !data.postsUnavailable, follow: true },
 		jsonld: [
 			buildBreadcrumb([
 				{ name: 'Home', url: `${SITE}/` },
@@ -43,6 +44,7 @@ export const load: PageLoad = ({ data, url }) => {
 
 	return {
 		posts: data?.posts ?? [],
+		postsUnavailable: data.postsUnavailable,
 		pagination: data?.pagination ?? {
 			currentPage: pageNum,
 			lastPage: 1,

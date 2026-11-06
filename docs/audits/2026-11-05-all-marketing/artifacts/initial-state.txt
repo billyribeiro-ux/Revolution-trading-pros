@@ -1,0 +1,11 @@
+ M CHANGELOG.md
+ M docs/audits/README.md
+ M frontend/src/routes/about/+page.svelte
+ M frontend/src/routes/alerts/explosive-swings/+page.svelte
+ M frontend/src/routes/alerts/explosive-swings/_sections/PricingSection.svelte
+ M frontend/vite.config.ts
+?? docs/audits/2026-11-05-all-marketing/
+?? docs/audits/2026-11-05-marketing-pages/
+?? frontend/tests/marketing-pages.spec.ts
+
+HEAD 5fbdb06c6e15501280df4b95e2c3e855f743048f

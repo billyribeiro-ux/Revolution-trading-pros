@@ -1,8 +1,7 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import { slide } from 'svelte/transition';
+	import { scrollReveal } from '#lib/animations/scroll-reveal.js';
+	import { motionSlide as slide } from '#lib/animations/motion.js';
 	import { cubicOut } from 'svelte/easing';
-	import { browser } from '$app/env';
 
 	// --- Pricing State (Svelte 5 Runes) ---
 	let selectedPlan: 'monthly' | 'quarterly' | 'annual' = $state('quarterly');
@@ -10,68 +9,6 @@
 	// --- FAQ Logic (Svelte 5 Runes) ---
 	let openFaq: number | null = $state(null);
 	const toggleFaq = (index: number) => (openFaq = openFaq === index ? null : index);
-
-	// --- GSAP ScrollTrigger Animations (Svelte 5 SSR-safe pattern) ---
-	onMount(() => {
-		if (!browser) return;
-
-		let isComponentMounted = true;
-		let ctx: ReturnType<typeof import('gsap').gsap.context> | null = null;
-
-		void (async () => {
-			try {
-				const { gsap } = await import('gsap');
-				const { ScrollTrigger } = await import('gsap/ScrollTrigger');
-				if (!isComponentMounted) return;
-
-				gsap.registerPlugin(ScrollTrigger);
-
-				const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-				if (prefersReducedMotion) {
-					gsap.set('[data-gsap]', { opacity: 1, y: 0 });
-					return;
-				}
-
-				// Use gsap.context() for scoped cleanup - prevents global ScrollTrigger destruction
-				ctx = gsap.context(() => {
-					// Only set initial hidden state for elements NOT yet in viewport
-					const elements = document.querySelectorAll('[data-gsap]');
-					elements.forEach((el) => {
-						const rect = el.getBoundingClientRect();
-						const isInViewport = rect.top < window.innerHeight * 0.85;
-						if (!isInViewport) {
-							gsap.set(el, { opacity: 0, y: 30 });
-						}
-					});
-
-					ScrollTrigger.batch('[data-gsap]', {
-						onEnter: (batch) => {
-							gsap.to(batch, {
-								opacity: 1,
-								y: 0,
-								duration: 0.8,
-								ease: 'power3.out',
-								stagger: 0.1,
-								overwrite: true
-							});
-						},
-						start: 'top 85%',
-						once: true
-					});
-
-					ScrollTrigger.refresh();
-				});
-			} catch (error) {
-				console.error('[SmallAccounts] GSAP initialization failed:', error);
-			}
-		})();
-
-		return () => {
-			isComponentMounted = false;
-			if (ctx) ctx.revert();
-		};
-	});
 
 	// --- DATA SOURCE: FAQs (Single Source of Truth) ---
 	const faqList = [
@@ -130,7 +67,7 @@
 	// SEO schemas emitted via +page.ts (page.data.seo).
 </script>
 
-<div class="small-accounts">
+<div class="small-accounts" {@attach scrollReveal}>
 	<section class="hero">
 		<div class="hero__bg" aria-hidden="true">
 			<div class="hero__bg-grid"></div>
@@ -1247,7 +1184,7 @@
 		color: var(--rtp-emerald);
 	}
 	.stats__value--indigo {
-		color: var(--rtp-indigo);
+		color: #a5b4fc;
 	}
 	.stats__value--blue {
 		color: var(--rtp-blue);
@@ -1486,7 +1423,7 @@
 		border-color: var(--rtp-emerald);
 	}
 	.inside-card--indigo:hover {
-		border-color: var(--rtp-indigo);
+		border-color: #a5b4fc;
 	}
 	.inside-card__icon {
 		width: 3rem;
@@ -1515,7 +1452,7 @@
 	}
 	.inside-card--indigo .inside-card__icon {
 		background: color-mix(in oklab, var(--rtp-indigo) 10%, transparent);
-		color: var(--rtp-indigo);
+		color: #a5b4fc;
 	}
 	.inside-card__title {
 		font-family: var(--rtp-font-display);
@@ -1669,7 +1606,7 @@
 	}
 	.timeline__pin--indigo {
 		border: 1px solid var(--rtp-indigo);
-		color: var(--rtp-indigo);
+		color: #a5b4fc;
 	}
 	.timeline__row:hover .timeline__pin--indigo {
 		background: var(--rtp-indigo);
@@ -1718,7 +1655,7 @@
 		color: var(--rtp-emerald);
 	}
 	.timeline__time--indigo {
-		color: var(--rtp-indigo);
+		color: #a5b4fc;
 	}
 	.timeline__time--blue {
 		color: var(--rtp-blue);
@@ -1739,7 +1676,7 @@
 	}
 	.timeline__chip--indigo {
 		background: color-mix(in oklab, var(--rtp-indigo) 10%, transparent);
-		color: var(--rtp-indigo);
+		color: #a5b4fc;
 	}
 	.timeline__chip--blue {
 		background: color-mix(in oklab, var(--rtp-blue) 10%, transparent);
@@ -1912,7 +1849,7 @@
 		}
 	}
 	.plan--highlight.plan--active {
-		border-color: var(--rtp-indigo);
+		border-color: #a5b4fc;
 		opacity: 1;
 		scale: 1.05;
 		box-shadow: 0 10px 15px -3px color-mix(in oklab, var(--rtp-indigo) 10%, transparent);
@@ -1978,7 +1915,7 @@
 		border-color: color-mix(in oklab, var(--rtp-emerald) 30%, transparent);
 	}
 	.plan__perday--indigo {
-		color: var(--rtp-indigo);
+		color: #a5b4fc;
 	}
 
 	.plan__features {
@@ -2007,7 +1944,7 @@
 		color: var(--rtp-emerald);
 	}
 	.plan__tick--indigo {
-		color: var(--rtp-indigo);
+		color: #a5b4fc;
 	}
 	.plan__feat-bold {
 		font-weight: 700;
@@ -2046,7 +1983,7 @@
 	.plan__cta--indigo {
 		background: var(--rtp-bg);
 		border: 1px solid var(--rtp-indigo);
-		color: var(--rtp-indigo);
+		color: #a5b4fc;
 	}
 	.plan__cta--indigo:hover {
 		background: var(--rtp-indigo);
@@ -2242,5 +2179,23 @@
 		margin-block-start: 2rem;
 		font-size: 0.875rem;
 		color: color-mix(in oklab, #fff 60%, transparent);
+	}
+
+	.hero__cta--primary,
+	.pricing-toggle__btn--active,
+	.plan__ribbon,
+	.plan__cta--primary {
+		background: var(--rtp-primary-action);
+	}
+	.hero__chrome-bubble-value {
+		color: #047857;
+	}
+	.plan {
+		opacity: 1;
+	}
+
+	.bell-cta__btn {
+		background: white;
+		color: var(--rtp-primary-action);
 	}
 </style>

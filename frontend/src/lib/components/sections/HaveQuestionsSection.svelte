@@ -15,9 +15,9 @@
 	}
 
 	let {
-		email = 'support@simplertrading.com',
-		phone = '5122668659',
-		phoneDisplay = '(512) 266-8659'
+		email = 'support@revolutiontradingpros.com',
+		phone = '',
+		phoneDisplay = ''
 	}: Props = $props();
 </script>
 
@@ -29,8 +29,7 @@
 		<p class="have-questions__text">
 			Our support staff is the best by far! You can email
 			<a href="mailto:{email}">{email}</a>
-			or call us at
-			<a href="tel:{phone}">{phoneDisplay}</a>
+			{#if phone}or call us at <a href="tel:{phone}">{phoneDisplay || phone}</a>{/if}
 		</p>
 	</div>
 </section>
@@ -73,8 +72,8 @@
 	}
 
 	.have-questions__text a {
-		color: #0984ae;
-		text-decoration: none;
+		color: #07627f;
+		text-decoration: underline;
 	}
 
 	.have-questions__text a:hover {

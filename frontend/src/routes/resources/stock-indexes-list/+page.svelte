@@ -7,7 +7,7 @@
 	 * Stock Indexes List Page - Google L11 Enterprise Standard
 	 * Comprehensive stock index education and reference resource
 	 */
-	import { fade, fly } from 'svelte/transition';
+	import { motionFade as fade, motionFly as fly } from '#lib/animations/motion.js';
 	import { cubicOut } from 'svelte/easing';
 	import {
 		IconChartLine,
@@ -297,7 +297,8 @@
 			<!-- Region Filter -->
 			<div class="filter-bar">
 				<label for="region-filter">
-					<IconWorld size={20} />
+					<IconWorld size={20} aria-hidden="true" />
+					Region
 				</label>
 				<select id="region-filter" bind:value={selectedRegion} class="filter-select">
 					{#each regions as region (region)}
@@ -641,7 +642,7 @@
 		align-items: center;
 		justify-content: center;
 		gap: 1rem;
-		color: #64748b;
+		color: var(--rtp-text-muted);
 		min-height: 300px;
 	}
 
@@ -749,7 +750,7 @@
 
 	.index-card__ticker {
 		font-size: 0.8rem;
-		color: #64748b;
+		color: var(--rtp-text-muted);
 		margin-bottom: 0.75rem;
 	}
 
@@ -778,7 +779,7 @@
 		align-items: center;
 		gap: 0.375rem;
 		font-size: 0.8rem;
-		color: #64748b;
+		color: var(--rtp-text-muted);
 	}
 
 	.index-card__etfs {
@@ -789,7 +790,7 @@
 
 	.index-card__etfs-label {
 		font-size: 0.75rem;
-		color: #64748b;
+		color: var(--rtp-text-muted);
 	}
 
 	.index-card__etfs-list {
@@ -851,7 +852,7 @@
 	.faq-item__chevron {
 		display: inline-flex;
 		align-items: center;
-		color: #64748b;
+		color: var(--rtp-text-muted);
 		transition: transform 0.3s ease;
 		flex-shrink: 0;
 	}

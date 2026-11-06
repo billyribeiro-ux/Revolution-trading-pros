@@ -1,7 +1,6 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import { browser } from '$app/env';
-	import { slide } from 'svelte/transition';
+	import { scrollReveal } from '#lib/animations/scroll-reveal.js';
+	import { motionSlide as slide } from '#lib/animations/motion.js';
 	import IconLock from '@tabler/icons-svelte-runes/icons/lock';
 	import IconGlobe from '@tabler/icons-svelte-runes/icons/globe';
 	import IconShield from '@tabler/icons-svelte-runes/icons/shield';
@@ -16,72 +15,6 @@
 	const toggleAccordion = (idx: number) => (openAccordion = openAccordion === idx ? null : idx);
 	const accordionChevronClass = (idx: number) =>
 		openAccordion === idx ? 'accordion__chevron accordion__chevron--open' : 'accordion__chevron';
-
-	onMount(async () => {
-		if (!browser) return;
-		const { gsap } = await import('gsap');
-
-		const tl = gsap.timeline({ defaults: { ease: 'power4.out' } });
-		const badge = document.querySelector<HTMLElement>('[data-gsap-hero="badge"]');
-		const title = document.querySelector<HTMLElement>('[data-gsap-hero="title"]');
-		const desc = document.querySelector<HTMLElement>('[data-gsap-hero="desc"]');
-		const metrics = document.querySelector<HTMLElement>('[data-gsap-hero="metrics"]');
-		const graphic = document.querySelector<HTMLElement>('[data-gsap-hero="graphic"]');
-
-		if (badge)
-			tl.fromTo(badge, { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 1, delay: 0.2 });
-		if (title)
-			tl.fromTo(
-				title,
-				{ y: 40, opacity: 0 },
-				{ y: 0, opacity: 1, duration: 1.2, stagger: 0.1 },
-				'-=0.8'
-			);
-		if (desc) tl.fromTo(desc, { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 1 }, '-=0.8');
-		if (metrics)
-			tl.fromTo(
-				metrics,
-				{ opacity: 0, scale: 0.98 },
-				{ opacity: 1, scale: 1, duration: 1.2 },
-				'-=0.6'
-			);
-		if (graphic)
-			tl.fromTo(graphic, { x: 40, opacity: 0 }, { x: 0, opacity: 1, duration: 1.5 }, '-=1.0');
-
-		const observer = new IntersectionObserver(
-			(entries) => {
-				entries.forEach((entry) => {
-					if (entry.isIntersecting) {
-						const target = entry.target as HTMLElement;
-						const children = target.querySelectorAll('.gsap-reveal-item');
-						if (children.length > 0) {
-							gsap.fromTo(
-								children,
-								{ y: 30, opacity: 0 },
-								{
-									y: 0,
-									opacity: 1,
-									duration: 0.8,
-									stagger: 0.1,
-									ease: 'power2.out',
-									overwrite: true
-								}
-							);
-						} else {
-							gsap.fromTo(
-								target,
-								{ y: 30, opacity: 0 },
-								{ y: 0, opacity: 1, duration: 0.8, ease: 'power2.out', overwrite: true }
-							);
-						}
-						observer.unobserve(target);
-					}
-				});
-			},
-			{ threshold: 0.15 }
-		);
-		document.querySelectorAll('.gsap-section').forEach((el) => observer.observe(el));
-	});
 
 	const sessionBreakdown = [
 		{
@@ -107,7 +40,7 @@
 	];
 </script>
 
-<div class="mentorship">
+<div class="mentorship" {@attach scrollReveal}>
 	<div class="mentorship__grid-overlay" aria-hidden="true"></div>
 
 	<!-- ICT11+ Fix: Changed from <main> to <div> - root layout provides <main> -->
@@ -131,17 +64,17 @@
 		<section class="hero">
 			<div class="hero__grid">
 				<div class="hero__copy">
-					<div data-gsap-hero="badge" class="hero__badge">
+					<div data-gsap data-gsap-hero="badge" class="hero__badge">
 						<IconLock size={12} />
 						Restricted Access
 					</div>
 
-					<h1 data-gsap-hero="title" class="hero__title">
+					<h1 data-gsap data-gsap-hero="title" class="hero__title">
 						Strategic<br />
 						<span class="hero__title-mute">Alpha</span> Audit.
 					</h1>
 
-					<div data-gsap-hero="desc" class="hero__lede">
+					<div data-gsap data-gsap-hero="desc" class="hero__lede">
 						<p>
 							A high-velocity, forensic deconstruction of your trading business. Designed strictly
 							for <span class="hero__lede-emph">Portfolio Managers</span> and
@@ -149,7 +82,7 @@
 						</p>
 					</div>
 
-					<div data-gsap-hero="metrics" class="hero__metrics">
+					<div data-gsap data-gsap-hero="metrics" class="hero__metrics">
 						<div class="hero__metric">
 							<div class="hero__metric-label">Consultation Fee</div>
 							<div class="hero__metric-value">
@@ -171,7 +104,7 @@
 					</div>
 				</div>
 
-				<div data-gsap-hero="graphic" class="hero__scope">
+				<div data-gsap data-gsap-hero="graphic" class="hero__scope">
 					<div class="scope-card">
 						<div class="scope-card__icon" aria-hidden="true">
 							<IconGlobe size={48} stroke={1.2} />
@@ -222,7 +155,7 @@
 		<section class="ceiling gsap-section">
 			<div class="ceiling__inner">
 				<div class="ceiling__grid">
-					<div class="ceiling__copy gsap-reveal-item">
+					<div data-gsap class="ceiling__copy gsap-reveal-item">
 						<h2 class="section-title">The Liquidity Ceiling.</h2>
 						<div class="ceiling__body">
 							<p>
@@ -243,7 +176,7 @@
 					</div>
 
 					<div class="ceiling__metrics-grid">
-						<div class="metric-tile gsap-reveal-item">
+						<div data-gsap class="metric-tile gsap-reveal-item">
 							<div class="metric-tile__icon"><IconActivity size={32} stroke={1.2} /></div>
 							<div>
 								<div class="metric-tile__value">
@@ -252,21 +185,21 @@
 								<div class="metric-tile__label">Avg. Execution Drag</div>
 							</div>
 						</div>
-						<div class="metric-tile gsap-reveal-item">
+						<div data-gsap class="metric-tile gsap-reveal-item">
 							<div class="metric-tile__icon"><IconBrain size={32} stroke={1.2} /></div>
 							<div>
 								<div class="metric-tile__value">Bias</div>
 								<div class="metric-tile__label">Primary Bottleneck</div>
 							</div>
 						</div>
-						<div class="metric-tile gsap-reveal-item">
+						<div data-gsap class="metric-tile gsap-reveal-item">
 							<div class="metric-tile__icon"><IconTerminal size={32} stroke={1.2} /></div>
 							<div>
 								<div class="metric-tile__value">Zero</div>
 								<div class="metric-tile__label">Latency Tolerance</div>
 							</div>
 						</div>
-						<div class="metric-tile gsap-reveal-item">
+						<div data-gsap class="metric-tile gsap-reveal-item">
 							<div class="metric-tile__icon"><IconShield size={32} stroke={1.2} /></div>
 							<div>
 								<div class="metric-tile__value">MNDA</div>
@@ -280,7 +213,7 @@
 
 		<section class="protocol gsap-section">
 			<div class="protocol__inner">
-				<div class="protocol__header gsap-reveal-item">
+				<div data-gsap class="protocol__header gsap-reveal-item">
 					<div>
 						<h2 class="section-title section-title--small">The 120-Minute Protocol</h2>
 						<p class="protocol__subhead">Session Agenda // Confidential</p>
@@ -293,7 +226,7 @@
 
 				<div class="protocol__list">
 					{#each sessionBreakdown as item (item.time)}
-						<div class="protocol__item gsap-reveal-item">
+						<div data-gsap class="protocol__item gsap-reveal-item">
 							<div class="protocol__row">
 								<div class="protocol__time">
 									<span>{item.time}</span>
@@ -311,7 +244,7 @@
 
 		<section class="engagement gsap-section">
 			<div class="engagement__grid">
-				<div class="engagement__col gsap-reveal-item">
+				<div data-gsap class="engagement__col gsap-reveal-item">
 					<div class="engagement__heading-row">
 						<div class="engagement__heading-icon">
 							<IconFileText size={24} stroke={1.2} />
@@ -344,7 +277,7 @@
 					</div>
 				</div>
 
-				<div class="engagement__col gsap-reveal-item">
+				<div data-gsap class="engagement__col gsap-reveal-item">
 					<div class="engagement__heading-row">
 						<div class="engagement__heading-icon">
 							<IconShield size={24} stroke={1.2} />
@@ -418,7 +351,7 @@
 			<div class="cta__vline" aria-hidden="true"></div>
 			<div class="cta__hline" aria-hidden="true"></div>
 
-			<div class="cta__shell gsap-reveal-item">
+			<div data-gsap class="cta__shell gsap-reveal-item">
 				<div class="cta__inner">
 					<div class="cta__halo" aria-hidden="true"></div>
 
@@ -807,11 +740,12 @@
 	}
 	.ceiling__grid {
 		display: grid;
+		grid-template-columns: minmax(0, 1fr);
 		gap: 6rem;
 	}
 	@media (min-width: 1024px) {
 		.ceiling__grid {
-			grid-template-columns: 1fr 1fr;
+			grid-template-columns: repeat(2, minmax(0, 1fr));
 		}
 	}
 	.ceiling__body {
@@ -832,7 +766,7 @@
 
 	.ceiling__metrics-grid {
 		display: grid;
-		grid-template-columns: 1fr 1fr;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
 		gap: 1px;
 		background: var(--rtp-border);
 		border: 1px solid var(--rtp-border);
@@ -979,7 +913,7 @@
 	}
 	@media (min-width: 1024px) {
 		.engagement__grid {
-			grid-template-columns: 1fr 1fr;
+			grid-template-columns: repeat(2, minmax(0, 1fr));
 		}
 	}
 	.engagement__heading-row {
@@ -1179,7 +1113,7 @@
 
 	.cta__terms {
 		display: grid;
-		grid-template-columns: 1fr 1fr;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
 		gap: 2rem;
 		max-width: 32rem;
 		margin-inline: auto;

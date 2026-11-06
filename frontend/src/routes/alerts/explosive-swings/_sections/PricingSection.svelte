@@ -33,15 +33,11 @@
 
 	function getPlanButtonClass(plan: 'monthly' | 'quarterly' | 'annual'): string[] {
 		return [
-			'relative z-10 px-6 py-2 rounded-lg font-bold text-sm transition-colors duration-200',
-			selectedPlan === plan ? 'text-white' : 'text-slate-300 hover:text-white'
+			'min-w-0 px-2 sm:px-6 py-2 rounded-lg font-bold text-sm transition-colors duration-200',
+			selectedPlan === plan
+				? 'bg-emerald-700 text-white shadow-md'
+				: 'text-slate-300 hover:text-white'
 		];
-	}
-
-	function getSelectorLeft(): string {
-		if (selectedPlan === 'monthly') return '0.375rem';
-		if (selectedPlan === 'quarterly') return 'calc(33.33% + 0.2rem)';
-		return 'calc(66.66% + 0.1rem)';
 	}
 
 	function getSidePlanClass(plan: 'monthly' | 'annual'): string[] {
@@ -77,29 +73,28 @@
 
 		<div class="flex justify-center mb-16">
 			<div
-				class="bg-rtp-surface bg-slate-950 p-1.5 rounded-xl border border-slate-700/50 inline-flex relative"
+				role="group"
+				aria-label="Highlight a billing plan"
+				class="bg-rtp-surface bg-slate-950 p-1.5 rounded-xl border border-slate-700/50 grid grid-cols-3 w-full max-w-md"
 			>
 				<button
 					type="button"
 					onclick={() => (selectedPlan = 'monthly')}
+					aria-pressed={selectedPlan === 'monthly'}
 					class={getPlanButtonClass('monthly')}>Monthly</button
 				>
 				<button
 					type="button"
 					onclick={() => (selectedPlan = 'quarterly')}
+					aria-pressed={selectedPlan === 'quarterly'}
 					class={getPlanButtonClass('quarterly')}>Quarterly</button
 				>
 				<button
 					type="button"
 					onclick={() => (selectedPlan = 'annual')}
+					aria-pressed={selectedPlan === 'annual'}
 					class={getPlanButtonClass('annual')}>Annual</button
 				>
-
-				<div
-					class="absolute top-1.5 bottom-1.5 bg-emerald-700 rounded-lg shadow-md transition-all duration-300 ease-out"
-					style:left={getSelectorLeft()}
-					style:width="calc(33.33% - 0.4rem)"
-				></div>
 			</div>
 		</div>
 

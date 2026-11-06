@@ -1,0 +1,19 @@
+
+Running 6 tests using 4 workers
+
+(node:33310) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:33312) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:33313) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:33311) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  3 [chromium] › tests/marketing-pages.spec.ts:38:2 › /about keeps heading text readable at 200% text size (444ms)
+  ✓  2 [chromium] › tests/marketing-pages.spec.ts:38:2 › /alerts/explosive-swings keeps heading text readable at 200% text size (503ms)
+  ✓  1 [chromium] › tests/marketing-pages.spec.ts:57:2 › /about respects reduced motion, including preference changes (637ms)
+  ✓  4 [chromium] › tests/marketing-pages.spec.ts:5:1 › About decoration stays within the page and ticker clears shared navigation (639ms)
+  ✓  5 [chromium] › tests/marketing-pages.spec.ts:57:2 › /alerts/explosive-swings respects reduced motion, including preference changes (483ms)
+  ✓  6 [chromium] › tests/marketing-pages.spec.ts:95:1 › Swings plan selection fits a 320px screen and announces selected state (495ms)
+
+  6 passed (1.4s)

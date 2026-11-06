@@ -1,0 +1,28 @@
+{
+	"head": "5fbdb06c6e15501280df4b95e2c3e855f743048f",
+	"deployed_version": "0e3678098bd0f531b63882aec315817faa3e4e66",
+	"production_build": {
+		"version": "1793929857816"
+	},
+	"sha256": {
+		"frontend/src/routes/about/+page.svelte": "73d47598a35d74d9997e4b8a604d7e0d9193de9f520243f43f25e1a799370ffe",
+		"frontend/src/routes/alerts/explosive-swings/+page.svelte": "11b27758cc9856923b6b8b2c6c32dd1669e57425d741cfbfbba68c24187260f1",
+		"frontend/src/routes/alerts/explosive-swings/_sections/PricingSection.svelte": "965e10c837536abd84d03f5c70d837e4b4d7122725852a46fe2d8d25e6fec469",
+		"frontend/vite.config.ts": "96543b0cad971926b940ae29c72bdebbfaa50df5e3e07a7e139d8b1e33124b00",
+		"frontend/tests/marketing-pages.spec.ts": "c671509196d9de55264d921a5992d194caa7f73d9aee3e3d401be243b77e0027"
+	},
+	"svelte_autofixer": {
+		"frontend/src/routes/about/+page.svelte": {
+			"issues": [],
+			"suggestions": []
+		},
+		"frontend/src/routes/alerts/explosive-swings/+page.svelte": {
+			"issues": [],
+			"suggestions": []
+		},
+		"frontend/src/routes/alerts/explosive-swings/_sections/PricingSection.svelte": {
+			"issues": [],
+			"suggestions": []
+		}
+	}
+}
