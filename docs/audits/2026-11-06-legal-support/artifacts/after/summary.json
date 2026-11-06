@@ -1,0 +1,516 @@
+{
+	"origin": "http://127.0.0.1:4196",
+	"label": "after",
+	"routes": [
+		{
+			"path": "/privacy",
+			"exceptions": [],
+			"widths": [
+				{
+					"width": 320,
+					"problems": []
+				},
+				{
+					"width": 390,
+					"problems": []
+				},
+				{
+					"width": 639,
+					"problems": []
+				},
+				{
+					"width": 640,
+					"problems": []
+				},
+				{
+					"width": 767,
+					"problems": []
+				},
+				{
+					"width": 768,
+					"problems": []
+				},
+				{
+					"width": 1023,
+					"problems": []
+				},
+				{
+					"width": 1024,
+					"problems": []
+				},
+				{
+					"width": 1280,
+					"problems": []
+				},
+				{
+					"width": 1920,
+					"problems": []
+				}
+			],
+			"status": 200,
+			"destination": "http://127.0.0.1:4196/privacy",
+			"typography": {
+				"h1": {
+					"font": "Inter, system-ui, -apple-system, sans-serif",
+					"size": "56px",
+					"weight": "800",
+					"lineHeight": "61.6px",
+					"width": 832,
+					"x": 220
+				},
+				"h2": {
+					"font": "Inter, system-ui, -apple-system, sans-serif",
+					"size": "24px",
+					"weight": "700",
+					"lineHeight": "32.4px",
+					"width": 788,
+					"x": 243
+				},
+				"body": {
+					"font": "Inter, system-ui, -apple-system, sans-serif",
+					"size": "13px",
+					"weight": "700",
+					"lineHeight": "19.5px",
+					"width": 832,
+					"x": 220
+				}
+			},
+			"enlarged": [
+				{
+					"left": 32,
+					"right": 251.453125
+				},
+				{
+					"left": 32,
+					"right": 208.5
+				}
+			],
+			"axe": []
+		},
+		{
+			"path": "/terms",
+			"exceptions": [],
+			"widths": [
+				{
+					"width": 320,
+					"problems": []
+				},
+				{
+					"width": 390,
+					"problems": []
+				},
+				{
+					"width": 639,
+					"problems": []
+				},
+				{
+					"width": 640,
+					"problems": []
+				},
+				{
+					"width": 767,
+					"problems": []
+				},
+				{
+					"width": 768,
+					"problems": []
+				},
+				{
+					"width": 1023,
+					"problems": []
+				},
+				{
+					"width": 1024,
+					"problems": []
+				},
+				{
+					"width": 1280,
+					"problems": []
+				},
+				{
+					"width": 1920,
+					"problems": []
+				}
+			],
+			"status": 200,
+			"destination": "http://127.0.0.1:4196/terms",
+			"typography": {
+				"h1": {
+					"font": "Inter, system-ui, -apple-system, sans-serif",
+					"size": "56px",
+					"weight": "800",
+					"lineHeight": "61.6px",
+					"width": 832,
+					"x": 220
+				},
+				"h2": {
+					"font": "Inter, system-ui, -apple-system, sans-serif",
+					"size": "24px",
+					"weight": "700",
+					"lineHeight": "32.4px",
+					"width": 788,
+					"x": 243
+				},
+				"body": {
+					"font": "Inter, system-ui, -apple-system, sans-serif",
+					"size": "13px",
+					"weight": "700",
+					"lineHeight": "19.5px",
+					"width": 832,
+					"x": 220
+				}
+			},
+			"enlarged": [
+				{
+					"left": 32,
+					"right": 290.609375
+				},
+				{
+					"left": 32,
+					"right": 254.9375
+				}
+			],
+			"axe": []
+		},
+		{
+			"path": "/refund",
+			"exceptions": [],
+			"widths": [
+				{
+					"width": 320,
+					"problems": []
+				},
+				{
+					"width": 390,
+					"problems": []
+				},
+				{
+					"width": 639,
+					"problems": []
+				},
+				{
+					"width": 640,
+					"problems": []
+				},
+				{
+					"width": 767,
+					"problems": []
+				},
+				{
+					"width": 768,
+					"problems": []
+				},
+				{
+					"width": 1023,
+					"problems": []
+				},
+				{
+					"width": 1024,
+					"problems": []
+				},
+				{
+					"width": 1280,
+					"problems": []
+				},
+				{
+					"width": 1920,
+					"problems": []
+				}
+			],
+			"status": 200,
+			"destination": "http://127.0.0.1:4196/refund",
+			"typography": {
+				"h1": {
+					"font": "Inter, system-ui, -apple-system, sans-serif",
+					"size": "56px",
+					"weight": "800",
+					"lineHeight": "61.6px",
+					"width": 832,
+					"x": 220
+				},
+				"h2": {
+					"font": "Inter, system-ui, -apple-system, sans-serif",
+					"size": "24px",
+					"weight": "700",
+					"lineHeight": "32.4px",
+					"width": 832,
+					"x": 220
+				},
+				"body": {
+					"font": "Inter, system-ui, -apple-system, sans-serif",
+					"size": "13px",
+					"weight": "700",
+					"lineHeight": "19.5px",
+					"width": 832,
+					"x": 220
+				}
+			},
+			"enlarged": [
+				{
+					"left": 32,
+					"right": 243.453125
+				},
+				{
+					"left": 32,
+					"right": 208.5
+				}
+			],
+			"axe": []
+		},
+		{
+			"path": "/disclaimer",
+			"exceptions": [],
+			"widths": [
+				{
+					"width": 320,
+					"problems": []
+				},
+				{
+					"width": 390,
+					"problems": []
+				},
+				{
+					"width": 639,
+					"problems": []
+				},
+				{
+					"width": 640,
+					"problems": []
+				},
+				{
+					"width": 767,
+					"problems": []
+				},
+				{
+					"width": 768,
+					"problems": []
+				},
+				{
+					"width": 1023,
+					"problems": []
+				},
+				{
+					"width": 1024,
+					"problems": []
+				},
+				{
+					"width": 1280,
+					"problems": []
+				},
+				{
+					"width": 1920,
+					"problems": []
+				}
+			],
+			"status": 200,
+			"destination": "http://127.0.0.1:4196/disclaimer",
+			"typography": {
+				"h1": {
+					"font": "Inter, system-ui, -apple-system, sans-serif",
+					"size": "56px",
+					"weight": "800",
+					"lineHeight": "61.6px",
+					"width": 832,
+					"x": 216.5
+				},
+				"h2": {
+					"font": "Inter, system-ui, -apple-system, sans-serif",
+					"size": "24px",
+					"weight": "700",
+					"lineHeight": "32.4px",
+					"width": 832,
+					"x": 216.5
+				},
+				"body": {
+					"font": "Inter, system-ui, -apple-system, sans-serif",
+					"size": "13px",
+					"weight": "700",
+					"lineHeight": "19.5px",
+					"width": 832,
+					"x": 216.5
+				}
+			},
+			"enlarged": [
+				{
+					"left": 32,
+					"right": 155.40625
+				},
+				{
+					"left": 32,
+					"right": 341.140625
+				}
+			],
+			"axe": []
+		},
+		{
+			"path": "/cookie-policy",
+			"exceptions": [],
+			"widths": [
+				{
+					"width": 320,
+					"problems": []
+				},
+				{
+					"width": 390,
+					"problems": []
+				},
+				{
+					"width": 639,
+					"problems": []
+				},
+				{
+					"width": 640,
+					"problems": []
+				},
+				{
+					"width": 767,
+					"problems": []
+				},
+				{
+					"width": 768,
+					"problems": []
+				},
+				{
+					"width": 1023,
+					"problems": []
+				},
+				{
+					"width": 1024,
+					"problems": []
+				},
+				{
+					"width": 1280,
+					"problems": []
+				},
+				{
+					"width": 1920,
+					"problems": []
+				}
+			],
+			"status": 200,
+			"destination": "http://127.0.0.1:4196/cookie-policy",
+			"typography": {
+				"h1": {
+					"font": "Inter, system-ui, -apple-system, sans-serif",
+					"size": "56px",
+					"weight": "800",
+					"lineHeight": "61.6px",
+					"width": 832,
+					"x": 220
+				},
+				"h2": {
+					"font": "Inter, system-ui, -apple-system, sans-serif",
+					"size": "24px",
+					"weight": "700",
+					"lineHeight": "32.4px",
+					"width": 832,
+					"x": 220
+				},
+				"body": {
+					"font": "Inter, system-ui, -apple-system, sans-serif",
+					"size": "13px",
+					"weight": "700",
+					"lineHeight": "19.5px",
+					"width": 832,
+					"x": 220
+				}
+			},
+			"enlarged": [
+				{
+					"left": 32,
+					"right": 237.015625
+				},
+				{
+					"left": 32,
+					"right": 208.5
+				}
+			],
+			"axe": []
+		},
+		{
+			"path": "/contact",
+			"exceptions": [],
+			"widths": [
+				{
+					"width": 320,
+					"problems": []
+				},
+				{
+					"width": 390,
+					"problems": []
+				},
+				{
+					"width": 639,
+					"problems": []
+				},
+				{
+					"width": 640,
+					"problems": []
+				},
+				{
+					"width": 767,
+					"problems": []
+				},
+				{
+					"width": 768,
+					"problems": []
+				},
+				{
+					"width": 1023,
+					"problems": []
+				},
+				{
+					"width": 1024,
+					"problems": []
+				},
+				{
+					"width": 1280,
+					"problems": []
+				},
+				{
+					"width": 1920,
+					"problems": []
+				}
+			],
+			"status": 200,
+			"destination": "http://127.0.0.1:4196/contact",
+			"typography": {
+				"h1": {
+					"font": "Inter, system-ui, -apple-system, sans-serif",
+					"size": "56px",
+					"weight": "800",
+					"lineHeight": "61.6px",
+					"width": 832,
+					"x": 216.5
+				},
+				"h2": {
+					"font": "Inter, system-ui, -apple-system, sans-serif",
+					"size": "24px",
+					"weight": "700",
+					"lineHeight": "32.4px",
+					"width": 832,
+					"x": 216.5
+				},
+				"body": {
+					"font": "Inter, system-ui, -apple-system, sans-serif",
+					"size": "13px",
+					"weight": "700",
+					"lineHeight": "19.5px",
+					"width": 832,
+					"x": 216.5
+				}
+			},
+			"enlarged": [
+				{
+					"left": 32,
+					"right": 264.75
+				},
+				{
+					"left": 32,
+					"right": 110.234375
+				}
+			],
+			"axe": []
+		}
+	]
+}

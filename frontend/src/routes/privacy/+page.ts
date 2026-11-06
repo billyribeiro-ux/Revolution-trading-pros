@@ -11,7 +11,7 @@ export const load = () => ({
 	seo: {
 		title: 'Privacy Policy',
 		description:
-			'Privacy policy for Revolution Trading Pros — what data we collect, how we use it, and your rights.',
+			'The Privacy Policy is awaiting publication. Contact Revolution Trading Pros support with privacy questions or browse our other policies.',
 		jsonld: [
 			buildBreadcrumb([
 				{ name: 'Home', url: `${SITE}/` },
