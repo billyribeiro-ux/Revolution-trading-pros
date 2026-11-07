@@ -26,6 +26,42 @@ pub struct Preset {
     pub responsive_sizes: Value,
     pub is_default: bool,
 }
+
+/// Queue the default preset in the same transaction that publishes an image.
+/// A missing processor leaves uploads available; the deployment health check
+/// exposes that optimization is disabled.
+pub async fn enqueue_default_if_image(
+    state: &AppState,
+    tx: &mut Transaction<'_, Postgres>,
+    media_id: i64,
+    mime: &str,
+    scan_status: &str,
+    source_version: i64,
+) -> std::result::Result<bool, sqlx::Error> {
+    if state.services.media_processor.is_none()
+        || scan_status == "infected"
+        || !matches!(
+            mime,
+            "image/jpeg" | "image/png" | "image/gif" | "image/webp" | "image/avif"
+        )
+    {
+        return Ok(false);
+    }
+    let preset: Value = sqlx::query_scalar(
+        "SELECT to_jsonb(p) FROM media_optimization_presets p WHERE is_default=TRUE LIMIT 1",
+    )
+    .fetch_one(&mut **tx)
+    .await?;
+    sqlx::query(
+        "INSERT INTO media_optimization_jobs(media_id,preset,source_version) VALUES($1,$2,$3)",
+    )
+    .bind(media_id)
+    .bind(preset)
+    .bind(source_version)
+    .execute(&mut **tx)
+    .await?;
+    Ok(true)
+}
 impl Preset {
     pub fn validate(&self) -> Result<()> {
         if !matches!(
@@ -150,10 +186,16 @@ pub async fn process_one(state: &AppState) -> Result<bool> {
         for (format, name, width, retina, quality) in outputs {
             let options = ProcessOptions { format: format.clone(), width, height: None, quality, lossless: preset.compression_mode == "lossless" };
             let output = processor.process(input.clone(), &options).await?;
+            if output.info.size >= original_size as u64 {
+                if name == "full" {
+                    primary_size = Some(primary_size.unwrap_or(original_size).min(original_size));
+                }
+                continue;
+            }
             let key = format!("media/variants/{media_id}/{}/{}.{}", claim.id, uuid::Uuid::new_v4(), format);
             uploaded.push(key.clone());
             let url = state.services.storage.upload_at_key(&key, output.bytes.to_vec(), &output.content_type).await?;
-            if name == "full" && primary_size.is_none() { primary_size = Some(output.info.size as i64); }
+            if name == "full" { primary_size = Some(primary_size.unwrap_or(original_size).min(output.info.size as i64)); }
             let savings = 100.0 * (1.0 - output.info.size as f64 / original_size as f64);
             sqlx::query("INSERT INTO media_variants(media_id,job_id,type,size,width,height,pages,path,url,format,file_size,is_retina,savings_percent,source_version) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)")
                 .bind(media_id).bind(claim.id).bind(if name == "full" { "optimized" } else { "responsive" }).bind(&name)

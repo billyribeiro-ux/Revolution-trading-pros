@@ -54,6 +54,9 @@
 
 		// If autoSrcset is disabled, return empty
 		if (!autoSrcset) return '';
+		if (baseUrl.startsWith('/api/media/image/')) {
+			return widths.map((w) => `${baseUrl}?width=${w} ${w}w`).join(', ');
+		}
 
 		// Detect image CDN patterns and generate appropriate srcset
 		const url = new URL(baseUrl, 'https://example.com');

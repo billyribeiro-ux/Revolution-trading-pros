@@ -4,6 +4,23 @@
 
 All notable changes to this project. Format roughly follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); we don't strictly adhere to SemVer because the product isn't a published library.
 
+## [Unreleased] — 2026-11-07 — Portable image optimization and website delivery
+
+### Added
+
+- Add the independent `@revolution/imagify` package with a typed Node API, file and directory CLI, downloads-folder watcher, bounded WebP encoding, tests, benchmark, and installable tarball build.
+- Queue the default image optimization job automatically for direct uploads, confirmed presigned uploads, and replacements when the media processor is configured.
+- Add an opaque public image selector and website proxy. New blog featured-image uploads use the selector; blog images request responsive widths and select a supported smaller WebP or AVIF variant when available.
+
+### Changed
+
+- Use the portable encoder in the existing media processor WebP endpoint. Skip stored derivatives that are no smaller than the source while keeping the original for revisions, recovery, and later re-encoding.
+
+### Validation and limits
+
+- The package's six tests, processor HTTP tests, media selector unit test, frontend route/client regressions, repository unit suite, type checks, and production builds pass. The SEO browser suite passes 111/114 checks; three existing data-dependent checks fail while the API is unavailable in this environment.
+- Existing blog image URLs are not rewritten by this change. Live CDN and database integration require a running production-like stack; performance and vendor-parity claims are not asserted.
+
 ## [Unreleased] — 2026-11-06 — Standard legal and support layout
 
 ### Changed

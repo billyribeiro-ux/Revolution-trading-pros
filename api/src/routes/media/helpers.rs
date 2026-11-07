@@ -65,7 +65,7 @@ pub(super) async fn present(
 ) -> Result<Vec<serde_json::Value>, crate::utils::errors::ApiError> {
     use crate::utils::errors::ApiError;
     let ids: Vec<i64> = media.iter().map(|m| m.id).collect();
-    let extras: Vec<(i64,serde_json::Value)> = sqlx::query_as("SELECT id,jsonb_build_object('content_version',content_version,'tags',tags,'metadata',metadata,'created_by',created_by,'processing_status',(SELECT status FROM media_optimization_jobs WHERE media_id=media.id AND source_version=media.content_version ORDER BY id DESC LIMIT 1),'has_webp',EXISTS(SELECT 1 FROM media_variants WHERE media_id=media.id AND source_version=media.content_version AND format='webp')) FROM media WHERE id=ANY($1)")
+    let extras: Vec<(i64,serde_json::Value)> = sqlx::query_as("SELECT id,jsonb_build_object('content_version',content_version,'tags',tags,'metadata',metadata,'created_by',created_by,'processing_status',(SELECT status FROM media_optimization_jobs WHERE media_id=media.id AND source_version=media.content_version ORDER BY id DESC LIMIT 1),'processing_job_id',(SELECT id FROM media_optimization_jobs WHERE media_id=media.id AND source_version=media.content_version ORDER BY id DESC LIMIT 1),'has_webp',EXISTS(SELECT 1 FROM media_variants WHERE media_id=media.id AND source_version=media.content_version AND format='webp'),'delivery_url',CASE WHEN mime_type IN ('image/jpeg','image/png','image/gif','image/webp','image/avif') AND scan_status='clean' THEN '/api/media/image/' || public_token::text ELSE NULL END) FROM media WHERE id=ANY($1)")
         .bind(ids).fetch_all(state.db.pool()).await.map_err(|e|ApiError::database_error(&e.to_string()))?;
     let mut extras: std::collections::HashMap<_, _> = extras.into_iter().collect();
     media

@@ -2,6 +2,7 @@ packages:
   - frontend
   - svelte-click-to-source
   - services/media-processor
+  - imagify
 
 # pnpm 11+ escalates ERR_PNPM_IGNORED_BUILDS to a FATAL non-zero exit by
 # default, so a clean `pnpm install --frozen-lockfile` (CI, fresh clone)
