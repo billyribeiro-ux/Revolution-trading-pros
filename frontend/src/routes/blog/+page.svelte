@@ -174,6 +174,7 @@
 								src={post.featured_image}
 								alt={post.title}
 								blurhash={post.featured_image_blurhash || post.blurhash}
+								autoSrcset={post.featured_image.startsWith('/api/media/image/')}
 								width="100%"
 								height="200px"
 							/>

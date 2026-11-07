@@ -18,6 +18,15 @@ export const load: PageServerLoad = async ({ params }) => {
 	}
 	const path = `/blog/${post.slug}`,
 		postUrl = `${PRODUCTION_ORIGIN}${path}`;
+	const featuredImage = (() => {
+		if (!post.featured_image) return undefined;
+		try {
+			const image = new URL(post.featured_image, PRODUCTION_ORIGIN);
+			return ['https:', 'http:'].includes(image.protocol) ? image.href : undefined;
+		} catch {
+			return undefined;
+		}
+	})();
 	const author = authors.find((author) => author.name === post.author?.name) ?? null;
 	const published =
 		post.published_at &&
@@ -34,7 +43,7 @@ export const load: PageServerLoad = async ({ params }) => {
 		!!author &&
 		!!published &&
 		Date.parse(published) <= Date.now() &&
-		!!post.featured_image &&
+		!!featuredImage &&
 		!!post.excerpt &&
 		post.excerpt.length >= 50;
 	const seo: SEOInput = {
@@ -44,7 +53,7 @@ export const load: PageServerLoad = async ({ params }) => {
 		robots: { index: indexable, follow: true },
 		og: {
 			type: 'article',
-			image: post.featured_image,
+			image: featuredImage,
 			imageAlt: post.title,
 			article: {
 				...(published ? { publishedTime: published } : {}),
@@ -64,7 +73,7 @@ export const load: PageServerLoad = async ({ params }) => {
 							publisherLogo: `${PRODUCTION_ORIGIN}/icon-512.png`,
 							type: 'BlogPosting',
 							description,
-							...(post.featured_image ? { image: post.featured_image } : {}),
+							...(featuredImage ? { image: featuredImage } : {}),
 							id: `${postUrl}#article`
 						})
 					]

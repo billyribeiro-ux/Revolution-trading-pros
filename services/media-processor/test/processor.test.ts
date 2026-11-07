@@ -121,6 +121,19 @@ describe('Sharp processor HTTP contract', () => {
 		});
 	});
 	it('rejects oversized, invalid and vector inputs instead of processing paths or URLs', async () => {
+		const compact = await sharp({
+			create: { width: 80, height: 40, channels: 3, background: '#123456' }
+		})
+			.webp({ quality: 1 })
+			.toBuffer();
+		await withProcessor({ maxBytes: compact.length + 1 }, async (origin) => {
+			const response = await fetch(`${origin}/process?format=webp&quality=100`, {
+				method: 'POST',
+				headers,
+				body: compact
+			});
+			expect(response.status).toBe(413);
+		});
 		await withProcessor({ maxBytes: 64 }, async (origin) => {
 			expect(
 				(await fetch(`${origin}/process`, { method: 'POST', headers, body: Buffer.alloc(65) }))

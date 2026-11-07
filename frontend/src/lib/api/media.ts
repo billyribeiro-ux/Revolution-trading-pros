@@ -287,6 +287,7 @@ export interface RawMedia {
 	metadata?: MediaMetadata;
 	created_by?: number | null;
 	has_webp?: boolean;
+	delivery_url?: string | null;
 	processing_status?: MediaFile['processing_status'] | null;
 	scan_status?: MediaFile['scan_status'];
 	created_at: string | null;
@@ -323,6 +324,7 @@ export function mediaFromApi(raw: RawMedia): MediaFile {
 				? undefined
 				: `/api/admin/media/content/${raw.id}${raw.content_version === undefined ? '' : `?revision=${raw.content_version}`}`,
 		url: raw.scan_status === 'infected' ? '' : (raw.url ?? ''),
+		cdn_url: raw.scan_status === 'infected' ? undefined : (raw.delivery_url ?? undefined),
 		width: raw.width ?? undefined,
 		height: raw.height ?? undefined,
 		dimensions: raw.width && raw.height ? { width: raw.width, height: raw.height } : undefined,

@@ -36,9 +36,11 @@ frames, one concurrent request, and a 25 second codec timeout. Larger images fai
 with a useful error. WebP/GIF preserve animations; animated AVIF/JPEG/PNG conversion
 is rejected to avoid silently losing frames. Resize never enlarges an original.
 The balanced preset generates full WebP and widths 320, 768 and 1280 where smaller
-than the source. Derivatives can be larger than an already compressed source;
-reported size differences retain their sign. Retaining originals and variants
-uses additional physical storage, reported separately from size savings.
+than the source dimensions. A derivative is stored only when its bytes are smaller
+than the original. The original remains available for recovery, revisions and
+future encoders. The website's public selector requires a valid `R2_PUBLIC_URL`;
+new blog featured images use it automatically once the API and processor are
+deployed with the required storage and scanner configuration.
 
 Verify with `pnpm --filter @revolution/media-processor check` and
 `pnpm --filter @revolution/media-processor test`. HTTP tests run the real codecs,
