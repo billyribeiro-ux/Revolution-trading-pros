@@ -10,11 +10,11 @@ export const RUNTIME_SCRIPT = `
 (function() {
   'use strict';
 
-  var HOTKEY = '__HOTKEY__';
-  var PROJECT_ROOT = '__PROJECT_ROOT__';
+  var HOTKEY = __HOTKEY__;
   var HIGHLIGHT_ENABLED = __HIGHLIGHT_ENABLED__;
-  var HIGHLIGHT_COLOR = '__HIGHLIGHT_COLOR__';
-  var OPEN_ENDPOINT = '__OPEN_ENDPOINT__';
+  var HIGHLIGHT_COLOR = __HIGHLIGHT_COLOR__;
+  var OPEN_ENDPOINT = __OPEN_ENDPOINT__;
+  var REQUEST_TOKEN = __REQUEST_TOKEN__;
 
   var isHotkeyPressed = false;
   var currentHighlight = null;
@@ -83,7 +83,7 @@ export const RUNTIME_SCRIPT = `
     var filePath = parts.join(':');
     var url = OPEN_ENDPOINT + '?file=' + encodeURIComponent(filePath) + '&line=' + line + '&col=' + col;
     console.log('[click-to-source] Opening:', filePath + ':' + line + ':' + col);
-    fetch(url).then(function(r) {
+    fetch(url, { method: 'POST', headers: { 'X-Click-To-Source-Token': REQUEST_TOKEN } }).then(function(r) {
       if (!r.ok) console.warn('[click-to-source] Server returned', r.status);
     }).catch(function(err) {
       console.error('[click-to-source] Failed to contact dev server:', err);

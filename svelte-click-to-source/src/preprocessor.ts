@@ -10,9 +10,11 @@
 
 import type { PreprocessorGroup } from 'svelte/compiler';
 import MagicString from 'magic-string';
+import { isAbsolute, relative, sep } from 'node:path';
 
 export interface PreprocessorOptions {
 	enabled?: boolean;
+	root?: string;
 }
 
 // Elements that must NOT receive data-source attributes
@@ -56,7 +58,7 @@ function isInsideExcludedRange(
 }
 
 export function createPreprocessor(options: PreprocessorOptions = {}): PreprocessorGroup {
-	const { enabled = process.env.NODE_ENV !== 'production' } = options;
+	const { enabled = process.env.NODE_ENV !== 'production', root = process.cwd() } = options;
 
 	return {
 		name: 'click-to-source-preprocessor',
@@ -100,9 +102,20 @@ export function createPreprocessor(options: PreprocessorOptions = {}): Preproces
 					const line = lines.length;
 					const column = lines[lines.length - 1].length + 1;
 
-					// Create relative path
-					const relativePath = filename.replace(process.cwd() + '/', '');
-					const attr = ` data-source="${relativePath}:${line}:${column}"`;
+					const relativePath = relative(root, filename);
+					if (
+						!relativePath ||
+						relativePath === '..' ||
+						relativePath.startsWith(`..${sep}`) ||
+						isAbsolute(relativePath)
+					) {
+						continue;
+					}
+					const escapedPath = relativePath
+						.replaceAll('&', '&amp;')
+						.replaceAll('"', '&quot;')
+						.replaceAll('<', '&lt;');
+					const attr = ` data-source="${escapedPath}:${line}:${column}"`;
 
 					insertions.push({ pos: afterTagName, text: attr });
 				}

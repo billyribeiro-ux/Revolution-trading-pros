@@ -1,6 +1,6 @@
 {
 	"name": "svelte-click-to-source",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"description": "Alt+Click any element in dev mode to open its source in your editor",
 	"keywords": [
 		"click-to-source",
@@ -26,6 +26,8 @@
 	},
 	"scripts": {
 		"build": "vp pack",
+		"test": "vp test",
+		"check": "tsc --noEmit",
 		"dev": "vp pack --watch",
 		"prepublishOnly": "pnpm run build"
 	},
@@ -37,7 +39,8 @@
 		"svelte": "^5.57.3",
 		"typescript": "^6.0.3",
 		"vite": "catalog:",
-		"vite-plus": "catalog:"
+		"vite-plus": "catalog:",
+		"vitest": "catalog:"
 	},
 	"peerDependencies": {
 		"svelte": "^4.0.0 || ^5.0.0",

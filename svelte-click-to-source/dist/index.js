@@ -1,5 +1,7 @@
-import { exec } from "child_process";
-import { existsSync } from "fs";
+import { randomBytes } from "node:crypto";
+import { spawn } from "node:child_process";
+import { existsSync, realpathSync, statSync } from "node:fs";
+import { isAbsolute, relative, resolve, sep } from "node:path";
 import MagicString from "magic-string";
 // src/runtime.ts
 /**
@@ -13,11 +15,11 @@ const RUNTIME_SCRIPT = `
 (function() {
   'use strict';
 
-  var HOTKEY = '__HOTKEY__';
-  var PROJECT_ROOT = '__PROJECT_ROOT__';
+  var HOTKEY = __HOTKEY__;
   var HIGHLIGHT_ENABLED = __HIGHLIGHT_ENABLED__;
-  var HIGHLIGHT_COLOR = '__HIGHLIGHT_COLOR__';
-  var OPEN_ENDPOINT = '__OPEN_ENDPOINT__';
+  var HIGHLIGHT_COLOR = __HIGHLIGHT_COLOR__;
+  var OPEN_ENDPOINT = __OPEN_ENDPOINT__;
+  var REQUEST_TOKEN = __REQUEST_TOKEN__;
 
   var isHotkeyPressed = false;
   var currentHighlight = null;
@@ -86,7 +88,7 @@ const RUNTIME_SCRIPT = `
     var filePath = parts.join(':');
     var url = OPEN_ENDPOINT + '?file=' + encodeURIComponent(filePath) + '&line=' + line + '&col=' + col;
     console.log('[click-to-source] Opening:', filePath + ':' + line + ':' + col);
-    fetch(url).then(function(r) {
+    fetch(url, { method: 'POST', headers: { 'X-Click-To-Source-Token': REQUEST_TOKEN } }).then(function(r) {
       if (!r.ok) console.warn('[click-to-source] Server returned', r.status);
     }).catch(function(err) {
       console.error('[click-to-source] Failed to contact dev server:', err);
@@ -182,7 +184,7 @@ function isInsideExcludedRange(pos, ranges) {
 	return ranges.some((r) => pos >= r.start && pos < r.end);
 }
 function createPreprocessor(options = {}) {
-	const { enabled = process.env.NODE_ENV !== "production" } = options;
+	const { enabled = process.env.NODE_ENV !== "production", root = process.cwd() } = options;
 	return {
 		name: "click-to-source-preprocessor",
 		markup({ content, filename }) {
@@ -192,7 +194,7 @@ function createPreprocessor(options = {}) {
 				const s = new MagicString(content);
 				const insertions = [];
 				const excludedRanges = findExcludedRanges(content);
-				const tagRegex = /<([a-z][a-z0-9-]*)([\s>\/])/gi;
+				const tagRegex = /<([a-z][a-z0-9-]*)([\s>/])/gi;
 				let match;
 				while ((match = tagRegex.exec(content)) !== null) {
 					const tagStart = match.index;
@@ -203,7 +205,9 @@ function createPreprocessor(options = {}) {
 					const lines = content.slice(0, tagStart).split("\n");
 					const line = lines.length;
 					const column = lines[lines.length - 1].length + 1;
-					const attr = ` data-source="${filename.replace(process.cwd() + "/", "")}:${line}:${column}"`;
+					const relativePath = relative(root, filename);
+					if (!relativePath || relativePath === ".." || relativePath.startsWith(`..${sep}`) || isAbsolute(relativePath)) continue;
+					const attr = ` data-source="${relativePath.replaceAll("&", "&amp;").replaceAll("\"", "&quot;").replaceAll("<", "&lt;")}:${line}:${column}"`;
 					insertions.push({
 						pos: afterTagName,
 						text: attr
@@ -230,19 +234,24 @@ function createPreprocessor(options = {}) {
 const VIRTUAL_MODULE_ID = "virtual:click-to-source";
 const RESOLVED_VIRTUAL_MODULE_ID = "\0" + VIRTUAL_MODULE_ID;
 const OPEN_ENDPOINT = "/__click-to-source-open";
+const MAX_POSITION = 1e6;
 function detectEditor() {
-	const termProgram = process.env.TERM_PROGRAM?.toLowerCase() || "";
-	const editor = process.env.EDITOR?.toLowerCase() || "";
-	const visual = process.env.VISUAL?.toLowerCase() || "";
-	if (termProgram.includes("cursor") || editor.includes("cursor")) return "cursor";
-	if (termProgram.includes("windsurf") || editor.includes("windsurf")) return "windsurf";
-	if (editor.includes("nvim") || visual.includes("nvim")) return "neovim";
-	if (editor.includes("vim") || visual.includes("vim")) return "vim";
-	if (editor.includes("webstorm") || visual.includes("webstorm")) return "webstorm";
+	const values = [
+		process.env.TERM_PROGRAM,
+		process.env.EDITOR,
+		process.env.VISUAL
+	].filter((value) => Boolean(value)).map((value) => value.toLowerCase());
+	for (const name of [
+		"cursor",
+		"windsurf",
+		"nvim",
+		"vim",
+		"webstorm"
+	]) if (values.some((value) => value.includes(name))) return name === "nvim" ? "neovim" : name;
 	return "vscode";
 }
 function getEditorCommand(editor) {
-	const editorPaths = {
+	const candidates = {
 		vscode: [
 			"code",
 			"/usr/local/bin/code",
@@ -261,71 +270,116 @@ function getEditorCommand(editor) {
 		webstorm: ["webstorm", "/usr/local/bin/webstorm"],
 		vim: ["vim"],
 		neovim: ["nvim"]
-	};
-	const paths = editorPaths[editor] || editorPaths.vscode;
-	for (const p of paths) if (p.startsWith("/") && existsSync(p)) return p;
-	return paths[0];
+	}[editor];
+	return candidates.find((candidate) => candidate.startsWith("/") && existsSync(candidate)) ?? candidates[0];
+}
+function resolveSourceFile(root, file) {
+	if (!file || file.includes("\0") || isAbsolute(file) || !file.endsWith(".svelte")) return null;
+	try {
+		const rootPath = realpathSync(root);
+		const filePath = realpathSync(resolve(rootPath, file));
+		const withinRoot = relative(rootPath, filePath);
+		if (!withinRoot || withinRoot === ".." || withinRoot.startsWith(`..${sep}`) || isAbsolute(withinRoot)) return null;
+		return statSync(filePath).isFile() ? filePath : null;
+	} catch {
+		return null;
+	}
+}
+function validPosition(value) {
+	if (!value || !/^[1-9]\d{0,6}$/.test(value)) return false;
+	return Number(value) <= MAX_POSITION;
+}
+function isLoopback(address) {
+	return address === "::1" || address?.startsWith("127.") === true || address?.startsWith("::ffff:127.") === true;
 }
 function clickToSource(options = {}) {
-	const { hotkey = "alt", editor = detectEditor(), highlight = true, highlightColor = "#3b82f6", enabled = true } = options;
+	const { hotkey = "alt", editor = detectEditor(), highlight = true, highlightColor = "#3b82f6", enabled = true, allowRemote = false, editorCommand } = options;
+	const requestToken = randomBytes(32).toString("base64url");
 	let isDev = false;
 	let projectRoot = "";
-	const editorCmd = getEditorCommand(editor);
+	const editorCmd = editorCommand ?? getEditorCommand(editor);
 	return {
 		name: "vite-plugin-click-to-source",
 		enforce: "pre",
 		configResolved(config) {
 			isDev = config.command === "serve";
 			projectRoot = config.root;
-			if (isDev && enabled) console.log(`[click-to-source] Active. Editor: ${editor} (${editorCmd}). Hotkey: ${hotkey.toUpperCase()}+Click`);
+			if (isDev && enabled) console.log(`[click-to-source] Active. Editor: ${editor}. Hotkey: ${hotkey.toUpperCase()}+Click`);
 		},
 		configureServer(server) {
-			if (!enabled) return;
+			if (!enabled || !isDev) return;
 			server.middlewares.use((req, res, next) => {
-				if (!req.url?.startsWith(OPEN_ENDPOINT)) return next();
-				const queryString = req.url.split("?")[1] || "";
-				const params = new URLSearchParams(queryString);
-				const rawFile = queryString.match(/file=([^&]*)/)?.[1];
-				const file = rawFile ? decodeURIComponent(rawFile.replace(/\+/g, "%2B")) : params.get("file");
-				const line = params.get("line") || "1";
-				const col = params.get("col") || "1";
-				if (!file) {
-					res.statusCode = 400;
-					res.end("Missing file parameter");
+				let url;
+				try {
+					url = new URL(req.url ?? "/", "http://localhost");
+				} catch {
+					return next();
+				}
+				if (url.pathname !== OPEN_ENDPOINT) return next();
+				res.setHeader("Cache-Control", "no-store");
+				res.setHeader("Content-Type", "application/json");
+				if (!allowRemote && !isLoopback(req.socket.remoteAddress)) {
+					res.statusCode = 403;
+					res.end(JSON.stringify({ error: "Remote requests are disabled" }));
 					return;
 				}
-				const absolutePath = file.startsWith("/") ? file : `${projectRoot}/${file}`;
-				const cmd = `${editorCmd} --goto "${absolutePath}:${line}:${col}"`;
-				console.log(`[click-to-source] Opening: ${absolutePath}:${line}:${col}`);
-				exec(cmd, (error) => {
-					if (error) {
-						console.warn(`[click-to-source] Primary command failed:`, error.message);
-						const fallbackCmd = `open -a "${editor.charAt(0).toUpperCase() + editor.slice(1)}" "${absolutePath}"`;
-						console.log(`[click-to-source] Trying fallback: ${fallbackCmd}`);
-						exec(fallbackCmd, (err2) => {
-							if (err2) console.error(`[click-to-source] Fallback also failed:`, err2.message);
-						});
+				if (req.method !== "POST") {
+					res.statusCode = 405;
+					res.setHeader("Allow", "POST");
+					res.end(JSON.stringify({ error: "Method not allowed" }));
+					return;
+				}
+				if (req.headers["x-click-to-source-token"] !== requestToken) {
+					res.statusCode = 403;
+					res.end(JSON.stringify({ error: "Forbidden" }));
+					return;
+				}
+				if (req.headers.origin) try {
+					if (new URL(req.headers.origin).host !== req.headers.host) {
+						res.statusCode = 403;
+						res.end(JSON.stringify({ error: "Forbidden" }));
+						return;
 					}
+				} catch {
+					res.statusCode = 403;
+					res.end(JSON.stringify({ error: "Forbidden" }));
+					return;
+				}
+				const file = url.searchParams.get("file");
+				const line = url.searchParams.get("line");
+				const col = url.searchParams.get("col");
+				const sourcePath = file ? resolveSourceFile(projectRoot, file) : null;
+				if (!sourcePath || !validPosition(line) || !validPosition(col)) {
+					res.statusCode = 400;
+					res.end(JSON.stringify({ error: "Invalid source location" }));
+					return;
+				}
+				const args = editor === "vim" || editor === "neovim" ? [`+${line}`, sourcePath] : ["--goto", `${sourcePath}:${line}:${col}`];
+				const child = spawn(editorCmd, args, {
+					detached: true,
+					stdio: "ignore",
+					shell: false
 				});
-				res.setHeader("Access-Control-Allow-Origin", "*");
-				res.setHeader("Content-Type", "application/json");
-				res.statusCode = 200;
-				res.end(JSON.stringify({
-					ok: true,
-					file: absolutePath,
-					line,
-					col
-				}));
+				child.once("error", () => {
+					if (res.writableEnded) return;
+					res.statusCode = 500;
+					res.end(JSON.stringify({ error: "Editor could not be started" }));
+				});
+				child.once("spawn", () => {
+					child.unref();
+					if (res.writableEnded) return;
+					res.statusCode = 200;
+					res.end(JSON.stringify({ ok: true }));
+				});
 			});
 		},
 		resolveId(id) {
-			if (id === VIRTUAL_MODULE_ID) return RESOLVED_VIRTUAL_MODULE_ID;
+			return id === VIRTUAL_MODULE_ID ? RESOLVED_VIRTUAL_MODULE_ID : void 0;
 		},
 		load(id) {
-			if (id === RESOLVED_VIRTUAL_MODULE_ID) {
-				if (!isDev || !enabled) return "export default {}";
-				return RUNTIME_SCRIPT.replace(/__HOTKEY__/g, hotkey).replace(/__PROJECT_ROOT__/g, projectRoot).replace(/__HIGHLIGHT_ENABLED__/g, String(highlight)).replace(/__HIGHLIGHT_COLOR__/g, highlightColor).replace(/__OPEN_ENDPOINT__/g, OPEN_ENDPOINT);
-			}
+			if (id !== RESOLVED_VIRTUAL_MODULE_ID) return void 0;
+			if (!isDev || !enabled) return "export default {}";
+			return RUNTIME_SCRIPT.replace("__HOTKEY__", JSON.stringify(hotkey)).replace("__HIGHLIGHT_ENABLED__", JSON.stringify(highlight)).replace("__HIGHLIGHT_COLOR__", JSON.stringify(highlightColor)).replace("__OPEN_ENDPOINT__", JSON.stringify(OPEN_ENDPOINT)).replace("__REQUEST_TOKEN__", JSON.stringify(requestToken));
 		},
 		transformIndexHtml() {
 			if (!isDev || !enabled) return [];
@@ -338,4 +392,4 @@ function clickToSource(options = {}) {
 		}
 	};
 }
-export { clickToSource, clickToSource as default, createPreprocessor };
+export { clickToSource, clickToSource as default, createPreprocessor, resolveSourceFile };
