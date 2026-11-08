@@ -1,52 +1,4 @@
-/**
- * Forms API Service - Google L7+ Enterprise Implementation
- * ═══════════════════════════════════════════════════════════════════════════
- *
- * ENTERPRISE FEATURES:
- *
- * 1. ADVANCED FORMS:
- *    - AI-powered form generation
- *    - Smart field suggestions
- *    - Multi-step wizards
- *    - Conditional logic engine
- *    - Real-time collaboration
- *    - Version control
- *
- * 2. PERFORMANCE:
- *    - Optimistic updates
- *    - Smart caching
- *    - Lazy loading
- *    - Virtual scrolling
- *    - WebSocket real-time sync
- *    - Offline mode
- *
- * 3. ANALYTICS:
- *    - Conversion tracking
- *    - Drop-off analysis
- *    - A/B testing
- *    - Heatmaps
- *    - User recordings
- *    - Predictive analytics
- *
- * 4. USER EXPERIENCE:
- *    - Drag & drop builder
- *    - Live preview
- *    - Mobile-first design
- *    - Accessibility (WCAG AAA)
- *    - Multi-language support
- *    - Voice input
- *
- * 5. SECURITY:
- *    - Field encryption
- *    - GDPR compliance
- *    - PII detection
- *    - Fraud prevention
- *    - Rate limiting
- *    - CAPTCHA integration
- *
- * @version 3.0.0 (Google L7+ Enterprise)
- * @license MIT
- */
+/** Forms API client. Verified core routes and remaining gaps are tracked in docs/plugins. */
 
 import { mergeHeaders } from '#lib/utils/http-headers.js';
 import { browser } from '$app/env';
@@ -497,9 +449,6 @@ export interface SubmissionNote {
 // Core Service Class
 // ═══════════════════════════════════════════════════════════════════════════
 
-/**
- * Shape of a queued analytics event — batched and POSTed to the backend.
- */
 class FormsService {
 	private static instance: FormsService;
 	// R7-A precedent: cache values stored as `unknown`; reads go through a
@@ -507,6 +456,8 @@ class FormsService {
 	// `0` / `""` / `false` to force a refetch via the `if (cached) ...`
 	// truthy-check.
 	private cache = new Map<string, { data: unknown; expiry: number }>();
+	private cacheAuthToken = '';
+	private cacheEpoch = 0;
 	private wsConnection?: WebSocket;
 	// `unknown` rather than a concrete `T` because the map holds different
 	// fetch results keyed by URL; dedup-then-replay returns the same Promise
@@ -580,9 +531,18 @@ class FormsService {
 			...fetchOptions
 		} = options;
 
-		// Check cache for GET requests
-		const cacheKey = `${fetchOptions.method || 'GET'}:${url}`;
-		if ((!skipCache && !fetchOptions.method) || fetchOptions.method === 'GET') {
+		// A login change must not expose the previous user's cached admin forms.
+		const authToken = this.getAuthToken();
+		if (authToken !== this.cacheAuthToken) {
+			this.cache.clear();
+			this.cacheAuthToken = authToken;
+			this.cacheEpoch += 1;
+		}
+		const method = (fetchOptions.method ?? 'GET').toUpperCase();
+		const isGet = method === 'GET';
+		const requestEpoch = this.cacheEpoch;
+		const cacheKey = `${requestEpoch}:${method}:${url}`;
+		if (isGet && !skipCache) {
 			// R7-A precedent: explicit `!== null` test on the generic
 			// `getFromCache<T>` return so a cached `0` / `""` / `false`
 			// doesn't force a refetch.
@@ -591,7 +551,7 @@ class FormsService {
 		}
 
 		// Check for pending request (deduplication)
-		const pending = this.pendingRequests.get(cacheKey);
+		const pending = isGet ? this.pendingRequests.get(cacheKey) : undefined;
 		if (pending) {
 			// Same-URL dedup — caller's generic re-establishes T from the
 			// stored `Promise<unknown>`.
@@ -599,7 +559,10 @@ class FormsService {
 		}
 
 		// Create request promise
-		const requestPromise = this.executeRequest<T>(url, fetchOptions, retries);
+		// Mutations are not idempotent without a server-issued idempotency key.
+		// Never collapse or automatically retry them after an ambiguous failure.
+		const requestPromise = this.executeRequest<T>(url, fetchOptions, isGet ? retries : 0);
+		if (!isGet) return requestPromise;
 
 		// Store pending request
 		this.pendingRequests.set(cacheKey, requestPromise);
@@ -608,7 +571,7 @@ class FormsService {
 			const result = await requestPromise;
 
 			// Cache successful GET requests
-			if (!fetchOptions.method || fetchOptions.method === 'GET') {
+			if (this.cacheEpoch === requestEpoch) {
 				this.setCache(cacheKey, result, cacheTTL);
 			}
 
@@ -1044,7 +1007,7 @@ class FormsService {
 				})
 			);
 
-			this.clearCache(`/forms/${id}`);
+			this.clearCache('/forms');
 
 			return form;
 		} catch (error: unknown) {
@@ -1094,6 +1057,7 @@ class FormsService {
 			);
 
 			this.forms.update((forms) => [...forms, form]);
+			this.clearCache('/forms');
 
 			return form;
 		} catch (error: unknown) {
@@ -1661,24 +1625,13 @@ export const getFieldTypes = () => [
 // Export formsApi for compatibility
 export const formsApi = {
 	list: () => formsService.getForms(),
-	get: (_id: number) => Promise.resolve({} as Form),
-	create: (_data: Partial<Form>) => Promise.resolve({} as Form),
-	update: (_id: number, _data: Partial<Form>) => Promise.resolve({} as Form),
-	delete: (_id: number) => Promise.resolve(),
+	get: (id: number) => formsService.getForm(id),
+	create: (data: Partial<Form>) => formsService.createForm(data),
+	update: (id: number, data: Partial<Form>) => formsService.updateForm(id, data),
+	delete: (id: number) => formsService.deleteForm(id),
 	getEntries: (formId: number, page?: number) => formsService.getSubmissions(formId, page),
-	exportEntries: async (formId: number, format: string = 'csv'): Promise<Blob> => {
-		try {
-			const response = await fetch(`/api/forms/${formId}/export?format=${format}`);
-			if (!response.ok) {
-				const errorData = await response.json().catch(() => ({ message: 'Export failed' }));
-				throw new Error(errorData.message || `Failed to export entries (HTTP ${response.status})`);
-			}
-			return response.blob();
-		} catch (error) {
-			logger.error('[FormsAPI] exportEntries error', { error });
-			throw error instanceof Error ? error : new Error('Failed to export form entries');
-		}
-	}
+	exportEntries: (formId: number, format: 'csv' | 'excel' | 'pdf' = 'csv'): Promise<Blob> =>
+		formsService.exportSubmissions(formId, format)
 };
 
 export default formsService;

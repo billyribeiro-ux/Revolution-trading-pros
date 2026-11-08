@@ -4,6 +4,18 @@
 
 All notable changes to this project. Format roughly follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); we don't strictly adhere to SemVer because the product isn't a published library.
 
+## [Unreleased] — 2026-11-07 — Forms request delivery
+
+### Fixed
+
+- Send every form mutation independently and stop automatic retries after ambiguous write failures. Concurrent creates to the same endpoint now reach the API as distinct requests.
+- Scope cached admin reads to the current authentication epoch, honor explicit cache bypass for GET requests, and invalidate list/detail cache entries after every form mutation.
+- Replace the compatibility forms API's no-op CRUD methods and incorrect export URL with the real forms service methods.
+
+### Validation and limits
+
+- Added focused tests for concurrent creates, single-attempt failure, and the real admin get route. Server-side idempotency keys for safely retryable writes remain future work.
+
 ## [Unreleased] — 2026-11-07 — Click-to-source plugin security
 
 ### Fixed
