@@ -53,7 +53,8 @@ const ALLOWED_QUERY = [
 	'per_page',
 	'filter',
 	'search',
-	'type'
+	'type',
+	'page_url'
 ] as const;
 
 function upstreamPath(rest: string): string {

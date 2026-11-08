@@ -6,11 +6,40 @@
 import type { BehaviorEvent, BehaviorEventBatch, BehaviorTrackerConfig } from './types';
 import { generateSessionId, generateVisitorId } from './utils.js';
 
+const SAFE_TAGS = new Set([
+	'a',
+	'button',
+	'div',
+	'span',
+	'img',
+	'svg',
+	'path',
+	'li',
+	'nav',
+	'header',
+	'footer',
+	'section',
+	'article',
+	'p',
+	'h1',
+	'h2',
+	'h3',
+	'h4',
+	'h5',
+	'h6',
+	'label',
+	'form',
+	'main',
+	'summary',
+	'details'
+]);
+const PRIVATE_PATH =
+	/^\/(admin|account|auth|checkout|login|register|dashboard|my|profile|settings|billing|orders|member|members|rooms|classroom|reset-password|verify-email|forgot-password|unsubscribe)(\/|$)/i;
+
 export class BehaviorTracker {
 	private config: BehaviorTrackerConfig;
 	private sessionId: string;
 	private visitorId: string;
-	private userId?: string;
 	private eventBuffer: BehaviorEvent[] = [];
 	private bufferTimer?: number;
 	private sessionStartTime: number;
@@ -33,6 +62,8 @@ export class BehaviorTracker {
 	private isIdle: boolean = false;
 	private lastScrollY: number = 0;
 	private lastScrollTime: number = 0;
+	private lastSpeedScrollEvent = 0;
+	private lastPagePath = '';
 
 	constructor(config: Partial<BehaviorTrackerConfig> = {}) {
 		this.config = {
@@ -41,10 +72,10 @@ export class BehaviorTracker {
 			bufferTimeout: 5000,
 			trackScrollDepth: true,
 			trackRageClicks: true,
-			trackHoverIntent: true,
-			trackFormBehavior: true,
+			trackHoverIntent: false,
+			trackFormBehavior: false,
 			trackCursorMovement: false,
-			trackIdleTime: true,
+			trackIdleTime: false,
 			rageClickThreshold: 3,
 			rageClickWindow: 1000,
 			hoverIntentDuration: 1500,
@@ -54,7 +85,7 @@ export class BehaviorTracker {
 			respectDNT: true,
 			anonymizeIP: true,
 			sampleRate: 1,
-			maxEventsPerSession: 1000,
+			maxEventsPerSession: 200,
 			...config
 		};
 
@@ -67,7 +98,11 @@ export class BehaviorTracker {
 
 	private init() {
 		// Check DNT
-		if (this.config.respectDNT && navigator.doNotTrack === '1') {
+		if (
+			this.config.respectDNT &&
+			(navigator.doNotTrack === '1' ||
+				(navigator as Navigator & { globalPrivacyControl?: boolean }).globalPrivacyControl === true)
+		) {
 			console.info('[BehaviorTracker] DNT enabled, tracking disabled');
 			return;
 		}
@@ -81,6 +116,7 @@ export class BehaviorTracker {
 		this.visitorId = generateVisitorId();
 		this.enabled = true;
 		this.pendingBatches = this.loadFailedBatches();
+		this.persistBatches();
 		this.setupEventListeners();
 		this.trackPageView();
 	}
@@ -137,39 +173,47 @@ export class BehaviorTracker {
 	}
 
 	private trackPageView() {
+		this.lastPagePath = window.location.pathname;
 		this.trackEvent({
 			event_type: 'page_view',
 			timestamp: Date.now(),
-			page_url: window.location.href,
-			event_metadata: {
-				referrer: document.referrer,
-				entry_type: this.getEntryType(),
-				viewport: {
-					width: window.innerWidth,
-					height: window.innerHeight
-				},
-				utm_source: new URLSearchParams(window.location.search).get('utm_source') || undefined,
-				utm_campaign: new URLSearchParams(window.location.search).get('utm_campaign') || undefined,
-				utm_medium: new URLSearchParams(window.location.search).get('utm_medium') || undefined
-			}
+			page_url: window.location.href
 		});
+	}
+
+	public trackNavigation(): void {
+		if (!this.enabled || this.closed || this.lastPagePath === window.location.pathname) return;
+		this.maxScrollDepth = 0;
+		this.lastScrollY = 0;
+		this.lastScrollTime = 0;
+		this.trackPageView();
+	}
+
+	public isActive(): boolean {
+		return this.enabled && !this.closed;
 	}
 
 	private handleScroll() {
 		const scrollY = window.scrollY;
 		const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
-		const scrollPercent = Math.round((scrollY / scrollHeight) * 100);
+		const scrollPercent =
+			scrollHeight > 0
+				? Math.min(100, Math.max(0, Math.round((scrollY / scrollHeight) * 100)))
+				: 100;
 
 		// Track scroll depth milestones
-		if (scrollPercent > this.maxScrollDepth && [25, 50, 75, 90, 100].includes(scrollPercent)) {
-			this.maxScrollDepth = scrollPercent;
+		const milestone = [100, 90, 75, 50, 25].find(
+			(depth) => scrollPercent >= depth && this.maxScrollDepth < depth
+		);
+		if (milestone !== undefined) {
+			this.maxScrollDepth = milestone;
 			const timeSincePageLoad = Date.now() - this.sessionStartTime;
 
 			this.trackEvent({
 				event_type: 'scroll_depth',
 				timestamp: Date.now(),
 				page_url: window.location.href,
-				event_value: scrollPercent,
+				event_value: milestone,
 				event_metadata: {
 					depth_percent: scrollPercent,
 					time_to_depth: timeSincePageLoad,
@@ -180,7 +224,11 @@ export class BehaviorTracker {
 
 		// Detect speed scrolling
 		const scrollSpeed = this.calculateScrollSpeed(scrollY);
-		if (scrollSpeed > this.config.speedScrollThreshold) {
+		if (
+			scrollSpeed > this.config.speedScrollThreshold &&
+			Date.now() - this.lastSpeedScrollEvent >= 1000
+		) {
+			this.lastSpeedScrollEvent = Date.now();
 			this.trackEvent({
 				event_type: 'speed_scroll',
 				timestamp: Date.now(),
@@ -221,6 +269,12 @@ export class BehaviorTracker {
 		const target = event.target as Element;
 		const now = Date.now();
 
+		if (
+			target.closest(
+				'input, textarea, select, [contenteditable], [data-sensitive], [data-behavior-ignore]'
+			)
+		)
+			return;
 		// Track click
 		this.trackEvent({
 			event_type: 'click',
@@ -228,7 +282,11 @@ export class BehaviorTracker {
 			page_url: window.location.href,
 			element: target.tagName,
 			element_selector: this.getSelector(target),
-			coordinates: { x: event.clientX, y: event.clientY }
+			coordinates: {
+				x: Math.max(0, Math.min(100, (event.clientX / window.innerWidth) * 100)),
+				y: Math.max(0, Math.min(100, (event.clientY / window.innerHeight) * 100))
+			},
+			coordinate_space: 'viewport_percent'
 		});
 
 		// Rage click detection
@@ -251,7 +309,11 @@ export class BehaviorTracker {
 						page_url: window.location.href,
 						element: target.tagName,
 						element_selector: this.getSelector(target),
-						coordinates: { x: event.clientX, y: event.clientY },
+						coordinates: {
+							x: Math.max(0, Math.min(100, (event.clientX / window.innerWidth) * 100)),
+							y: Math.max(0, Math.min(100, (event.clientY / window.innerHeight) * 100))
+						},
+						coordinate_space: 'viewport_percent',
 						event_metadata: {
 							click_count: this.clickPositions.length,
 							time_window: this.config.rageClickWindow,
@@ -386,6 +448,7 @@ export class BehaviorTracker {
 				timestamp: Date.now(),
 				page_url: window.location.href
 			});
+			void this.flush();
 		} else {
 			this.trackEvent({
 				event_type: 'tab_focus',
@@ -450,28 +513,8 @@ export class BehaviorTracker {
 		}, this.config.idleTimeout);
 	}
 
-	private getEntryType(): 'direct' | 'referral' | 'search' | 'social' | 'campaign' {
-		const referrer = document.referrer;
-		const hasUTM = window.location.search.includes('utm_');
-
-		if (hasUTM) return 'campaign';
-		if (!referrer) return 'direct';
-		if (referrer.includes('google') || referrer.includes('bing')) return 'search';
-		if (
-			referrer.includes('facebook') ||
-			referrer.includes('twitter') ||
-			referrer.includes('linkedin')
-		)
-			return 'social';
-		return 'referral';
-	}
-
 	private getSelector(element: Element): string {
-		if (element.id) return `#${element.id}`;
-		// Handle SVG elements which have className as SVGAnimatedString, not string
-		if (element.className && typeof element.className === 'string') {
-			return `.${element.className.split(' ')[0]}`;
-		}
+		// IDs and classes often contain account data. Only retain the tag.
 		return element.tagName.toLowerCase();
 	}
 
@@ -480,7 +523,9 @@ export class BehaviorTracker {
 			return;
 		}
 
-		this.eventBuffer.push(event);
+		const safe = this.sanitizeEvent(event);
+		if (!safe) return;
+		this.eventBuffer.push(safe);
 		this.sequenceNumber++;
 
 		if (immediate || this.eventBuffer.length >= this.config.bufferSize) {
@@ -491,6 +536,34 @@ export class BehaviorTracker {
 				void this.flush();
 			}, this.config.bufferTimeout);
 		}
+	}
+
+	private sanitizeEvent(event: BehaviorEvent): BehaviorEvent | null {
+		let path: string;
+		try {
+			const url = new URL(event.page_url, window.location.origin);
+			if (url.origin !== window.location.origin) return null;
+			path = url.pathname;
+		} catch {
+			return null;
+		}
+		if (path.length > 500 || PRIVATE_PATH.test(path)) return null;
+		const selector = event.element_selector?.toLowerCase();
+		return {
+			event_type: event.event_type,
+			timestamp: event.timestamp,
+			page_url: `${window.location.origin}${path}`,
+			...(selector && SAFE_TAGS.has(selector) ? { element_selector: selector } : {}),
+			...(typeof event.event_value === 'number' && Number.isFinite(event.event_value)
+				? { event_value: event.event_value }
+				: {}),
+			...(event.coordinate_space === 'viewport_percent' &&
+			event.coordinates &&
+			Number.isFinite(event.coordinates.x) &&
+			Number.isFinite(event.coordinates.y)
+				? { coordinates: event.coordinates, coordinate_space: 'viewport_percent' as const }
+				: {})
+		};
 	}
 
 	public flush(): Promise<void> {
@@ -543,7 +616,6 @@ export class BehaviorTracker {
 		return {
 			session_id: this.sessionId,
 			visitor_id: this.visitorId,
-			...(this.userId && { user_id: this.userId }),
 			events,
 			client_timestamp: Date.now()
 		};
@@ -581,7 +653,14 @@ export class BehaviorTracker {
 							Number.isFinite(event.timestamp)
 					);
 				})
-				.slice(-5);
+				.slice(-5)
+				.map((batch) => ({
+					...batch,
+					events: batch.events
+						.map((event) => this.sanitizeEvent(event))
+						.filter((event): event is BehaviorEvent => event !== null)
+				}))
+				.filter((batch) => batch.events.length > 0);
 		} catch {
 			return [];
 		}
@@ -656,8 +735,8 @@ export class BehaviorTracker {
 		}
 	}
 
-	public setUserId(userId: string) {
-		this.userId = userId;
+	public setUserId(_userId: string) {
+		// Compatibility shim: identity is never sent with behavior telemetry.
 	}
 
 	public destroy(options: { flush?: boolean } = {}): void {

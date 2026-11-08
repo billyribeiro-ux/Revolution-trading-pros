@@ -2028,9 +2028,9 @@ async fn fresh_install_crm_persistence_media_states_and_migration_failure() {
     let (status, summary) = request(&api, "GET", summary_path, Some(&tokens[0]), Value::Null).await;
     assert_eq!(status, StatusCode::OK);
     assert_eq!(summary["total_sessions"], 1);
-    assert_eq!(summary["heatmap_views"], 0, "clicks are not heatmap views");
+    assert_eq!(summary["click_events"], 1);
     assert_eq!(summary["avg_scroll_depth"], 75.0);
-    assert_eq!(summary["top_clicks"][0]["element"], "#subscribe");
+    assert_eq!(summary["top_clicks"][0]["element"], "Unknown element");
     let saved: Vec<(String, Option<f64>)> =
         sqlx::query_as("SELECT page_url,event_value FROM behavior_events ORDER BY id")
             .fetch_all(&pool)
@@ -2042,6 +2042,45 @@ async fn fresh_install_crm_persistence_media_states_and_migration_failure() {
         "strip sensitive query/fragment data"
     );
     assert!(saved[1].1.is_none(), "never store form input values");
+    let normalized = json!({"session_id":"fixture-heatmap","visitor_id":"fixture-anonymous","events":[
+        {"event_type":"page_view","timestamp":chrono::Utc::now().timestamp_millis(),"page_url":"https://example.test/pricing"},
+        {"event_type":"click","timestamp":chrono::Utc::now().timestamp_millis(),"page_url":"https://example.test/pricing","element_selector":"button","coordinates":{"x":25,"y":35},"coordinate_space":"viewport_percent"}
+    ]});
+    assert_eq!(
+        request(&api, "POST", "/api/behavior/events", None, normalized)
+            .await
+            .0,
+        StatusCode::OK
+    );
+    let heatmap_path = "/api/analytics/behavior/heatmaps?period=7d&page_url=%2Fpricing";
+    assert_eq!(
+        request(&api, "GET", heatmap_path, None, Value::Null)
+            .await
+            .0,
+        StatusCode::UNAUTHORIZED
+    );
+    let (status, heatmap) = request(&api, "GET", heatmap_path, Some(&tokens[0]), Value::Null).await;
+    assert_eq!(status, StatusCode::OK);
+    assert_eq!(heatmap["points"][0]["count"], 1);
+    assert_eq!(heatmap["scroll_depth"][0]["depth"], 25);
+    let (status, listing) = request(
+        &api,
+        "GET",
+        "/api/analytics/behavior/sessions?period=7d",
+        Some(&tokens[0]),
+        Value::Null,
+    )
+    .await;
+    assert_eq!(status, StatusCode::OK);
+    assert_eq!(listing["pagination"]["total"], 2);
+    let detail_path = "/api/analytics/behavior/sessions/fixture-heatmap";
+    assert_eq!(
+        request(&api, "GET", detail_path, None, Value::Null).await.0,
+        StatusCode::UNAUTHORIZED
+    );
+    let (status, detail) = request(&api, "GET", detail_path, Some(&tokens[0]), Value::Null).await;
+    assert_eq!(status, StatusCode::OK);
+    assert_eq!(detail["events"].as_array().map(Vec::len), Some(2));
     drop(api);
     // Rebuild services/router and reopen the DB pool, proving state does not
     // depend on process-local memory or the old connection pool.

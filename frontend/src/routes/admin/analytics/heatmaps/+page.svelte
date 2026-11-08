@@ -1,813 +1,103 @@
 <script lang="ts">
-	/**
-	 * Click Heatmaps - Visual User Interaction Analysis
-	 * Apple ICT7 Grade Implementation
-	 *
-	 * Visualize where users click on your pages
-	 * with interactive heatmap overlays.
-	 */
 	import { onMount } from 'svelte';
-	import { browser } from '$app/env';
-	import { connections, getIsAnalyticsConnected } from '#lib/stores/connections.svelte.js';
-	import ServiceConnectionStatus from '#lib/components/admin/ServiceConnectionStatus.svelte';
 	import PeriodSelector from '#lib/components/analytics/PeriodSelector.svelte';
-	// FIX-2026-04-26: Tabler icons replace raw inline <svg> blocks.
-	import IconPointer from '@tabler/icons-svelte-runes/icons/pointer';
-	import IconAlertCircle from '@tabler/icons-svelte-runes/icons/alert-circle';
-	import IconPhoto from '@tabler/icons-svelte-runes/icons/photo';
 
-	interface HeatmapPage {
-		id: string;
-		url: string;
-		title: string;
-		clicks: number;
-		unique_visitors: number;
-		scroll_depth: number;
-		last_updated: string;
-		thumbnail?: string;
-	}
+	interface PageSummary { id: string; url: string; clicks: number; sessions: number; scroll_depth: number }
+	interface Point { x: number; y: number; count: number }
+	interface ScrollDepth { depth: number; sessions: number }
+	interface PageDetail { page_url: string; points: Point[]; scroll_depth: ScrollDepth[]; sessions: number }
 
-	// Svelte 5 Runes - State
-	let pages = $state<HeatmapPage[]>([]);
-	let selectedPage = $state<HeatmapPage | null>(null);
+	let pages = $state<PageSummary[]>([]);
+	let selected = $state<PageSummary | null>(null);
+	let detail = $state<PageDetail | null>(null);
+	let period = $state('7d');
 	let loading = $state(true);
-	let connectionLoading = $state(true);
+	let detailLoading = $state(false);
 	let error = $state<string | null>(null);
-	let selectedPeriod = $state('7d');
-	let heatmapType = $state<'click' | 'scroll' | 'move'>('click');
+	let requestId = 0;
 
 	async function loadPages() {
+		const current = ++requestId;
 		loading = true;
 		error = null;
 		try {
-			const params = new URLSearchParams({ period: selectedPeriod });
-			const response = await fetch(`/api/admin/analytics/heatmaps?${params.toString()}`);
-			if (!response.ok) {
-				// FIX-2026-04-26 (audit 08-analytics §P1-4): surface real upstream
-				// status instead of silently zeroing the list.
-				throw new Error(`Failed to load heatmaps (HTTP ${response.status})`);
-			}
-			const data = await response.json();
-			pages = data.pages || [];
-		} catch (e) {
-			error = e instanceof Error ? e.message : 'Failed to load heatmaps';
-			pages = [];
+			const response = await fetch(`/api/admin/analytics/behavior/heatmaps?period=${period}`);
+			if (!response.ok) throw new Error(`Heatmap request failed (HTTP ${response.status})`);
+			const data: { pages: PageSummary[] } = await response.json();
+			if (current !== requestId) return;
+			pages = data.pages;
+			selected = data.pages.find((page) => page.url === selected?.url) ?? data.pages[0] ?? null;
+			if (selected) await loadDetail(selected);
+			else detail = null;
+		} catch (cause) {
+			if (current === requestId) error = cause instanceof Error ? cause.message : 'Heatmap request failed';
 		} finally {
-			loading = false;
+			if (current === requestId) loading = false;
 		}
 	}
 
-	async function loadHeatmapData(page: HeatmapPage) {
-		selectedPage = page;
+	async function loadDetail(page: PageSummary) {
+		selected = page;
+		detail = null;
+		detailLoading = true;
+		const current = requestId;
 		try {
-			const response = await fetch(
-				`/api/admin/analytics/heatmaps/${encodeURIComponent(page.url)}?period=${selectedPeriod}&type=${heatmapType}`
-			);
-			if (response.ok) {
-				await response.json();
-			}
-		} catch (_e) {
-			// Handle gracefully
+			const query = new URLSearchParams({ period, page_url: page.url });
+			const response = await fetch(`/api/admin/analytics/behavior/heatmaps?${query}`);
+			if (!response.ok) throw new Error(`Click data request failed (HTTP ${response.status})`);
+			const result: PageDetail = await response.json();
+			if (current === requestId && selected?.url === page.url) detail = result;
+		} catch (cause) {
+			if (current === requestId) error = cause instanceof Error ? cause.message : 'Click data request failed';
+		} finally {
+			if (current === requestId) detailLoading = false;
 		}
 	}
 
-	function handlePeriodChange(value: string) {
-		selectedPeriod = value;
-		loadPages();
-		if (selectedPage) {
-			loadHeatmapData(selectedPage);
-		}
-	}
-
-	// FIX-2026-04-26 (P1-3): $derived restores reactivity past helper's `untrack`.
-	let isAnalyticsConnected = $derived(getIsAnalyticsConnected());
-
-	// FIX-2026-04-26 (P1-1): onMount replaces the $effect cascade pattern.
-	onMount(() => {
-		if (!browser) return;
-
-		(async () => {
-			try {
-				await connections.load();
-			} catch (e) {
-				if (import.meta.env.DEV) {
-					console.error('[Heatmaps] Failed to load connection status:', e);
-				}
-			} finally {
-				connectionLoading = false;
-			}
-
-			if (getIsAnalyticsConnected()) {
-				await loadPages();
-			} else {
-				loading = false;
-			}
-		})();
-	});
-
-	// Derived stats
-	const stats = $derived({
-		totalPages: pages.length,
-		totalClicks: pages.reduce((sum, p) => sum + p.clicks, 0),
-		avgScrollDepth:
-			pages.length > 0
-				? Math.round(pages.reduce((sum, p) => sum + p.scroll_depth, 0) / pages.length)
-				: 0,
-		totalVisitors: pages.reduce((sum, p) => sum + p.unique_visitors, 0)
-	});
+	function changePeriod(value: string) { period = value; void loadPages(); }
+	onMount(() => { void loadPages(); return () => { requestId++; }; });
+	let maxCount = $derived(Math.max(1, ...(detail?.points.map((point) => point.count) ?? [])));
 </script>
 
-<svelte:head>
-	<title>Click Heatmaps | Analytics</title>
-</svelte:head>
-
-<div class="heatmaps-page">
-	<div class="heatmaps-container">
-		<!-- Apple ICT7 Grade Header -->
-		<header class="heatmaps-header">
-			<div class="header-title-group">
-				<div class="header-icon">
-					<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: pointer/cursor (heatmap) -->
-					<IconPointer size={24} aria-hidden="true" />
-				</div>
-				<div>
-					<h1 class="page-title">Click Heatmaps</h1>
-					<p class="page-subtitle">Visualize where users click on your pages</p>
-				</div>
-			</div>
-			{#if isAnalyticsConnected}
-				<div class="header-controls">
-					<PeriodSelector value={selectedPeriod} onchange={handlePeriodChange} />
-					<div class="type-switcher">
-						{#each [{ value: 'click', label: 'Clicks' }, { value: 'scroll', label: 'Scroll' }, { value: 'move', label: 'Movement' }] as type (type.value)}
-							<button
-								onclick={() => (heatmapType = type.value as typeof heatmapType)}
-								class={{
-									'type-button': true,
-									'type-button--active': heatmapType === type.value
-								}}
-							>
-								{type.label}
-							</button>
+<main class="behavior-page">
+	<header class="page-header">
+		<div><h1>Click heatmaps</h1><p>Aggregated clicks from visitors who consented to analytics. Positions are relative to the viewport.</p></div>
+		<PeriodSelector value={period} onchange={changePeriod} />
+	</header>
+	{#if error}<p role="alert" class="error">{error} <button onclick={loadPages}>Retry</button></p>{/if}
+	{#if loading}<p>Loading click data…</p>
+	{:else if pages.length === 0}<p>No consented activity is available for this period.</p>
+	{:else}
+		<div class="layout">
+			<nav aria-label="Tracked pages" class="pages">
+				{#each pages as page (page.id)}
+					<button class={{ active: selected?.url === page.url }} onclick={() => loadDetail(page)}>
+						<strong>{page.url}</strong><span>{page.clicks.toLocaleString()} clicks · {page.sessions.toLocaleString()} sessions</span>
+					</button>
+				{/each}
+			</nav>
+			<section class="detail" aria-label="Page click density">
+				<h2>{selected?.url}</h2>
+				{#if detailLoading}<p>Loading page detail…</p>
+				{:else if detail}
+					<p>{selected?.clicks.toLocaleString()} clicks · {detail.sessions.toLocaleString()} sessions with a page view</p>
+					<div class="viewport" aria-label="Click density by viewport position">
+						{#each detail.points as point (`${point.x}-${point.y}`)}
+							<span class="point" style:left={`${point.x}%`} style:top={`${point.y}%`} style:--intensity={point.count / maxCount} title={`${point.count} clicks near ${point.x}%, ${point.y}%`}></span>
 						{/each}
 					</div>
-				</div>
-			{/if}
-		</header>
-
-		<!-- Connection Check -->
-		{#if connectionLoading}
-			<div class="loading-state">
-				<div class="spinner spinner--large"></div>
-			</div>
-		{:else if !isAnalyticsConnected}
-			<ServiceConnectionStatus feature="analytics" variant="card" showFeatures={true} />
-		{:else}
-			<!-- Stats Grid -->
-			<div class="stats-grid">
-				<div class="metric-card">
-					<div class="metric-value">{stats.totalPages}</div>
-					<div class="metric-label">Tracked Pages</div>
-				</div>
-				<div class="metric-card">
-					<div class="metric-value metric-value--rose">
-						{stats.totalClicks.toLocaleString()}
-					</div>
-					<div class="metric-label">Total Clicks</div>
-				</div>
-				<div class="metric-card">
-					<div class="metric-value metric-value--amber">{stats.avgScrollDepth}%</div>
-					<div class="metric-label">Avg Scroll Depth</div>
-				</div>
-				<div class="metric-card">
-					<div class="metric-value metric-value--blue">
-						{stats.totalVisitors.toLocaleString()}
-					</div>
-					<div class="metric-label">Unique Visitors</div>
-				</div>
-			</div>
-
-			{#if loading}
-				<div class="loading-state">
-					<div class="spinner"></div>
-				</div>
-			{:else if error}
-				<div class="panel-state panel-state--error">
-					<div class="state-icon state-icon--error">
-						<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: alert-circle error -->
-						<IconAlertCircle size={32} aria-hidden="true" />
-					</div>
-					<p class="error-message">{error}</p>
-					<button onclick={loadPages} class="retry-button"> Retry </button>
-				</div>
-			{:else if pages.length === 0}
-				<div class="panel-state">
-					<div class="state-icon state-icon--rose">
-						<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: pointer (no heatmap data empty state) -->
-						<IconPointer size={32} aria-hidden="true" />
-					</div>
-					<h3 class="state-title">No Heatmap Data Yet</h3>
-					<p class="state-copy">Heatmaps will appear once you have visitor activity on your site</p>
-					<a href="/admin/settings/tracking" class="setup-link"> Setup Tracking </a>
-				</div>
-			{:else}
-				<div class="heatmap-layout">
-					<!-- Page List -->
-					<div class="page-list">
-						<h3 class="list-heading">Tracked Pages</h3>
-						{#each pages as page (page.id)}
-							<button
-								onclick={() => loadHeatmapData(page)}
-								class={{
-									'page-card': true,
-									'page-card--selected': selectedPage?.id === page.id
-								}}
-							>
-								<div class="page-card-title">{page.title || page.url}</div>
-								<div class="page-card-url">{page.url}</div>
-								<div class="page-card-meta">
-									<span class="page-clicks">{page.clicks.toLocaleString()} clicks</span>
-									<span>{page.scroll_depth}% scroll</span>
-								</div>
-							</button>
-						{/each}
-					</div>
-
-					<!-- Heatmap Preview -->
-					<div class="preview-column">
-						{#if selectedPage}
-							<div class="preview-panel">
-								<div class="preview-header">
-									<div>
-										<h3 class="preview-title">
-											{selectedPage.title || selectedPage.url}
-										</h3>
-										<p class="preview-url">{selectedPage.url}</p>
-									</div>
-									<div class="preview-badges">
-										<span class="preview-badge preview-badge--rose">
-											{selectedPage.clicks.toLocaleString()} clicks
-										</span>
-										<span class="preview-badge preview-badge--blue">
-											{selectedPage.unique_visitors.toLocaleString()} visitors
-										</span>
-									</div>
-								</div>
-
-								<!-- Heatmap Visualization Placeholder -->
-								<div class="visualization-placeholder">
-									<div class="placeholder-content">
-										<div class="state-icon state-icon--rose">
-											<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: photo (heatmap placeholder) -->
-											<IconPhoto size={32} aria-hidden="true" />
-										</div>
-										<p class="placeholder-copy">Heatmap visualization will be rendered here</p>
-										<p class="placeholder-hint">Requires heatmap rendering library integration</p>
-									</div>
-								</div>
-
-								<!-- Scroll Depth Visualization -->
-								<div class="scroll-depth-panel">
-									<h4 class="scroll-depth-title">Scroll Depth Distribution</h4>
-									<div class="scroll-depth-list">
-										{#each [{ depth: '25%', percentage: 85 }, { depth: '50%', percentage: 62 }, { depth: '75%', percentage: 38 }, { depth: '100%', percentage: 15 }] as scroll (scroll.depth)}
-											<div class="scroll-depth-row">
-												<span class="scroll-depth-label">{scroll.depth}</span>
-												<div class="scroll-depth-track">
-													<div
-														class="scroll-depth-fill"
-														style:--scroll-percent={`${scroll.percentage}%`}
-													></div>
-												</div>
-												<span class="scroll-depth-value">{scroll.percentage}%</span>
-											</div>
-										{/each}
-									</div>
-								</div>
-							</div>
-						{:else}
-							<div class="preview-empty">
-								<div>
-									<div class="state-icon state-icon--muted">
-										<!-- FIX-2026-04-26: replaced raw SVG with Tabler icon. Old: pointer (select page placeholder) -->
-										<IconPointer size={32} aria-hidden="true" />
-									</div>
-									<p class="state-copy state-copy--compact">Select a page to view its heatmap</p>
-								</div>
-							</div>
-						{/if}
-					</div>
-				</div>
-			{/if}
-		{/if}
-	</div>
-</div>
+					<p class="note">Each dot is a 5% viewport cell. Historical clicks without normalized coordinates are excluded.</p>
+					<h3>Scroll depth</h3>
+					{#each detail.scroll_depth as row (row.depth)}
+						<div class="scroll-row"><span>{row.depth}%</span><progress value={row.sessions} max={Math.max(1, detail.sessions)}></progress><span>{row.sessions} sessions</span></div>
+					{/each}
+					{#if detail.scroll_depth.length === 0}<p>No scroll events for this page.</p>{/if}
+				{/if}
+			</section>
+		</div>
+	{/if}
+</main>
 
 <style>
-	.heatmaps-page {
-		min-height: 100%;
-		background: var(--bg-base, #0d1117);
-	}
-
-	.heatmaps-container {
-		width: min(100%, 80rem);
-		margin: 0 auto;
-		padding: 2rem 1rem;
-	}
-
-	.heatmaps-header,
-	.header-title-group,
-	.header-controls,
-	.type-switcher,
-	.loading-state,
-	.page-card-meta,
-	.preview-header,
-	.preview-badges,
-	.visualization-placeholder,
-	.scroll-depth-row,
-	.preview-empty,
-	.state-icon {
-		display: flex;
-	}
-
-	.heatmaps-header {
-		align-items: center;
-		justify-content: space-between;
-		gap: 1rem;
-		margin-bottom: 2rem;
-	}
-
-	.header-title-group,
-	.header-controls,
-	.preview-badges {
-		align-items: center;
-		gap: 1rem;
-	}
-
-	.header-icon {
-		display: flex;
-		width: 3rem;
-		height: 3rem;
-		align-items: center;
-		justify-content: center;
-		border-radius: 1rem;
-		background: #f43f5e;
-		
-		color: #ffffff;
-	}
-
-	.page-title {
-		margin: 0;
-		color: #ffffff;
-		font-size: 1.5rem;
-		font-weight: 700;
-		letter-spacing: 0;
-	}
-
-	.page-subtitle,
-	.metric-label,
-	.page-card-meta,
-	.preview-url,
-	.placeholder-copy,
-	.scroll-depth-label,
-	.scroll-depth-value,
-	.state-copy {
-		color: var(--text-secondary, #8b949e);
-	}
-
-	.page-subtitle {
-		margin: 0;
-		font-size: 0.875rem;
-	}
-
-	.type-switcher {
-		align-items: center;
-		border: 1px solid rgba(255, 255, 255, 0.1);
-		border-radius: 0.75rem;
-		background: var(--bg-elevated, #161b22);
-		padding: 0.25rem;
-	}
-
-	.type-button {
-		border: 0;
-		border-radius: 0.5rem;
-		background: transparent;
-		color: var(--text-secondary, #8b949e);
-		padding: 0.5rem 1rem;
-		font-size: 0.875rem;
-		font-weight: 500;
-		transition:
-			background 0.2s ease,
-			box-shadow 0.2s ease,
-			color 0.2s ease;
-	}
-
-	.type-button:hover,
-	.type-button:focus-visible,
-	.type-button--active {
-		color: #ffffff;
-	}
-
-	.type-button--active {
-		background: #f43f5e;
-		
-	}
-
-	.loading-state {
-		align-items: center;
-		justify-content: center;
-		padding: 5rem 0;
-	}
-
-	.spinner {
-		width: 2.5rem;
-		height: 2.5rem;
-		border: 4px solid rgba(248, 81, 73, 0.2);
-		border-top-color: transparent;
-		border-right-color: #f43f5e;
-		border-radius: 999px;
-		animation: spin 0.8s linear infinite;
-	}
-
-	.spinner--large {
-		width: 3rem;
-		height: 3rem;
-	}
-
-	.stats-grid {
-		display: grid;
-		grid-template-columns: 1fr;
-		gap: 1rem;
-		margin-bottom: 2rem;
-	}
-
-	.metric-card,
-	.panel-state,
-	.page-card,
-	.preview-panel,
-	.preview-empty {
-		border: 1px solid rgba(255, 255, 255, 0.1);
-		background: rgba(255, 255, 255, 0.05);
-	}
-
-	.metric-card {
-		border-radius: 1rem;
-		padding: 1.25rem;
-	}
-
-	.metric-value {
-		margin-bottom: 0.25rem;
-		color: #ffffff;
-		font-size: 1.875rem;
-		font-weight: 700;
-		line-height: 1.1;
-	}
-
-	.metric-value--rose {
-		color: #fb7185;
-	}
-
-	.metric-value--amber {
-		color: var(--warning-emphasis, #d29922);
-	}
-
-	.metric-value--blue {
-		color: var(--info-emphasis, #58a6ff);
-	}
-
-	.metric-label {
-		font-size: 0.875rem;
-	}
-
-	.panel-state,
-	.preview-empty {
-		border-radius: 1rem;
-		padding: 3rem 1.5rem;
-		text-align: center;
-	}
-
-	.panel-state--error {
-		border-color: rgba(248, 81, 73, 0.2);
-		background: rgba(248, 81, 73, 0.1);
-	}
-
-	.state-icon {
-		width: 4rem;
-		height: 4rem;
-		align-items: center;
-		justify-content: center;
-		margin: 0 auto 1rem;
-		border-radius: 1rem;
-	}
-
-	.state-icon--error {
-		background: rgba(248, 81, 73, 0.1);
-		color: var(--error-emphasis, #f85149);
-	}
-
-	.state-icon--rose {
-		background: rgba(248, 81, 73, 0.1);
-		color: #fb7185;
-	}
-
-	.state-icon--muted {
-		background: var(--bg-hover, #252b33);
-		color: var(--text-secondary, #8b949e);
-	}
-
-	.error-message {
-		margin: 0 0 1rem;
-		color: var(--error-emphasis, #f85149);
-	}
-
-	.retry-button,
-	.setup-link {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		border-radius: 0.75rem;
-		font-weight: 600;
-		text-decoration: none;
-		transition:
-			background 0.2s ease,
-			border-color 0.2s ease,
-			box-shadow 0.2s ease;
-	}
-
-	.retry-button {
-		border: 1px solid rgba(248, 81, 73, 0.3);
-		background: rgba(248, 81, 73, 0.2);
-		color: var(--error-emphasis, #f85149);
-		padding: 0.625rem 1.25rem;
-	}
-
-	.retry-button:hover,
-	.retry-button:focus-visible {
-		background: rgba(248, 81, 73, 0.3);
-	}
-
-	.state-title {
-		margin: 0 0 0.5rem;
-		color: #ffffff;
-		font-size: 1.125rem;
-		font-weight: 500;
-	}
-
-	.state-copy {
-		margin: 0 0 1.5rem;
-	}
-
-	.state-copy--compact {
-		margin-bottom: 0;
-	}
-
-	.setup-link {
-		background: #f43f5e;
-		
-		color: #ffffff;
-		padding: 0.75rem 1.5rem;
-	}
-
-	.setup-link:hover,
-	.setup-link:focus-visible {
-		background: #fb7185;
-	}
-
-	.heatmap-layout {
-		display: grid;
-		grid-template-columns: 1fr;
-		gap: 1.5rem;
-	}
-
-	.page-list {
-		display: grid;
-		align-content: start;
-		gap: 1rem;
-	}
-
-	.list-heading {
-		margin: 0;
-		color: var(--text-secondary, #8b949e);
-		font-size: 0.875rem;
-		font-weight: 500;
-		letter-spacing: 0.04em;
-		text-transform: uppercase;
-	}
-
-	.page-card {
-		width: 100%;
-		border-radius: 1rem;
-		padding: 1rem;
-		color: inherit;
-		text-align: left;
-		transition:
-			background 0.2s ease,
-			border-color 0.2s ease,
-			box-shadow 0.2s ease;
-	}
-
-	.page-card:hover,
-	.page-card:focus-visible {
-		background: rgba(255, 255, 255, 0.1);
-	}
-
-	.page-card--selected {
-		border-color: rgba(248, 81, 73, 0.5);
-		box-shadow: 0 0 0 2px #f43f5e;
-	}
-
-	.page-card-title,
-	.preview-title {
-		color: #ffffff;
-		font-weight: 600;
-	}
-
-	.page-card-title,
-	.page-card-url {
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-	}
-
-	.page-card-title {
-		margin-bottom: 0.25rem;
-	}
-
-	.page-card-url {
-		margin-bottom: 0.75rem;
-		color: var(--text-tertiary, #6e7681);
-		font-size: 0.75rem;
-	}
-
-	.page-card-meta {
-		align-items: center;
-		justify-content: space-between;
-		font-size: 0.75rem;
-	}
-
-	.page-clicks {
-		color: #fb7185;
-	}
-
-	.preview-column {
-		min-width: 0;
-	}
-
-	.preview-panel {
-		overflow: hidden;
-		border-radius: 1rem;
-	}
-
-	.preview-header {
-		align-items: center;
-		justify-content: space-between;
-		gap: 1rem;
-		border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-		padding: 1.25rem;
-	}
-
-	.preview-title {
-		margin: 0;
-	}
-
-	.preview-url {
-		margin: 0.25rem 0 0;
-		font-size: 0.75rem;
-	}
-
-	.preview-badge {
-		border-radius: 0.5rem;
-		padding: 0.375rem 0.75rem;
-		font-size: 0.75rem;
-		font-weight: 500;
-	}
-
-	.preview-badge--rose {
-		background: rgba(248, 81, 73, 0.2);
-		color: #fb7185;
-	}
-
-	.preview-badge--blue {
-		background: rgba(88, 166, 255, 0.2);
-		color: var(--info-emphasis, #58a6ff);
-	}
-
-	.visualization-placeholder {
-		aspect-ratio: 16 / 9;
-		align-items: center;
-		justify-content: center;
-		background: var(--bg-elevated, #161b22);
-	}
-
-	.placeholder-content {
-		text-align: center;
-	}
-
-	.placeholder-copy {
-		margin: 0;
-		font-size: 0.875rem;
-	}
-
-	.placeholder-hint {
-		margin: 0.25rem 0 0;
-		color: var(--text-tertiary, #6e7681);
-		font-size: 0.75rem;
-	}
-
-	.scroll-depth-panel {
-		border-top: 1px solid rgba(255, 255, 255, 0.1);
-		padding: 1.25rem;
-	}
-
-	.scroll-depth-title {
-		margin: 0 0 1rem;
-		color: var(--text-secondary, #8b949e);
-		font-size: 0.875rem;
-		font-weight: 500;
-	}
-
-	.scroll-depth-list {
-		display: grid;
-		gap: 0.5rem;
-	}
-
-	.scroll-depth-row {
-		align-items: center;
-		gap: 0.75rem;
-	}
-
-	.scroll-depth-label {
-		width: 3rem;
-		font-size: 0.75rem;
-	}
-
-	.scroll-depth-track {
-		height: 0.5rem;
-		flex: 1;
-		overflow: hidden;
-		border-radius: 999px;
-		background: var(--bg-hover, #252b33);
-	}
-
-	.scroll-depth-fill {
-		width: var(--scroll-percent);
-		height: 100%;
-		border-radius: 999px;
-		background: #f43f5e;
-	}
-
-	.scroll-depth-value {
-		width: 2.5rem;
-		font-size: 0.75rem;
-		text-align: right;
-	}
-
-	.preview-empty {
-		height: 100%;
-		align-items: center;
-		justify-content: center;
-	}
-
-	@keyframes spin {
-		to {
-			transform: rotate(360deg);
-		}
-	}
-
-	@media (min-width: 640px) {
-		.heatmaps-container {
-			padding-right: 1.5rem;
-			padding-left: 1.5rem;
-		}
-	}
-
-	@media (min-width: 768px) {
-		.stats-grid {
-			grid-template-columns: repeat(4, minmax(0, 1fr));
-		}
-	}
-
-	@media (min-width: 1024px) {
-		.heatmaps-container {
-			padding-right: 2rem;
-			padding-left: 2rem;
-		}
-
-		.heatmap-layout {
-			grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
-		}
-	}
-
-	@media (max-width: 767px) {
-		.heatmaps-header,
-		.header-controls,
-		.preview-header {
-			align-items: flex-start;
-			flex-direction: column;
-		}
-
-		.type-switcher {
-			flex-wrap: wrap;
-		}
-	}
+	.behavior-page{max-width:80rem;margin:auto;padding:2rem;color:#f8fafc}.page-header{display:flex;justify-content:space-between;align-items:start;gap:1rem;margin-bottom:2rem}.page-header h1{margin:0 0 .4rem}.page-header p,.note{color:#94a3b8}.layout{display:grid;grid-template-columns:minmax(15rem,20rem) 1fr;gap:1.5rem}.pages{display:flex;flex-direction:column;gap:.5rem;max-height:42rem;overflow:auto}.pages button{color:inherit;background:#1e293b;border:1px solid #334155;border-radius:.5rem;text-align:left;padding:.8rem;cursor:pointer}.pages button.active{border-color:#facc15}.pages strong,.pages span{display:block;overflow-wrap:anywhere}.pages span{color:#94a3b8;font-size:.85rem;margin-top:.35rem}.detail{background:#111827;border:1px solid #334155;border-radius:.75rem;padding:1.25rem;min-width:0}.detail h2{overflow-wrap:anywhere}.viewport{height:28rem;position:relative;overflow:hidden;border:1px solid #475569;border-radius:.5rem;background:linear-gradient(90deg,transparent 49.8%,#334155 50%,transparent 50.2%),linear-gradient(transparent 49.8%,#334155 50%,transparent 50.2%),#0f172a}.point{position:absolute;width:1.6rem;height:1.6rem;transform:translate(-50%,-50%);border-radius:50%;background:rgba(239,68,68,var(--intensity));box-shadow:0 0 1.4rem #ef4444}.scroll-row{display:grid;grid-template-columns:3rem 1fr 5rem;align-items:center;gap:.7rem;margin:.6rem 0}.scroll-row progress{width:100%}.error{color:#fecaca}.error button{margin-left:.6rem}@media(max-width:700px){.page-header{flex-direction:column}.layout{grid-template-columns:1fr}.pages{max-height:14rem}}
 </style>

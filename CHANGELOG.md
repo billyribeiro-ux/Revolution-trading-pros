@@ -4,6 +4,26 @@
 
 All notable changes to this project. Format roughly follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); we don't strictly adhere to SemVer because the product isn't a published library.
 
+## [Unreleased] — 2026-11-07 — Behavior analytics audit and repair
+
+### Added
+
+- Serve authenticated session event timelines and click/scroll heatmap aggregates from the existing `behavior_events` table. Replace the admin screens' missing endpoints and placeholder visuals with these measured results.
+- Normalize click coordinates to viewport percentages so activity from different screen sizes can be aggregated. Retain older absolute-coordinate rows for their other metrics without plotting them as normalized clicks.
+- Enforce 90-day behavior-event retention with a bounded background cleanup worker and supporting database index.
+
+### Changed
+
+- Remove the dormant consent-bypassing auto-initializer. Scrub URL queries, fragments, metadata, user IDs, CSS IDs and classes before browser buffering or retry storage; use short-lived random identifiers and exclude protected pages and sensitive controls.
+- Honor analytics consent, DNT and GPC; prevent delayed tracker initialization after consent withdrawal; record SvelteKit navigation and flush when the page becomes hidden.
+- Describe the admin timeline as session activity. It contains event types and paths, not DOM replay, captured form values, or video.
+- Redirect the broken public `/behavior` page to the authenticated admin dashboard and remove its unused client/store, which called nonexistent `/admin/behavior/*` endpoints.
+
+### Validation and limits
+
+- Tracker privacy/delivery tests, Rust compilation, Svelte checks, an isolated PostgreSQL integration scenario, and a real Chromium website-to-API smoke test cover the implementation. See [the behavior audit](docs/audits/behavior-2026-11-07.md) for exact results and environment limits. The SEO gate passes 111/114; three existing API-dependent checks fail while their content source is unavailable.
+- The system is first-party event analytics. It does not claim feature or performance parity with Hotjar, Microsoft, Google, or OpenAI; that would require measured production load, security review, and privacy/legal review.
+
 ## [Unreleased] — 2026-11-07 — Portable image optimization and website delivery
 
 ### Added
