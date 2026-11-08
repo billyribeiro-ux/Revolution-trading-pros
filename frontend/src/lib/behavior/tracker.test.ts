@@ -103,7 +103,7 @@ describe('behavior delivery', () => {
 		reply(receipt(1));
 		await pending;
 		expect(fetch).toHaveBeenCalledTimes(2);
-		expect(body(fetch, 1).events[0]?.element_selector).toBe('#during-upload');
+		expect(body(fetch, 1).events[0]?.element_selector).toBeUndefined();
 		expect(localStorage.getItem('behavior_failed_batches')).toBeNull();
 	});
 
@@ -155,9 +155,13 @@ describe('behavior delivery', () => {
 		const fetch = vi.fn<typeof globalThis.fetch>();
 		vi.stubGlobal('fetch', fetch);
 		Object.defineProperty(navigator, 'doNotTrack', { configurable: true, get: () => '1' });
-		await tracker().flush();
+		const dnt = tracker();
+		expect(dnt.isActive()).toBe(false);
+		await dnt.flush();
 		Object.defineProperty(navigator, 'doNotTrack', { configurable: true, get: () => '0' });
-		await tracker({ sampleRate: 0 }).flush();
+		const unsampled = tracker({ sampleRate: 0 });
+		expect(unsampled.isActive()).toBe(false);
+		await unsampled.flush();
 		expect(fetch).not.toHaveBeenCalled();
 		expect(localStorage.length).toBe(0);
 	});
@@ -172,5 +176,82 @@ describe('behavior delivery', () => {
 		instance.trackEvent({ event_type: 'click', timestamp: Date.now(), page_url: location.href });
 		await instance.flush();
 		expect(fetch).toHaveBeenCalledTimes(2);
+	});
+
+	it('removes URL secrets, selectors, metadata and user identity before the retry queue', async () => {
+		const fetch = vi
+			.fn<typeof globalThis.fetch>()
+			.mockResolvedValue(new Response('', { status: 503 }));
+		vi.stubGlobal('fetch', fetch);
+		const instance = tracker();
+		instance.setUserId('private-account-id');
+		instance.trackEvent({
+			event_type: 'click',
+			timestamp: Date.now(),
+			page_url: `${location.origin}/pricing?email=private@example.test#secret`,
+			element_selector: '#private-email',
+			event_metadata: { value: 'private-form-value' },
+			coordinates: { x: 20, y: 30 },
+			coordinate_space: 'viewport_percent'
+		});
+		await instance.flush();
+		const serialized = JSON.stringify(body(fetch));
+		expect(serialized).toContain('/pricing');
+		for (const secret of [
+			'private@example.test',
+			'private-email',
+			'private-form-value',
+			'private-account-id'
+		]) {
+			expect(serialized).not.toContain(secret);
+			expect(localStorage.getItem('behavior_failed_batches')).not.toContain(secret);
+		}
+		expect(body(fetch).events[1]?.coordinate_space).toBe('viewport_percent');
+	});
+
+	it('does not send events from protected routes or other origins', async () => {
+		const fetch = vi.fn<typeof globalThis.fetch>().mockImplementation(async () => receipt(1));
+		vi.stubGlobal('fetch', fetch);
+		const instance = tracker();
+		await instance.flush();
+		instance.trackEvent({
+			event_type: 'click',
+			timestamp: Date.now(),
+			page_url: `${location.origin}/account/private`
+		});
+		instance.trackEvent({
+			event_type: 'click',
+			timestamp: Date.now(),
+			page_url: 'https://other.example/private'
+		});
+		await instance.flush();
+		expect(fetch).toHaveBeenCalledTimes(1);
+	});
+
+	it('scrubs an older retry batch as soon as the tracker starts', () => {
+		localStorage.setItem(
+			'behavior_failed_batches',
+			JSON.stringify([
+				{
+					session_id: 'old-session',
+					visitor_id: 'old-visitor',
+					client_timestamp: Date.now(),
+					events: [
+						{
+							event_type: 'click',
+							timestamp: Date.now(),
+							page_url: `${location.origin}/pricing?email=old@example.test`,
+							element_selector: '#old-secret',
+							event_metadata: { value: 'old-secret' }
+						}
+					]
+				}
+			])
+		);
+		tracker();
+		const saved = localStorage.getItem('behavior_failed_batches') || '';
+		expect(saved).toContain('/pricing');
+		expect(saved).not.toContain('old@example.test');
+		expect(saved).not.toContain('old-secret');
 	});
 });

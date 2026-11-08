@@ -13,7 +13,7 @@
 	import IconRoute from '@tabler/icons-svelte-runes/icons/route';
 	import IconTarget from '@tabler/icons-svelte-runes/icons/target';
 	import IconFlame from '@tabler/icons-svelte-runes/icons/flame';
-	import IconVideo from '@tabler/icons-svelte-runes/icons/video';
+	import IconListDetails from '@tabler/icons-svelte-runes/icons/list-details';
 	import IconFileAnalytics from '@tabler/icons-svelte-runes/icons/file-analytics';
 
 	interface Props {
@@ -30,7 +30,7 @@
 		{ href: '/admin/analytics/attribution', label: 'Attribution', icon: IconRoute },
 		{ href: '/admin/analytics/goals', label: 'Goals', icon: IconTarget },
 		{ href: '/admin/analytics/heatmaps', label: 'Heatmaps', icon: IconFlame },
-		{ href: '/admin/analytics/recordings', label: 'Recordings', icon: IconVideo },
+		{ href: '/admin/analytics/recordings', label: 'Sessions', icon: IconListDetails },
 		{ href: '/admin/analytics/reports', label: 'Reports', icon: IconFileAnalytics }
 	];
 

@@ -47,7 +47,7 @@
 	import { isAdminUser } from '#lib/stores/auth.svelte.js';
 	import { initializeAuth } from '#lib/api/auth.js';
 	import type { Snippet } from 'svelte';
-	import { initializeConsent } from '#lib/consent/init.js';
+	import { initializeConsent, onPageNavigation } from '#lib/consent/init.js';
 	import { trackPageView } from '#lib/consent/vendors/ga4.js';
 	import { logger } from '#lib/utils/logger.js';
 
@@ -157,6 +157,7 @@
 
 		if (to?.url) {
 			try {
+				onPageNavigation();
 				trackPageView(to.url.href);
 			} catch (err) {
 				logger.error('[Layout] Page view tracking failed (non-critical):', err);

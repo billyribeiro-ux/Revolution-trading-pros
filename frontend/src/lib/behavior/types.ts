@@ -61,6 +61,7 @@ export interface BehaviorEvent {
 	element?: string;
 	element_selector?: string;
 	coordinates?: { x: number; y: number };
+	coordinate_space?: 'viewport_percent';
 	event_value?: unknown;
 	event_metadata?: Record<string, unknown>;
 }
