@@ -336,6 +336,8 @@ struct SessionFilters {
     page: Option<i64>,
 }
 
+type SessionRow = (String, f64, i64, i64, chrono::DateTime<Utc>, bool, bool);
+
 async fn sessions(
     State(state): State<AppState>,
     _admin: AdminUser,
@@ -353,7 +355,7 @@ async fn sessions(
     let total: i64 = sqlx::query_scalar(
         "WITH sessions AS (SELECT session_id,BOOL_OR(event_type='form_error') AS has_errors,BOOL_OR(event_type='rage_click') AS has_rage_clicks,EXTRACT(EPOCH FROM MAX(happened_at)-MIN(happened_at)) AS duration FROM behavior_events WHERE happened_at>=NOW()-$1*INTERVAL '1 day' GROUP BY session_id) SELECT COUNT(*)::bigint FROM sessions WHERE ($2='all' OR $2='with_errors' AND has_errors OR $2='rage_clicks' AND has_rage_clicks OR $2='long' AND duration>=60)"
     ).bind(days).bind(filter).fetch_one(&state.db.pool).await.map_err(db_error)?;
-    let rows: Vec<(String, f64, i64, i64, chrono::DateTime<Utc>, bool, bool)> = sqlx::query_as(
+    let rows: Vec<SessionRow> = sqlx::query_as(
         "WITH sessions AS (SELECT session_id,EXTRACT(EPOCH FROM MAX(happened_at)-MIN(happened_at))::float8 AS duration,COUNT(DISTINCT page_url)::bigint AS pages_viewed,COUNT(*)::bigint AS events_count,MIN(happened_at) AS started_at,BOOL_OR(event_type='form_error') AS has_errors,BOOL_OR(event_type='rage_click') AS has_rage_clicks FROM behavior_events WHERE happened_at>=NOW()-$1*INTERVAL '1 day' GROUP BY session_id) SELECT session_id,duration,pages_viewed,events_count,started_at,has_errors,has_rage_clicks FROM sessions WHERE ($2='all' OR $2='with_errors' AND has_errors OR $2='rage_clicks' AND has_rage_clicks OR $2='long' AND duration>=60) ORDER BY started_at DESC LIMIT 20 OFFSET $3"
     ).bind(days).bind(filter).bind((page-1)*20).fetch_all(&state.db.pool).await.map_err(db_error)?;
     Ok(Json(
