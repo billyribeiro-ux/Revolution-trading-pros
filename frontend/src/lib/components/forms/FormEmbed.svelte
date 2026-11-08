@@ -152,7 +152,7 @@
 			// Initialize form data with default values
 			if (formInstance?.fields) {
 				formInstance.fields.forEach((field) => {
-					if (field.default_value) {
+					if (field.default_value != null) {
 						formData[field.name] = field.default_value;
 					}
 				});
@@ -256,7 +256,7 @@
 				// Reset form
 				formData = {};
 				formInstance.fields?.forEach((field) => {
-					if (field.default_value) {
+					if (field.default_value != null) {
 						formData[field.name] = field.default_value;
 					}
 				});

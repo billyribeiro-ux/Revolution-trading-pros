@@ -163,6 +163,46 @@ async fn forms_and_popups_work_through_real_routes() {
         StatusCode::OK
     );
 
+    let (status, numeric_form) = request(
+        &api,
+        "POST",
+        "/api/admin/forms",
+        Some(&admin),
+        json!({
+            "name":"Required Numeric Answers",
+            "fields":[
+                {"name":"quantity","label":"Quantity","field_type":"number","required":true,"validation":{"min":0}},
+                {"name":"enabled","label":"Enabled","field_type":"toggle","required":true}
+            ],
+            "settings":{},"is_published":true
+        }),
+    )
+    .await;
+    assert_eq!(status, StatusCode::OK, "{numeric_form}");
+    let numeric_slug = numeric_form["data"]["slug"].as_str().unwrap();
+    let (status, accepted) = request(
+        &api,
+        "POST",
+        &format!("/api/forms/{numeric_slug}/submit"),
+        None,
+        json!({"quantity":0,"enabled":false}),
+    )
+    .await;
+    assert_eq!(status, StatusCode::OK, "{accepted}");
+    let (status, rejected) = request(
+        &api,
+        "POST",
+        &format!("/api/forms/{numeric_slug}/submit"),
+        None,
+        json!({"quantity":-1,"enabled":false}),
+    )
+    .await;
+    assert_eq!(status, StatusCode::BAD_REQUEST, "{rejected}");
+    assert_eq!(
+        rejected["errors"]["quantity"][0],
+        "Quantity must be at least 0"
+    );
+
     let (status, popup) = request(
         &api,
         "POST",

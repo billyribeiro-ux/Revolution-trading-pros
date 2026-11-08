@@ -34,7 +34,7 @@
 	onMount(() => {
 		if (props.form.fields) {
 			props.form.fields.forEach((field) => {
-				if (field.default_value) {
+				if (field.default_value != null) {
 					formData[field.name] = field.default_value;
 				}
 			});
@@ -157,7 +157,7 @@
 				formData = {};
 				if (props.form.fields) {
 					props.form.fields.forEach((field) => {
-						if (field.default_value) {
+						if (field.default_value != null) {
 							formData[field.name] = field.default_value;
 						}
 					});

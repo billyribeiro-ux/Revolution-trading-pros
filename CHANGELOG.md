@@ -4,6 +4,19 @@
 
 All notable changes to this project. Format roughly follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); we don't strictly adhere to SemVer because the product isn't a published library.
 
+## [Unreleased] — 2026-11-08 — Form field validation parity
+
+### Fixed
+
+- Treat numeric zero and boolean false as present required answers in both the browser and Rust API; reject blank strings and empty arrays consistently.
+- Preserve zero and false field defaults when initializing and resetting standard, embedded, and multi-step form renderers.
+- Apply numeric bounds to JSON numbers, reject malformed numeric and email answers, use JavaScript-compatible string lengths, and return validation errors for invalid configured patterns.
+- Require an explicit positive async validation receipt in the browser and reject fields marked for unsupported async validation at the API, including direct submissions.
+
+### Validation and limits
+
+- Nine focused frontend tests, the full 145-file frontend unit suite, three Rust validator tests, and the disposable PostgreSQL forms/popups router proof passed. The generic async validation endpoint and optional form analytics/collaboration features remain unimplemented; affected fields now fail closed.
+
 ## [Unreleased] — 2026-11-07 — Portable behavior tracker client
 
 ### Added
