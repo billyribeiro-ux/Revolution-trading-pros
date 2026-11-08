@@ -238,6 +238,55 @@ async fn forms_and_popups_work_through_real_routes() {
     )
     .await;
     assert_eq!(excluded["popups"].as_array().unwrap().len(), 0);
+    let (status, targeted) = request(
+        &api,
+        "POST",
+        "/api/admin/popups",
+        Some(&admin),
+        json!({
+            "name":"Newsletter launch", "type":"timed", "status":"published",
+            "display_rules":{
+                "devices":["desktop"], "include_pages":["/blog/*"],
+                "utm_source":["newsletter"], "utm_campaign":["launch"]
+            }
+        }),
+    )
+    .await;
+    assert_eq!(status, StatusCode::OK, "{targeted}");
+    let targeted_id = targeted["id"].as_i64().unwrap();
+    for path in [
+        "/api/popups/active?page=%2Fblog%2Farticle&device=desktop",
+        "/api/popups/active?page=%2Fblog%2Farticle&device=desktop&utm_source=newsletter",
+        "/api/popups/active?page=%2Fblog%2Farticle&device=desktop&utm_campaign=launch",
+        "/api/popups/active?page=%2Fblog%2Farticle&device=desktop&utm_source=other&utm_campaign=launch",
+    ] {
+        let (status, result) = request(&api, "GET", path, None, Value::Null).await;
+        assert_eq!(status, StatusCode::OK, "{result}");
+        assert!(
+            !result["popups"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .any(|popup| popup["id"].as_i64() == Some(targeted_id)),
+            "targeted popup leaked for {path}"
+        );
+    }
+    let (status, matched) = request(
+        &api,
+        "GET",
+        "/api/popups/active?page=%2Fblog%2Farticle&device=desktop&utm_source=newsletter&utm_campaign=launch",
+        None,
+        Value::Null,
+    )
+    .await;
+    assert_eq!(status, StatusCode::OK, "{matched}");
+    assert!(
+        matched["popups"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .any(|popup| popup["id"].as_i64() == Some(targeted_id))
+    );
     let (status, impression) = request(
         &api,
         "POST",

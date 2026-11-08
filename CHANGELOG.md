@@ -4,6 +4,17 @@
 
 All notable changes to this project. Format roughly follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); we don't strictly adhere to SemVer because the product isn't a published library.
 
+## [Unreleased] — 2026-11-08 — Popup campaign targeting
+
+### Fixed
+
+- Public popup selection now requires every configured UTM source and campaign to match; missing parameters no longer bypass targeting.
+- The mounted consent-gated popup runtime forwards the page's source and campaign values to the API.
+
+### Validation and limits
+
+- Browser request coverage and disposable PostgreSQL router coverage include missing, mismatched, and matching campaign values. Visitor, page-view, and geographic targeting still need a separately defined signal contract.
+
 ## [Unreleased] — 2026-11-08 — Form field validation parity
 
 ### Fixed

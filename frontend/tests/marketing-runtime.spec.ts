@@ -3,8 +3,10 @@ import { expect, test } from '@playwright/test';
 test('consent gates a public popup and records its impression', async ({ page }) => {
 	let lookups = 0;
 	let impressions = 0;
+	const lookupQueries: URLSearchParams[] = [];
 	await page.route('**/api/popups/active?**', async (route) => {
 		lookups += 1;
+		lookupQueries.push(new URL(route.request().url()).searchParams);
 		await route.fulfill({
 			status: 200,
 			contentType: 'application/json',
@@ -35,12 +37,14 @@ test('consent gates a public popup and records its impression', async ({ page })
 		impressions += 1;
 		await route.fulfill({ status: 200, contentType: 'application/json', body: '{"success":true}' });
 	});
-	await page.goto('/about');
+	await page.goto('/about?utm_source=newsletter&utm_campaign=launch');
 	await expect(page.getByRole('dialog', { name: 'Cookie consent' })).toBeVisible();
 	expect(lookups).toBe(0);
 	expect(await page.evaluate(() => localStorage.getItem('rtp_ab_variant'))).toBeNull();
 	await page.getByRole('dialog', { name: 'Cookie consent' }).locator('.btn-accept').click();
 	await expect(page.getByRole('dialog', { name: 'Test campaign' })).toBeVisible();
+	expect(lookupQueries[0]?.get('utm_source')).toBe('newsletter');
+	expect(lookupQueries[0]?.get('utm_campaign')).toBe('launch');
 	await expect.poll(() => impressions).toBe(1);
 	await page
 		.getByRole('dialog', { name: 'Test campaign' })

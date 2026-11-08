@@ -170,9 +170,13 @@
 	async function load(): Promise<void> {
 		try {
 			const device = window.innerWidth < 768 ? 'mobile' : 'desktop';
-			const response = await fetch(
-				`/api/popups/active?page=${encodeURIComponent(pathname)}&device=${device}`
-			);
+			const params = new URLSearchParams({ page: pathname, device });
+			const campaignParams = new URLSearchParams(window.location.search);
+			for (const key of ['utm_source', 'utm_campaign'] as const) {
+				const value = campaignParams.get(key);
+				if (value) params.set(key, value);
+			}
+			const response = await fetch(`/api/popups/active?${params}`);
 			if (!response.ok) return;
 			const body: unknown = await response.json();
 			if (typeof body !== 'object' || body === null || !('popups' in body) || !Array.isArray(body.popups)) return;
