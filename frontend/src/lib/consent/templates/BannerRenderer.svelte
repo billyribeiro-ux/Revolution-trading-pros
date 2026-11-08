@@ -265,9 +265,9 @@
 
 	function handleAcceptAll() {
 		closing = true;
-		recordDecision('accept_all');
 		scheduleConsentAction(() => {
 			consentStore.acceptAll('banner');
+			recordDecision('accept_all');
 		}, template.animationDuration);
 	}
 
@@ -458,22 +458,18 @@
 
 	@keyframes bannerEntry {
 		from {
-			opacity: 0;
 			transform: translateY(20px);
 		}
 		to {
-			opacity: 1;
 			transform: translateY(0);
 		}
 	}
 
 	@keyframes bannerExit {
 		from {
-			opacity: 1;
 			transform: translateY(0);
 		}
 		to {
-			opacity: 0;
 			transform: translateY(20px);
 		}
 	}
@@ -486,11 +482,9 @@
 
 	@keyframes bannerEntryTop {
 		from {
-			opacity: 0;
 			transform: translateY(-20px);
 		}
 		to {
-			opacity: 1;
 			transform: translateY(0);
 		}
 	}
@@ -502,11 +496,9 @@
 
 	@keyframes bannerEntryScale {
 		from {
-			opacity: 0;
 			transform: translate(-50%, -50%) scale(0.95);
 		}
 		to {
-			opacity: 1;
 			transform: translate(-50%, -50%) scale(1);
 		}
 	}

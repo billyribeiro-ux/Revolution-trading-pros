@@ -148,6 +148,24 @@
 	// ICT Level 7: Hydration-safe — mounted guard prevents class mismatch on SSR
 	let mounted = $state(false);
 	const showAdminToolbar = $derived(mounted && isAdminUser.current);
+	let ConsentUi = $state<typeof import('#lib/components/marketing/ConsentUI.svelte').default | null>(
+		null
+	);
+	let consentUiLoading: Promise<void> | null = null;
+
+	function loadConsentUi(): void {
+		if (ConsentUi || consentUiLoading) return;
+		consentUiLoading = import('#lib/components/marketing/ConsentUI.svelte')
+			.then((module) => {
+				ConsentUi = module.default;
+			})
+			.catch((error: unknown) => {
+				logger.error('[Layout] Consent UI failed to load', { error });
+			})
+			.finally(() => {
+				consentUiLoading = null;
+			});
+	}
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// SIDE EFFECTS - SvelteKit Navigation Lifecycle
@@ -156,6 +174,7 @@
 		if (shallow) return;
 
 		if (to?.url) {
+			if (isMarketingPage) loadConsentUi();
 			try {
 				onPageNavigation();
 				trackPageView(to.url.href);
@@ -170,6 +189,7 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 	onMount(() => {
 		mounted = true;
+		if (isMarketingPage) loadConsentUi();
 
 		// All initializers wrapped in try/catch to prevent render interruption
 		initializeAuth().catch((err) => {
@@ -268,7 +288,9 @@
 			</div>
 		{/if}
 
-		<!-- Consent UI: Re-enable when consent system is ready -->
+		{#if mounted && isMarketingPage && ConsentUi}
+			<ConsentUi {pathname} />
+		{/if}
 	</div>
 {/if}
 

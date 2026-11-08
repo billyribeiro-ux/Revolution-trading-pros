@@ -311,8 +311,21 @@ async fn update_popup(
             position = COALESCE($9, position),
             size = COALESCE($10, size),
             animation = COALESCE($11, animation),
+            cta_new_tab = COALESCE($12, cta_new_tab),
+            show_close_button = COALESCE($13, show_close_button),
+            close_on_overlay_click = COALESCE($14, close_on_overlay_click),
+            close_on_escape = COALESCE($15, close_on_escape),
+            auto_close_after = COALESCE($16, auto_close_after),
+            has_form = COALESCE($17, has_form),
+            form_id = COALESCE($18, form_id),
+            trigger_rules = COALESCE($19, trigger_rules),
+            frequency_rules = COALESCE($20, frequency_rules),
+            display_rules = COALESCE($21, display_rules),
+            design = COALESCE($22, design),
+            start_date = COALESCE($23, start_date),
+            end_date = COALESCE($24, end_date),
             updated_at = NOW()
-        WHERE id = $12
+        WHERE id = $25
         ",
     )
     .bind(&req.name)
@@ -326,6 +339,19 @@ async fn update_popup(
     .bind(&req.position)
     .bind(&req.size)
     .bind(&req.animation)
+    .bind(req.cta_new_tab)
+    .bind(req.show_close_button)
+    .bind(req.close_on_overlay_click)
+    .bind(req.close_on_escape)
+    .bind(req.auto_close_after)
+    .bind(req.has_form)
+    .bind(req.form_id)
+    .bind(req.trigger_rules.map(sqlx::types::Json))
+    .bind(req.frequency_rules.map(sqlx::types::Json))
+    .bind(req.display_rules.map(sqlx::types::Json))
+    .bind(req.design.map(sqlx::types::Json))
+    .bind(req.start_date)
+    .bind(req.end_date)
     .bind(id)
     .execute(&state.db.pool)
     .await;
@@ -356,12 +382,6 @@ async fn delete_popup(
     State(state): State<AppState>,
     Path(id): Path<i32>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    // First delete related events
-    let _ = sqlx::query("DELETE FROM popup_events WHERE popup_id = $1")
-        .bind(id)
-        .execute(&state.db.pool)
-        .await;
-
     let result = sqlx::query("DELETE FROM popups WHERE id = $1")
         .bind(id)
         .execute(&state.db.pool)

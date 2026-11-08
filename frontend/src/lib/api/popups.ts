@@ -55,6 +55,8 @@ import { logger } from '#lib/utils/logger.js';
 import type { Popup } from '#lib/stores/popups.svelte.js';
 import { ML_API_URL } from './config';
 import type { JsonValue } from './_types';
+import { normalizePopup, popupWritePayload } from './popup-contract.js';
+import { consentStore } from '#lib/consent/store.svelte.js';
 
 /**
  * R9-A typed-envelope sweep: `gtag` is declared globally in
@@ -528,7 +530,6 @@ class PopupEngagementService {
 	private static instance: PopupEngagementService;
 	private wsConnection?: WebSocket;
 	private cache = new Map<string, { data: unknown; expiry: number }>();
-	private eventBuffer: PopupEvent[] = [];
 	private impressionTimers = new Map<string, number>();
 	private exitIntentListener?: (e: MouseEvent) => void;
 	private scrollListener?: () => void;
@@ -554,8 +555,8 @@ class PopupEngagementService {
 
 	private constructor() {
 		this.sessionId = this.generateSessionId();
-		this.initialize();
 	}
+	private initialized = false;
 
 	static getInstance(): PopupEngagementService {
 		if (!PopupEngagementService.instance) {
@@ -568,7 +569,8 @@ class PopupEngagementService {
 	 * Initialize service
 	 */
 	private initialize(): void {
-		if (!browser) return;
+		if (!browser || this.initialized) return;
+		this.initialized = true;
 
 		// Setup WebSocket for real-time updates
 		this.setupWebSocket();
@@ -576,14 +578,8 @@ class PopupEngagementService {
 		// Setup behavioral tracking
 		this.setupBehavioralTracking();
 
-		// Load active popups for current page
-		void this.loadActivePopups();
-
 		// Setup event listeners
 		this.setupEventListeners();
-
-		// Start analytics processing
-		this.startAnalyticsProcessing();
 	}
 
 	/**
@@ -723,9 +719,6 @@ class PopupEngagementService {
 
 		// Inactivity detection
 		this.setupInactivityDetection();
-
-		// Page interaction tracking
-		this.setupInteractionTracking();
 	}
 
 	private setupExitIntentDetection(): void {
@@ -776,24 +769,6 @@ class PopupEngagementService {
 		resetTimer();
 	}
 
-	private setupInteractionTracking(): void {
-		// Track clicks
-		document.addEventListener('click', (e) => {
-			const target = e.target as HTMLElement;
-			const popupElement = target.closest('[data-popup-id]');
-
-			if (popupElement) {
-				const popupId = popupElement.getAttribute('data-popup-id');
-				if (popupId) {
-					this.trackInteraction(popupId, 'click', {
-						element: target.tagName,
-						text: target.textContent
-					});
-				}
-			}
-		});
-	}
-
 	/**
 	 * Setup event listeners
 	 */
@@ -813,23 +788,6 @@ class PopupEngagementService {
 		window.addEventListener('resize', () => {
 			this.repositionActivePopup();
 		});
-
-		// Before unload
-		window.addEventListener('beforeunload', () => {
-			this.flushEventBuffer();
-		});
-	}
-
-	/**
-	 * Start analytics processing
-	 */
-	private startAnalyticsProcessing(): void {
-		if (!browser) return;
-
-		// Process event buffer periodically
-		setInterval(() => {
-			this.flushEventBuffer();
-		}, 5000);
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -859,8 +817,16 @@ class PopupEngagementService {
 				throw new Error('Failed to fetch popups');
 			}
 
-			const data = await response.json();
-			const popupsList = data.popups || data.data || data || [];
+			const data: unknown = await response.json();
+			if (
+				typeof data !== 'object' ||
+				data === null ||
+				!('popups' in data) ||
+				!Array.isArray(data.popups)
+			) {
+				throw new Error('Invalid popup list response');
+			}
+			const popupsList = data.popups.map(normalizePopup);
 			this.popups.set(popupsList);
 
 			return popupsList;
@@ -876,7 +842,8 @@ class PopupEngagementService {
 	 * Load active popups for current page
 	 */
 	async loadActivePopups(): Promise<void> {
-		if (!browser) return;
+		if (!browser || !get(consentStore).marketing) return;
+		this.initialize();
 
 		const page = window.location.pathname;
 		const cacheKey = `active_popups_${page}`;
@@ -936,20 +903,29 @@ class PopupEngagementService {
 				popup = await this.optimizeWithAI(popup);
 			}
 
-			const response = await fetch(`${API_BASE}/popups`, {
+			const response = await fetch(`${API_BASE}/admin/popups`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'
 				},
 				credentials: 'include',
-				body: JSON.stringify(popup)
+				body: JSON.stringify(popupWritePayload(popup))
 			});
 
 			if (!response.ok) {
 				throw new Error('Failed to create popup');
 			}
 
-			const created = await response.json();
+			const receipt: unknown = await response.json();
+			if (
+				typeof receipt !== 'object' ||
+				receipt === null ||
+				!('id' in receipt) ||
+				typeof receipt.id !== 'number'
+			) {
+				throw new Error('Invalid popup creation receipt');
+			}
+			const created = await this.getAdminPopup(String(receipt.id));
 
 			this.popups.update((popups) => [...popups, created]);
 
@@ -973,20 +949,20 @@ class PopupEngagementService {
 		this.error.set(null);
 
 		try {
-			const response = await fetch(`${API_BASE}/popups/${id}`, {
+			const response = await fetch(`${API_BASE}/admin/popups/${id}`, {
 				method: 'PUT',
 				headers: {
 					'Content-Type': 'application/json'
 				},
 				credentials: 'include',
-				body: JSON.stringify(updates)
+				body: JSON.stringify(popupWritePayload(updates))
 			});
 
 			if (!response.ok) {
 				throw new Error('Failed to update popup');
 			}
 
-			const updated = await response.json();
+			const updated = await this.getAdminPopup(id);
 
 			this.handlePopupUpdate(updated);
 			this.clearCache();
@@ -1008,7 +984,7 @@ class PopupEngagementService {
 		this.error.set(null);
 
 		try {
-			const response = await fetch(`${API_BASE}/popups/${id}`, {
+			const response = await fetch(`${API_BASE}/admin/popups/${id}`, {
 				method: 'DELETE',
 				credentials: 'include'
 			});
@@ -1025,6 +1001,18 @@ class PopupEngagementService {
 		} finally {
 			this.isLoading.set(false);
 		}
+	}
+
+	async getAdminPopup(id: string): Promise<EnhancedPopup> {
+		const response = await fetch(`${API_BASE}/admin/popups/${id}`, {
+			credentials: 'include'
+		});
+		if (!response.ok) throw new Error(`Failed to fetch popup (HTTP ${response.status})`);
+		const data: unknown = await response.json();
+		if (typeof data !== 'object' || data === null || !('popup' in data)) {
+			throw new Error('Invalid popup detail response');
+		}
+		return normalizePopup(data.popup);
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -1189,33 +1177,27 @@ class PopupEngagementService {
 	 * Record impression
 	 */
 	async recordImpression(popupId: string): Promise<void> {
+		if (!browser || !get(consentStore).marketing) return;
 		// Prevent duplicate impressions
 		if (this.viewedPopups.has(popupId)) return;
 
 		this.viewedPopups.add(popupId);
 		this.impressionTimers.set(popupId, Date.now());
 
-		// Add to event buffer
-		this.eventBuffer.push({
-			type: 'impression',
-			popupId,
-			timestamp: new Date().toISOString(),
-			sessionId: this.sessionId
-		});
-
-		// Send immediately for important events
 		try {
-			await fetch(`${API_BASE}/popups/${popupId}/impression`, {
+			const response = await fetch(`${API_BASE}/popups/${popupId}/impression`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'
 				},
 				body: JSON.stringify({
-					sessionId: this.sessionId,
-					timestamp: new Date().toISOString()
+					session_id: this.sessionId,
+					page_url: window.location.pathname
 				})
 			});
+			if (!response.ok) throw new Error(`HTTP ${response.status}`);
 		} catch (error) {
+			this.viewedPopups.delete(popupId);
 			logger.error('[PopupService] Failed to record impression', { error });
 		}
 	}
@@ -1224,6 +1206,7 @@ class PopupEngagementService {
 	 * Record conversion
 	 */
 	async recordConversion(popupId: string, data?: ConversionData): Promise<void> {
+		if (!browser || !get(consentStore).marketing) return;
 		// Prevent duplicate conversions
 		if (this.convertedPopups.has(popupId)) return;
 
@@ -1231,32 +1214,22 @@ class PopupEngagementService {
 
 		const conversionTime = Date.now() - (this.impressionTimers.get(popupId) || Date.now());
 
-		// Add to event buffer
-		this.eventBuffer.push({
-			type: 'conversion',
-			popupId,
-			timestamp: new Date().toISOString(),
-			sessionId: this.sessionId,
-			data: {
-				...data,
-				conversionTime
-			}
-		});
-
-		// Send immediately
 		try {
-			await fetch(`${API_BASE}/popups/${popupId}/conversion`, {
+			const response = await fetch(`${API_BASE}/popups/${popupId}/conversion`, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'
 				},
 				body: JSON.stringify({
 					...data,
-					sessionId: this.sessionId,
+					session_id: this.sessionId,
+					page_url: window.location.pathname,
 					conversionTime
 				})
 			});
+			if (!response.ok) throw new Error(`HTTP ${response.status}`);
 		} catch (error) {
+			this.convertedPopups.delete(popupId);
 			logger.error('[PopupService] Failed to record conversion', { error });
 		}
 
@@ -1265,27 +1238,10 @@ class PopupEngagementService {
 	}
 
 	/**
-	 * Track interaction
-	 */
-	private trackInteraction(
-		popupId: string,
-		action: string,
-		data?: Record<string, JsonValue>
-	): void {
-		this.eventBuffer.push({
-			type: 'interaction',
-			popupId,
-			timestamp: new Date().toISOString(),
-			sessionId: this.sessionId,
-			data: { action, ...data }
-		});
-	}
-
-	/**
 	 * Get analytics for popup
 	 */
 	async getAnalytics(popupId: string): Promise<PopupAnalytics> {
-		const response = await fetch(`${API_BASE}/popups/${popupId}/analytics`, {
+		const response = await fetch(`${API_BASE}/admin/popups/${popupId}/analytics`, {
 			credentials: 'include'
 		});
 
@@ -1533,25 +1489,6 @@ class PopupEngagementService {
 		return popup;
 	}
 
-	private flushEventBuffer(): void {
-		if (this.eventBuffer.length === 0) return;
-
-		const events = [...this.eventBuffer];
-		this.eventBuffer = [];
-
-		fetch(`${API_BASE}/popups/events`, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({ events })
-		}).catch((error) => {
-			logger.error('[PopupService] Failed to send events', { error });
-			// Re-add events to buffer
-			this.eventBuffer.unshift(...events);
-		});
-	}
-
 	private trackEvent(event: string, data?: TrackEventPayload): void {
 		if (browser && window.gtag) {
 			window.gtag('event', event, data);
@@ -1621,8 +1558,6 @@ class PopupEngagementService {
 		if (this.inactivityTimer) {
 			clearTimeout(this.inactivityTimer);
 		}
-
-		this.flushEventBuffer();
 	}
 }
 
@@ -1740,11 +1675,21 @@ export async function submitPopupForm(
 export const createABTest = (basePopupId: string, variants: Partial<ABTestVariant>[]) =>
 	popupService.createABTest(basePopupId, variants);
 export const duplicatePopup = async (id: string) => {
-	const popup = get(popups).find((p) => p.id === id);
-	if (!popup) throw new Error('Popup not found');
-	const { id: _id, ...popupWithoutId } = popup;
-	const duplicate = { ...popupWithoutId, name: `${popup.name} (Copy)` };
-	return createPopup(duplicate);
+	const response = await fetch(`${API_BASE}/admin/popups/${id}/duplicate`, {
+		method: 'POST',
+		credentials: 'include'
+	});
+	if (!response.ok) throw new Error(`Failed to duplicate popup (HTTP ${response.status})`);
+	const receipt: unknown = await response.json();
+	if (
+		typeof receipt !== 'object' ||
+		receipt === null ||
+		!('id' in receipt) ||
+		typeof receipt.id !== 'number'
+	) {
+		throw new Error('Invalid popup duplication receipt');
+	}
+	return popupService.getAdminPopup(String(receipt.id));
 };
 export const togglePopupStatus = async (id: string, isActive: boolean) => {
 	return updatePopup(id, { isActive });
@@ -1753,7 +1698,7 @@ export const togglePopupStatus = async (id: string, isActive: boolean) => {
 // Legacy API compatibility
 export const popupsApi = {
 	list: async () => ({ data: await getAllPopups() }),
-	get: async (id: number) => ({ popup: get(popups).find((p) => p.id === String(id)) }),
+	get: async (id: number) => ({ popup: await popupService.getAdminPopup(String(id)) }),
 	getActive: async (page: string) => {
 		await getActivePopups(page);
 		return get(popups);

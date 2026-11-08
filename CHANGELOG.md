@@ -4,6 +4,25 @@
 
 All notable changes to this project. Format roughly follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); we don't strictly adhere to SemVer because the product isn't a published library.
 
+## [Unreleased] — 2026-11-07 — Marketing plugin runtime audit
+
+### Fixed
+
+- Mount the existing consent banner, preferences modal, and settings control on marketing routes. Gate public popup lookup on marketing consent and exclude sensitive account/checkout routes.
+- Stop consent-banner A/B testing from persisting identifiers or decision records before analytics consent; clear those records when analytics consent is withdrawn.
+- Keep consent banner text at full opacity during entry and exit motion, and correct solid accept-button colors across the template registry to meet WCAG AA text contrast.
+- Connect the popup runtime to published campaigns, accessible dismissal, frequency limits, embedded forms, and impression/conversion calls.
+- Align forms and popup admin clients with the Rust admin routes and response shapes, including form submission management; fetch popup detail for direct editor navigation and duplicate from the backend.
+- Remove form analytics buffering to a nonexistent endpoint and the legacy popup event buffer that could double-count impressions and conversions. Defer legacy popup tracking setup until an explicit consented public lookup.
+- Make popup tracking and popup form writes transactional, return errors when writes fail, and stop treating a failed popup lookup as an empty successful response.
+- Store only public page paths, bounded opaque session IDs, and known device labels in popup analytics; discard arbitrary event metadata and URL query strings.
+- Remove legacy localStorage copies of queued form submissions.
+
+### Validation and limits
+
+- Added a disposable PostgreSQL router integration test, browser consent/popup tests, frontend contract tests, and a contrast regression test for solid template buttons. The [inventory and extraction plan](docs/plugins/INVENTORY_AND_PLAN.md) records the remaining optional feature and packaging work. The SEO gate passes 111/114 checks; the three failures require the unavailable local content/SEO API.
+- These systems remain embedded in the application. Production deployment and installation into another app have not been verified.
+
 ## [Unreleased] — 2026-11-07 — Behavior analytics audit and repair
 
 ### Added

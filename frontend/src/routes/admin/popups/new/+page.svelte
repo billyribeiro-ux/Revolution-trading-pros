@@ -102,8 +102,22 @@
 		try {
 			const response = await fetch('/api/admin/forms');
 			if (response.ok) {
-				const data = await response.json();
-				availableForms = data.forms || data || [];
+				const data: unknown = await response.json();
+				const rows: unknown[] =
+					typeof data === 'object' && data !== null && 'data' in data && Array.isArray(data.data)
+						? data.data
+						: [];
+				availableForms = rows
+					.filter(
+						(row): row is { id: number; name: string } =>
+							typeof row === 'object' &&
+							row !== null &&
+							'id' in row &&
+							'name' in row &&
+							typeof row.id === 'number' &&
+							typeof row.name === 'string'
+						)
+					.map((row) => ({ id: String(row.id), name: row.name }));
 			}
 		} catch (e) {
 			console.error('Failed to load forms:', e);
