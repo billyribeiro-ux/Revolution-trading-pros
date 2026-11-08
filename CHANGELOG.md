@@ -4,6 +4,20 @@
 
 All notable changes to this project. Format roughly follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); we don't strictly adhere to SemVer because the product isn't a published library.
 
+## [Unreleased] — 2026-11-07 — Portable behavior tracker client
+
+### Added
+
+- Extract the browser behavior tracker into `behavior-tracker/`, an independently buildable package with named exports, a browser consent integration guide, and a packed tarball install path.
+
+### Changed
+
+- Keep website behavior imports as compatibility re-exports from the package and remove configuration fields that had no effect in the tracker.
+
+### Validation and limits
+
+- Package build, typecheck, and import test passed. The tarball installed in a separate temporary project; the website typecheck, 10 tracker unit tests, production build, and two Chromium flows against a disposable Rust API passed. The Rust ingest/admin service and migrations remain application-specific and require a portable server adapter before this is a full standalone analytics plugin.
+
 ## [Unreleased] — 2026-11-07 — Forms request delivery
 
 ### Fixed

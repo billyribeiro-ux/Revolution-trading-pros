@@ -105,10 +105,7 @@ async function enableTracking(): Promise<void> {
 				trackFormBehavior: false,
 				trackIdleTime: false,
 				sampleRate: 1.0,
-				// Enhanced privacy settings
-				maskPII: true,
-				respectDNT: true,
-				anonymizeIP: true
+				respectDNT: true
 			});
 			if (!behaviorTracker.isActive()) {
 				behaviorTracker = null;

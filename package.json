@@ -21,7 +21,7 @@
 		"api:lint:machete": "cd api && cargo machete",
 		"api:lint:deny": "cd api && cargo deny check",
 		"api:lint:clippy": "cd api && cargo clippy --locked --all-targets -- -D warnings",
-		"prepare": "pnpm --filter @revolution/imagify build && vp config"
+		"prepare": "pnpm --filter @revolution/imagify build && pnpm --filter @revolution/behavior-tracker build && vp config"
 	},
 	"devDependencies": {
 		"concurrently": "^10.0.6",
