@@ -20,6 +20,51 @@ use serde_json::json;
 use crate::models::popup::{DisplayRules, FrequencyRules, PopupDesign, TriggerRules};
 use crate::{AppState, utils::html};
 
+fn safe_page_path(value: Option<&str>) -> Option<String> {
+    let value = value?;
+    let path = if value.starts_with('/') && !value.starts_with("//") {
+        value.split(['?', '#']).next()?.to_string()
+    } else {
+        let url = reqwest::Url::parse(value).ok()?;
+        if !matches!(url.scheme(), "http" | "https") {
+            return None;
+        }
+        url.path().to_string()
+    };
+    if path.len() > 512
+        || path.contains('@')
+        || path.to_ascii_lowercase().contains("%40")
+        || [
+            "/account",
+            "/admin",
+            "/auth",
+            "/checkout",
+            "/dashboard",
+            "/login",
+            "/my",
+            "/register",
+        ]
+        .iter()
+        .any(|prefix| path == *prefix || path.starts_with(&format!("{prefix}/")))
+    {
+        return None;
+    }
+    Some(path)
+}
+
+fn safe_session_id(value: Option<&str>) -> Option<&str> {
+    value.filter(|id| {
+        id.len() <= 100
+            && id
+                .bytes()
+                .all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'-' | b'_'))
+    })
+}
+
+fn safe_device(value: Option<&str>) -> Option<&str> {
+    value.filter(|device| matches!(*device, "desktop" | "tablet" | "mobile"))
+}
+
 /// Query params for active popups
 #[derive(Debug, Deserialize)]
 pub struct ActivePopupsQuery {
@@ -124,14 +169,8 @@ async fn get_active_popups(
     let popups = match popups_result {
         Ok(rows) => rows,
         Err(e) => {
-            // If table doesn't exist, return empty list gracefully
-            if e.to_string().contains("does not exist") {
-                return Ok(Json(json!({ "popups": [] })));
-            }
-            return Err((
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Json(json!({ "error": format!("Database error: {}", e) })),
-            ));
+            tracing::error!(error = %e, "Failed to load active popups");
+            return Err(popup_db_error());
         }
     };
 
@@ -290,36 +329,34 @@ async fn track_impression(
     Path(id): Path<i32>,
     Json(body): Json<TrackEventBody>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    // Insert event
-    let _ = sqlx::query(
+    let mut tx = state.db.pool.begin().await.map_err(|_| popup_db_error())?;
+    let updated = sqlx::query(
+        "UPDATE popups SET total_views = total_views + 1 WHERE id = $1 AND status = 'published'",
+    )
+    .bind(id)
+    .execute(&mut *tx)
+    .await
+    .map_err(|_| popup_db_error())?;
+    if updated.rows_affected() == 0 {
+        return Err((
+            StatusCode::NOT_FOUND,
+            Json(json!({ "error": "Popup not found" })),
+        ));
+    }
+    sqlx::query(
         r"
         INSERT INTO popup_events (popup_id, event_type, session_id, page_url, device_type, created_at)
         VALUES ($1, 'view', $2, $3, $4, NOW())
         ",
     )
     .bind(id)
-    .bind(&body.session_id)
-    .bind(&body.page_url)
-    .bind(&body.device_type)
-    .execute(&state.db.pool)
-    .await;
-
-    // Update popup total views
-    let _ = sqlx::query(
-        r"
-        UPDATE popups
-        SET total_views = total_views + 1,
-            conversion_rate = CASE
-                WHEN total_views + 1 > 0
-                THEN (total_conversions::float / (total_views + 1)::float) * 100
-                ELSE 0
-            END
-        WHERE id = $1
-        ",
-    )
-    .bind(id)
-    .execute(&state.db.pool)
-    .await;
+    .bind(safe_session_id(body.session_id.as_deref()))
+    .bind(safe_page_path(body.page_url.as_deref()))
+    .bind(safe_device(body.device_type.as_deref()))
+    .execute(&mut *tx)
+    .await
+    .map_err(|_| popup_db_error())?;
+    tx.commit().await.map_err(|_| popup_db_error())?;
 
     Ok(Json(json!({ "success": true })))
 }
@@ -330,39 +367,44 @@ async fn track_conversion(
     Path(id): Path<i32>,
     Json(body): Json<TrackConversionBody>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    // Insert event
-    let _ = sqlx::query(
+    let mut tx = state.db.pool.begin().await.map_err(|_| popup_db_error())?;
+    let updated = sqlx::query(
+        "UPDATE popups SET total_conversions = total_conversions + 1 WHERE id = $1 AND status = 'published'",
+    )
+    .bind(id)
+    .execute(&mut *tx)
+    .await
+    .map_err(|_| popup_db_error())?;
+    if updated.rows_affected() == 0 {
+        return Err((
+            StatusCode::NOT_FOUND,
+            Json(json!({ "error": "Popup not found" })),
+        ));
+    }
+    sqlx::query(
         r"
         INSERT INTO popup_events (popup_id, event_type, session_id, page_url, device_type, metadata, created_at)
         VALUES ($1, 'conversion', $2, $3, $4, $5, NOW())
         ",
     )
     .bind(id)
-    .bind(&body.session_id)
-    .bind(&body.page_url)
-    .bind(&body.device_type)
-    .bind(sqlx::types::Json(&body.metadata))
-    .execute(&state.db.pool)
-    .await;
-
-    // Update popup totals
-    let _ = sqlx::query(
-        r"
-        UPDATE popups
-        SET total_conversions = total_conversions + 1,
-            conversion_rate = CASE
-                WHEN total_views > 0
-                THEN ((total_conversions + 1)::float / total_views::float) * 100
-                ELSE 0
-            END
-        WHERE id = $1
-        ",
-    )
-    .bind(id)
-    .execute(&state.db.pool)
-    .await;
+    .bind(safe_session_id(body.session_id.as_deref()))
+    .bind(safe_page_path(body.page_url.as_deref()))
+    .bind(safe_device(body.device_type.as_deref()))
+    .bind(sqlx::types::Json(json!({})))
+    .execute(&mut *tx)
+    .await
+    .map_err(|_| popup_db_error())?;
+    tx.commit().await.map_err(|_| popup_db_error())?;
 
     Ok(Json(json!({ "success": true })))
+}
+
+fn popup_db_error() -> (StatusCode, Json<serde_json::Value>) {
+    (
+        StatusCode::INTERNAL_SERVER_ERROR,
+        Json(json!({ "error": "Popup service unavailable" })),
+    )
 }
 
 #[derive(Debug, Deserialize)]
@@ -391,17 +433,16 @@ async fn submit_popup_form(
     Json(body): Json<PopupFormSubmission>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     // Get popup to check form configuration
-    let popup: Option<(bool, Option<i32>)> =
-        sqlx::query_as("SELECT has_form, form_id FROM popups WHERE id = $1")
-            .bind(id)
-            .fetch_optional(&state.db.pool)
-            .await
-            .map_err(|e| {
-                (
-                    StatusCode::INTERNAL_SERVER_ERROR,
-                    Json(json!({ "error": format!("Database error: {}", e) })),
-                )
-            })?;
+    let popup: Option<(bool, Option<i32>)> = sqlx::query_as(
+        "SELECT has_form, form_id FROM popups WHERE id = $1 AND status = 'published'",
+    )
+    .bind(id)
+    .fetch_optional(&state.db.pool)
+    .await
+    .map_err(|e| {
+        tracing::error!(error = %e, "Failed to load popup form configuration");
+        popup_db_error()
+    })?;
 
     let (has_form, form_id) = popup.ok_or_else(|| {
         (
@@ -417,8 +458,21 @@ async fn submit_popup_form(
         ));
     }
 
-    // Store form submission
-    let _ = sqlx::query(
+    let mut tx = state.db.pool.begin().await.map_err(|_| popup_db_error())?;
+    let updated = sqlx::query(
+        "UPDATE popups SET total_conversions = total_conversions + 1 WHERE id = $1 AND status = 'published'",
+    )
+    .bind(id)
+    .execute(&mut *tx)
+    .await
+    .map_err(|_| popup_db_error())?;
+    if updated.rows_affected() == 0 {
+        return Err((
+            StatusCode::NOT_FOUND,
+            Json(json!({ "error": "Popup not found" })),
+        ));
+    }
+    sqlx::query(
         r"
         INSERT INTO popup_form_submissions (popup_id, form_id, data, session_id, metadata, created_at)
         VALUES ($1, $2, $3, $4, $5, NOW())
@@ -427,40 +481,27 @@ async fn submit_popup_form(
     .bind(id)
     .bind(form_id)
     .bind(sqlx::types::Json(&body.form_data))
-    .bind(&body.session_id)
-    .bind(sqlx::types::Json(&body.metadata))
-    .execute(&state.db.pool)
-    .await;
+    .bind(safe_session_id(body.session_id.as_deref()))
+    .bind(sqlx::types::Json(json!({})))
+    .execute(&mut *tx)
+    .await
+    .map_err(|_| popup_db_error())?;
 
     // Track as conversion
-    let _ = sqlx::query(
+    sqlx::query(
         r"
         INSERT INTO popup_events (popup_id, event_type, session_id, metadata, created_at)
         VALUES ($1, 'conversion', $2, $3, NOW())
         ",
     )
     .bind(id)
-    .bind(&body.session_id)
+    .bind(safe_session_id(body.session_id.as_deref()))
     .bind(sqlx::types::Json(json!({ "type": "form_submit" })))
-    .execute(&state.db.pool)
-    .await;
+    .execute(&mut *tx)
+    .await
+    .map_err(|_| popup_db_error())?;
 
-    // Update conversion count
-    let _ = sqlx::query(
-        r"
-        UPDATE popups
-        SET total_conversions = total_conversions + 1,
-            conversion_rate = CASE
-                WHEN total_views > 0
-                THEN ((total_conversions + 1)::float / total_views::float) * 100
-                ELSE 0
-            END
-        WHERE id = $1
-        ",
-    )
-    .bind(id)
-    .execute(&state.db.pool)
-    .await;
+    tx.commit().await.map_err(|_| popup_db_error())?;
 
     Ok(Json(json!({
         "status": "ok",
@@ -489,22 +530,60 @@ async fn track_events_batch(
     }
 
     let event_count = body.events.len();
+    let mut tx = state.db.pool.begin().await.map_err(|_| popup_db_error())?;
     for event in body.events {
-        let _ = sqlx::query(
+        let popup_id = event
+            .popup_id
+            .or_else(|| event.popup_id_alt.as_deref()?.parse().ok())
+            .ok_or_else(|| {
+                (
+                    StatusCode::BAD_REQUEST,
+                    Json(json!({ "error": "Invalid popup ID" })),
+                )
+            })?;
+        let event_type = match event.event_type.as_str() {
+            "impression" | "view" => "view",
+            "conversion" => "conversion",
+            _ => {
+                return Err((
+                    StatusCode::BAD_REQUEST,
+                    Json(json!({ "error": "Invalid event type" })),
+                ));
+            }
+        };
+        let statement = if event_type == "view" {
+            "UPDATE popups SET total_views = total_views + 1 WHERE id = $1 AND status = 'published'"
+        } else {
+            "UPDATE popups SET total_conversions = total_conversions + 1 WHERE id = $1 AND status = 'published'"
+        };
+        let updated = sqlx::query(statement)
+            .bind(popup_id)
+            .execute(&mut *tx)
+            .await
+            .map_err(|_| popup_db_error())?;
+        if updated.rows_affected() == 0 {
+            return Err((
+                StatusCode::NOT_FOUND,
+                Json(json!({ "error": "Popup not found" })),
+            ));
+        }
+        sqlx::query(
             r"
             INSERT INTO popup_events (popup_id, event_type, session_id, page_url, device_type, metadata, created_at)
             VALUES ($1, $2, $3, $4, $5, $6, NOW())
             ",
         )
-        .bind(event.popup_id)
-        .bind(&event.event_type)
-        .bind(&event.session_id)
-        .bind(&event.page_url)
-        .bind(&event.device_type)
-        .bind(sqlx::types::Json(&event.data))
-        .execute(&state.db.pool)
-        .await;
+        .bind(popup_id)
+        .bind(event_type)
+        .bind(safe_session_id(event.session_id.as_deref()))
+        .bind(safe_page_path(event.page_url.as_deref()))
+        .bind(safe_device(event.device_type.as_deref()))
+        .bind(sqlx::types::Json(json!({})))
+        .execute(&mut *tx)
+        .await
+        .map_err(|_| popup_db_error())?;
     }
+    tx.commit().await.map_err(|_| popup_db_error())?;
 
     Ok(Json(json!({ "success": true, "processed": event_count })))
 }
@@ -535,4 +614,28 @@ pub fn router() -> Router<AppState> {
         .route("/{id}/conversion", post(track_conversion))
         .route("/{id}/form-submit", post(submit_popup_form))
         .route("/events", post(track_events_batch))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{safe_device, safe_page_path, safe_session_id};
+
+    #[test]
+    fn public_event_fields_drop_private_data() {
+        assert_eq!(
+            safe_page_path(Some(
+                "https://example.test/blog/article?email=private@example.test#token"
+            )),
+            Some("/blog/article".to_string())
+        );
+        assert_eq!(safe_page_path(Some("/checkout?secret=token")), None);
+        assert_eq!(safe_page_path(Some("javascript:alert(1)")), None);
+        assert_eq!(
+            safe_session_id(Some("safe_session-1")),
+            Some("safe_session-1")
+        );
+        assert_eq!(safe_session_id(Some("email@example.test")), None);
+        assert_eq!(safe_device(Some("desktop")), Some("desktop"));
+        assert_eq!(safe_device(Some("unknown")), None);
+    }
 }

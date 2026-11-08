@@ -13,6 +13,7 @@
 
 import { browser } from '$app/env';
 import { writable, get } from 'svelte/store';
+import { consentStore } from './store.svelte.js';
 
 /**
  * Banner variant types
@@ -186,7 +187,8 @@ export function initializeABTest(
 	}
 
 	// Check for existing assignment
-	const storedVariantId = localStorage.getItem(VARIANT_STORAGE_KEY);
+	const analyticsAllowed = get(consentStore).analytics;
+	const storedVariantId = analyticsAllowed ? localStorage.getItem(VARIANT_STORAGE_KEY) : null;
 	if (storedVariantId) {
 		const stored = variants.find((v) => v.id === storedVariantId);
 		if (stored) {
@@ -197,7 +199,7 @@ export function initializeABTest(
 
 	// Assign new variant
 	const variant = selectVariant(variants);
-	localStorage.setItem(VARIANT_STORAGE_KEY, variant.id);
+	if (analyticsAllowed) localStorage.setItem(VARIANT_STORAGE_KEY, variant.id);
 	currentVariant.set(variant);
 
 	return variant;
@@ -219,7 +221,7 @@ export function recordImpression(): void {
  * Record user decision
  */
 export function recordDecision(action: ABTestResult['action']): void {
-	if (!browser) return;
+	if (!browser || !get(consentStore).analytics) return;
 
 	const variant = get(currentVariant);
 	if (!variant) return;
@@ -242,7 +244,7 @@ export function recordDecision(action: ABTestResult['action']): void {
  * Load results from storage
  */
 function loadResults(): void {
-	if (!browser) return;
+	if (!browser || !get(consentStore).analytics) return;
 
 	try {
 		const stored = localStorage.getItem(RESULTS_STORAGE_KEY);

@@ -55,6 +55,7 @@ import type { FormTheme } from '#lib/data/formTemplates.js';
 import { getAuthToken, getSessionId as _getAuthSessionId } from '#lib/stores/auth.svelte.js';
 import { logger } from '#lib/utils/logger.js';
 import type { JsonValue, PaginatedResponse } from './_types';
+import { formWritePayload, normalizeForm } from './forms-contract.js';
 
 // R8-A: re-export `PaginatedResponse` so the type is reachable to forms-area
 // callers without forcing them to `import from '#lib/api/_types'` directly.
@@ -90,7 +91,6 @@ const CACHE_TTL = 300000; // 5 minutes
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 1000;
 const OFFLINE_QUEUE_KEY = 'forms_offline_queue';
-const ANALYTICS_BATCH_SIZE = 10;
 const AUTOSAVE_INTERVAL = 30000; // 30 seconds
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -498,24 +498,8 @@ export interface SubmissionNote {
 // ═══════════════════════════════════════════════════════════════════════════
 
 /**
- * Shape of a queued offline request — replayed by `processOfflineQueue` when
- * the network comes back online. Kept private to this module.
- */
-interface OfflineRequest {
-	url: string;
-	options: RequestInit;
-	timestamp?: number;
-}
-
-/**
  * Shape of a queued analytics event — batched and POSTed to the backend.
  */
-interface AnalyticsEvent {
-	event: string;
-	data: Record<string, JsonValue | undefined>;
-	timestamp: number;
-}
-
 class FormsService {
 	private static instance: FormsService;
 	// R7-A precedent: cache values stored as `unknown`; reads go through a
@@ -523,9 +507,7 @@ class FormsService {
 	// `0` / `""` / `false` to force a refetch via the `if (cached) ...`
 	// truthy-check.
 	private cache = new Map<string, { data: unknown; expiry: number }>();
-	private offlineQueue: OfflineRequest[] = [];
 	private wsConnection?: WebSocket;
-	private analyticsQueue: AnalyticsEvent[] = [];
 	// `unknown` rather than a concrete `T` because the map holds different
 	// fetch results keyed by URL; dedup-then-replay returns the same Promise
 	// reference and the caller's `authFetch<T>` generic re-establishes T.
@@ -556,8 +538,9 @@ class FormsService {
 	private initialize(): void {
 		if (!browser) return;
 
-		// Load offline queue
-		this.loadOfflineQueue();
+		// Old versions persisted complete submissions in localStorage. Remove
+		// those copies rather than replaying sensitive data without user action.
+		localStorage.removeItem(OFFLINE_QUEUE_KEY);
 
 		// Setup WebSocket connection
 		this.setupWebSocket();
@@ -567,9 +550,6 @@ class FormsService {
 
 		// Setup autosave
 		this.setupAutosave();
-
-		// Process analytics queue
-		this.processAnalyticsQueue();
 	}
 
 	/**
@@ -695,12 +675,6 @@ class FormsService {
 			if (retriesLeft > 0 && this.shouldRetry(error)) {
 				await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY));
 				return this.executeRequest<T>(url, options, retriesLeft - 1);
-			}
-
-			// Queue for offline processing if network error
-			if (this.isNetworkError(error)) {
-				this.queueOfflineRequest({ url, options });
-				throw new Error('Request queued for offline processing', { cause: error });
 			}
 
 			throw error;
@@ -858,51 +832,11 @@ class FormsService {
 
 		window.addEventListener('online', () => {
 			this.offlineMode.set(false);
-			void this.processOfflineQueue();
 		});
 
 		window.addEventListener('offline', () => {
 			this.offlineMode.set(true);
 		});
-	}
-
-	private loadOfflineQueue(): void {
-		if (!browser) return;
-
-		const stored = localStorage.getItem(OFFLINE_QUEUE_KEY);
-		if (stored) {
-			this.offlineQueue = JSON.parse(stored);
-		}
-	}
-
-	private saveOfflineQueue(): void {
-		if (!browser) return;
-		localStorage.setItem(OFFLINE_QUEUE_KEY, JSON.stringify(this.offlineQueue));
-	}
-
-	private queueOfflineRequest(request: Omit<OfflineRequest, 'timestamp'>): void {
-		this.offlineQueue.push({
-			...request,
-			timestamp: Date.now()
-		});
-		this.saveOfflineQueue();
-	}
-
-	private async processOfflineQueue(): Promise<void> {
-		if (this.offlineQueue.length === 0) return;
-
-		logger.debug(`[FormsService] Processing ${this.offlineQueue.length} offline requests`);
-
-		for (const request of this.offlineQueue) {
-			try {
-				await this.executeRequest(request.url, request.options, 0);
-			} catch (error) {
-				logger.error('[FormsService] Failed to process offline request', { error });
-			}
-		}
-
-		this.offlineQueue = [];
-		this.saveOfflineQueue();
 	}
 
 	/**
@@ -931,53 +865,11 @@ class FormsService {
 	}
 
 	/**
-	 * Analytics
-	 */
-	private trackEvent(event: string, data: Record<string, JsonValue | undefined>): void {
-		this.analyticsQueue.push({
-			event,
-			data,
-			timestamp: Date.now()
-		});
-
-		if (this.analyticsQueue.length >= ANALYTICS_BATCH_SIZE) {
-			void this.flushAnalytics();
-		}
-	}
-
-	private async flushAnalytics(): Promise<void> {
-		if (this.analyticsQueue.length === 0) return;
-
-		const batch = [...this.analyticsQueue];
-		this.analyticsQueue = [];
-
-		try {
-			await this.authFetch(`${API_BASE}/forms/analytics/track`, {
-				method: 'POST',
-				body: JSON.stringify({ events: batch }),
-				skipCache: true
-			});
-		} catch (_error) {
-			// Re-queue on failure
-			this.analyticsQueue.unshift(...batch);
-		}
-	}
-
-	private processAnalyticsQueue(): void {
-		setInterval(() => this.flushAnalytics(), 60000); // Every minute
-	}
-
-	/**
 	 * Utilities
 	 */
 	private shouldRetry(error: unknown): boolean {
 		const message = error instanceof Error ? error.message : '';
 		return message.includes('Network') || message.includes('fetch');
-	}
-
-	private isNetworkError(error: unknown): boolean {
-		const message = error instanceof Error ? error.message : '';
-		return !navigator.onLine || message.includes('Network');
 	}
 
 	private async clearAuth(): Promise<void> {
@@ -1032,7 +924,7 @@ class FormsService {
 			// re-type the boundary as `unknown` and narrow at each branch.
 			// This deletes 1 `any` (the `authFetch<any>`) while preserving
 			// the 5-shape compat that some external consumer might depend on.
-			const response = await this.authFetch<unknown>(`${API_BASE}/forms?${params}`);
+			const response = await this.authFetch<unknown>(`${API_BASE}/admin/forms?${params}`);
 
 			let forms: Form[] = [];
 			let total = 0;
@@ -1047,13 +939,13 @@ class FormsService {
 			) {
 				// Paginated wrapped: { data: { data: [], total, per_page } }
 				const inner = response['data'] as { data: unknown[]; total?: number; per_page?: number };
-				forms = inner.data as Form[];
+				forms = inner.data.map(normalizeForm);
 				total = inner.total ?? forms.length;
 				responsePerPage = inner.per_page ?? perPage;
 			} else if (isRecord(response) && Array.isArray(response['data'])) {
 				// Canonical envelope from forms.rs:126-134:
 				// { data: Form[], meta: { total, ... } }
-				forms = response['data'] as Form[];
+				forms = response['data'].map(normalizeForm);
 				if (isRecord(response['meta']) && typeof response['meta']['total'] === 'number') {
 					total = response['meta']['total'];
 				} else {
@@ -1064,14 +956,14 @@ class FormsService {
 				}
 			} else if (isRecord(response) && Array.isArray(response['forms'])) {
 				// Legacy format: { forms: Form[], total, perPage }
-				forms = response['forms'] as Form[];
+				forms = response['forms'].map(normalizeForm);
 				total = typeof response['total'] === 'number' ? response['total'] : forms.length;
 				if (typeof response['perPage'] === 'number') {
 					responsePerPage = response['perPage'];
 				}
 			} else if (Array.isArray(response)) {
 				// Direct array response
-				forms = response as Form[];
+				forms = response.map(normalizeForm);
 				total = forms.length;
 			}
 
@@ -1081,9 +973,6 @@ class FormsService {
 				total,
 				perPage: responsePerPage
 			};
-		} catch (error: unknown) {
-			this.error.set(errorMessage(error));
-			throw error;
 		} finally {
 			this.isLoading.set(false);
 		}
@@ -1094,11 +983,8 @@ class FormsService {
 		this.error.set(null);
 
 		try {
-			const form = await this.authFetch<Form>(`${API_BASE}/forms/${id}`);
+			const form = normalizeForm(await this.authFetch<unknown>(`${API_BASE}/admin/forms/${id}`));
 			this.currentForm.set(form);
-
-			// Track view
-			this.trackEvent('form_viewed', { form_id: id });
 
 			return form;
 		} catch (error: unknown) {
@@ -1114,17 +1000,16 @@ class FormsService {
 		this.error.set(null);
 
 		try {
-			const form = await this.authFetch<Form>(`${API_BASE}/forms`, {
-				method: 'POST',
-				body: JSON.stringify(formData),
-				skipCache: true
-			});
+			const form = normalizeForm(
+				await this.authFetch<unknown>(`${API_BASE}/admin/forms`, {
+					method: 'POST',
+					body: JSON.stringify(formWritePayload(formData)),
+					skipCache: true
+				})
+			);
 
 			this.forms.update((forms) => [...forms, form]);
 			this.clearCache('/forms');
-
-			// Track creation
-			this.trackEvent('form_created', { form_id: form.id });
 
 			return form;
 		} catch (error: unknown) {
@@ -1151,16 +1036,15 @@ class FormsService {
 				return forms;
 			});
 
-			const form = await this.authFetch<Form>(`${API_BASE}/forms/${id}`, {
-				method: 'PUT',
-				body: JSON.stringify(formData),
-				skipCache: true
-			});
+			const form = normalizeForm(
+				await this.authFetch<unknown>(`${API_BASE}/admin/forms/${id}`, {
+					method: 'PUT',
+					body: JSON.stringify(formWritePayload(formData)),
+					skipCache: true
+				})
+			);
 
 			this.clearCache(`/forms/${id}`);
-
-			// Track update
-			this.trackEvent('form_updated', { form_id: id });
 
 			return form;
 		} catch (error: unknown) {
@@ -1181,15 +1065,12 @@ class FormsService {
 			// Optimistic delete
 			this.forms.update((forms) => forms.filter((f) => f.id !== id));
 
-			await this.authFetch(`${API_BASE}/forms/${id}`, {
+			await this.authFetch(`${API_BASE}/admin/forms/${id}`, {
 				method: 'DELETE',
 				skipCache: true
 			});
 
 			this.clearCache('/forms');
-
-			// Track deletion
-			this.trackEvent('form_deleted', { form_id: id });
 		} catch (error: unknown) {
 			// Revert optimistic delete
 			await this.getForms();
@@ -1205,18 +1086,14 @@ class FormsService {
 		this.error.set(null);
 
 		try {
-			const form = await this.authFetch<Form>(`${API_BASE}/forms/${id}/duplicate`, {
-				method: 'POST',
-				skipCache: true
-			});
+			const form = normalizeForm(
+				await this.authFetch<unknown>(`${API_BASE}/admin/forms/${id}/duplicate`, {
+					method: 'POST',
+					skipCache: true
+				})
+			);
 
 			this.forms.update((forms) => [...forms, form]);
-
-			// Track duplication
-			this.trackEvent('form_duplicated', {
-				original_id: id,
-				new_id: form.id
-			});
 
 			return form;
 		} catch (error: unknown) {
@@ -1240,9 +1117,6 @@ class FormsService {
 				body: JSON.stringify({ prompt }),
 				skipCache: true
 			});
-
-			// Track AI generation
-			this.trackEvent('ai_form_generated', { prompt });
 
 			return response.form;
 		} catch (error: unknown) {
@@ -1281,9 +1155,6 @@ class FormsService {
 				}
 			);
 
-			// Track optimization
-			this.trackEvent('form_optimized', { form_id: formId });
-
 			return response.form;
 		} catch (error: unknown) {
 			this.error.set(errorMessage(error));
@@ -1306,53 +1177,27 @@ class FormsService {
 		errors?: Record<string, string[]>;
 		redirect_url?: string;
 	}> {
-		try {
-			const response = await fetch(`${API_BASE}/forms/${slug}/submit`, {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-					Accept: 'application/json'
-				},
-				body: JSON.stringify(data)
-			});
+		const response = await fetch(`${API_BASE}/forms/${slug}/submit`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				Accept: 'application/json'
+			},
+			body: JSON.stringify(data)
+		});
 
-			// Backend `POST /forms/:slug/submit` returns `{ success, message?,
-			// submission_id?, errors?, redirect_url? }` per the type signature
-			// of this method. Parse with the same shape.
-			const result: {
-				success: boolean;
-				message?: string;
-				submission_id?: string;
-				errors?: Record<string, string[]>;
-				redirect_url?: string;
-			} = await response.json();
-
-			// Track submission
-			this.trackEvent('form_submitted', {
-				form_slug: slug,
-				success: result.success
-			});
-
-			return result;
-		} catch (error: unknown) {
-			// Queue for offline if network error
-			if (this.isNetworkError(error)) {
-				this.queueOfflineRequest({
-					url: `${API_BASE}/forms/${slug}/submit`,
-					options: {
-						method: 'POST',
-						body: JSON.stringify(data)
-					}
-				});
-
-				return {
-					success: false,
-					message: "Your submission has been queued and will be sent when you're back online."
-				};
-			}
-
-			throw error;
+		const result: {
+			success: boolean;
+			message?: string;
+			submission_id?: string;
+			errors?: Record<string, string[]>;
+			redirect_url?: string;
+		} = await response.json();
+		if ((!response.ok || !result.success) && !result.errors) {
+			throw new Error(result.message || `Submission failed (HTTP ${response.status})`);
 		}
+
+		return result;
 	}
 
 	async getSubmissions(
@@ -1375,7 +1220,7 @@ class FormsService {
 		try {
 			const params = new URLSearchParams({
 				page: page.toString(),
-				perPage: perPage.toString(),
+				per_page: perPage.toString(),
 				...filters
 			});
 
@@ -1384,22 +1229,26 @@ class FormsService {
 				total?: number;
 				perPage?: number;
 				currentPage?: number;
-			}>(`${API_BASE}/forms/${formId}/submissions?${params}`);
+				meta?: { total: number; per_page: number; current_page: number };
+			}>(`${API_BASE}/admin/forms/${formId}/submissions?${params}`);
 
 			this.submissions.set(response.submissions);
-			return response;
-		} catch (error: unknown) {
-			this.error.set(errorMessage(error));
-			throw error;
+			return {
+				...response,
+				total: response.meta?.total ?? response.total,
+				perPage: response.meta?.per_page ?? response.perPage,
+				currentPage: response.meta?.current_page ?? response.currentPage
+			};
 		} finally {
 			this.isLoading.set(false);
 		}
 	}
 
 	async exportSubmissions(formId: number, format: 'csv' | 'excel' | 'pdf' = 'csv'): Promise<Blob> {
+		if (format !== 'csv') throw new Error('Only CSV submission export is supported');
 		const token = this.getAuthToken();
 		const response = await fetch(
-			`${API_BASE}/forms/${formId}/submissions/export?format=${format}`,
+			`${API_BASE}/admin/forms/${formId}/submissions/export?format=${format}`,
 			{
 				headers: {
 					Accept: format === 'csv' ? 'text/csv' : 'application/octet-stream',
@@ -1419,7 +1268,7 @@ class FormsService {
 	 * Analytics & Insights
 	 */
 	async getFormAnalytics(formId: number): Promise<FormAnalytics> {
-		return this.authFetch<FormAnalytics>(`${API_BASE}/forms/${formId}/analytics`);
+		return this.authFetch<FormAnalytics>(`${API_BASE}/admin/forms/${formId}/analytics`);
 	}
 
 	// Analytics endpoints below return shapes the backend doesn't define
@@ -1574,9 +1423,6 @@ class FormsService {
 
 		this.forms.update((forms) => [...forms, form]);
 
-		// Track template usage
-		this.trackEvent('template_used', { template_id: templateId });
-
 		return form;
 	}
 }
@@ -1625,12 +1471,12 @@ export const submitForm = (slug: string, data: Record<string, JsonValue>) =>
 
 export const previewForm = async (slug: string): Promise<Form> => {
 	try {
-		const response = await fetch(`${API_BASE}/forms/preview/${slug}`);
+		const response = await fetch(`${API_BASE}/forms/${encodeURIComponent(slug)}`);
 		if (!response.ok) {
 			const errorData = await response.json().catch(() => ({ message: 'Form not found' }));
 			throw new Error(errorData.message || `Failed to load form preview (HTTP ${response.status})`);
 		}
-		return response.json();
+		return normalizeForm(await response.json());
 	} catch (error) {
 		// Log error for debugging while preserving the error chain
 		logger.error('[FormsAPI] previewForm error', { error });
@@ -1644,13 +1490,12 @@ export const previewForm = async (slug: string): Promise<Form> => {
  */
 export const getFormById = async (id: number): Promise<Form> => {
 	try {
-		const response = await fetch(`${API_BASE}/forms/${id}/public`);
+		const response = await fetch(`${API_BASE}/forms/${id}`);
 		if (!response.ok) {
 			const errorData = await response.json().catch(() => ({ message: 'Form not found' }));
 			throw new Error(errorData.message || `Failed to load form (HTTP ${response.status})`);
 		}
-		const data = await response.json();
-		return data.data || data;
+		return normalizeForm(await response.json());
 	} catch (error) {
 		// Log error for debugging while preserving the error chain
 		logger.error('[FormsAPI] getFormById error', { error });
@@ -1720,21 +1565,24 @@ export const updateSubmissionStatus = async (
 	status: string
 ) => {
 	const token = getAuthToken();
-	const response = await fetch(`${API_BASE}/forms/${formId}/submissions/${submissionId}/status`, {
-		method: 'PUT',
-		headers: {
-			'Content-Type': 'application/json',
-			Authorization: `Bearer ${token}`
-		},
-		body: JSON.stringify({ status })
-	});
+	const response = await fetch(
+		`${API_BASE}/admin/forms/${formId}/submissions/${submissionId}/status`,
+		{
+			method: 'PUT',
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${token}`
+			},
+			body: JSON.stringify({ status })
+		}
+	);
 	if (!response.ok) throw new Error('Failed to update submission status');
 	return response.json();
 };
 
 export const deleteSubmission = async (formId: number, submissionId: number | string) => {
 	const token = getAuthToken();
-	const response = await fetch(`${API_BASE}/forms/${formId}/submissions/${submissionId}`, {
+	const response = await fetch(`${API_BASE}/admin/forms/${formId}/submissions/${submissionId}`, {
 		method: 'DELETE',
 		headers: {
 			Authorization: `Bearer ${token}`
@@ -1750,7 +1598,7 @@ export const bulkUpdateSubmissionStatus = async (
 	status: string
 ) => {
 	const token = getAuthToken();
-	const response = await fetch(`${API_BASE}/forms/${formId}/submissions/bulk-update-status`, {
+	const response = await fetch(`${API_BASE}/admin/forms/${formId}/submissions/bulk-update-status`, {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
@@ -1764,7 +1612,7 @@ export const bulkUpdateSubmissionStatus = async (
 
 export const bulkDeleteSubmissions = async (formId: number, submissionIds: (number | string)[]) => {
 	const token = getAuthToken();
-	const response = await fetch(`${API_BASE}/forms/${formId}/submissions/bulk-delete`, {
+	const response = await fetch(`${API_BASE}/admin/forms/${formId}/submissions/bulk-delete`, {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',

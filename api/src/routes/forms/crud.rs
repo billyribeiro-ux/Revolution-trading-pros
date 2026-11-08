@@ -175,16 +175,16 @@ pub(super) async fn update_form(
         "Admin updating form"
     );
 
-    // Build dynamic update - simplified approach
+    let updated_slug = input.name.as_deref().map(slug::slugify);
     let form: FormRow = sqlx::query_as(
         r"
         UPDATE forms SET
             name = COALESCE($2, name),
-            slug = CASE WHEN $2 IS NOT NULL THEN LOWER(REPLACE($2, ' ', '-')) ELSE slug END,
-            description = COALESCE($3, description),
-            fields = COALESCE($4, fields),
-            settings = COALESCE($5, settings),
-            is_published = COALESCE($6, is_published),
+            slug = COALESCE($3, slug),
+            description = COALESCE($4, description),
+            fields = COALESCE($5, fields),
+            settings = COALESCE($6, settings),
+            is_published = COALESCE($7, is_published),
             updated_at = NOW()
         WHERE id = $1
         RETURNING id, name, slug, description, fields, COALESCE(settings, '{}'::jsonb) as settings,
@@ -194,6 +194,7 @@ pub(super) async fn update_form(
     )
     .bind(id)
     .bind(&input.name)
+    .bind(&updated_slug)
     .bind(&input.description)
     .bind(&input.fields)
     .bind(&input.settings)
