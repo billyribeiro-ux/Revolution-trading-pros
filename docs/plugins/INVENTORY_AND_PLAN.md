@@ -37,6 +37,7 @@ Other registered product modules include member courses and indicators, trading 
 
 ## Evidence from this audit
 
+- `docker-compose.media.yml` builds a private, authenticated media processor container and wires it to the Compose API. A Docker HTTP probe converted a generated 377,747-byte PNG to a decodable 5,834-byte WebP; it did not exercise API object storage or ClamAV.
 - `api/tests/marketing_plugins_integration_test.rs` runs against an **empty** local database named `marketing_verify*` and drives the real router.
 - `frontend/tests/marketing-runtime.spec.ts` drives the consent and popup browser flow with an intercepted campaign API response.
 - `frontend/src/lib/api/forms-contract.test.ts` and `popup-contract.test.ts` check the Rust/frontend DTO boundaries.

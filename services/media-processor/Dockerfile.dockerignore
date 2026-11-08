@@ -1,0 +1,11 @@
+.git
+**/node_modules
+**/dist
+api
+frontend
+behavior-tracker
+svelte-click-to-source
+docs
+coverage
+playwright-report
+test-results
