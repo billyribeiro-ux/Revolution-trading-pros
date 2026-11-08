@@ -1,0 +1,39 @@
+# Optional local image processor overlay. Supply MEDIA_PROCESSOR_TOKEN through
+# the shell or an untracked .env file before running Compose.
+services:
+  media-processor:
+    build:
+      context: .
+      dockerfile: services/media-processor/Dockerfile
+    environment:
+      MEDIA_PROCESSOR_TOKEN: ${MEDIA_PROCESSOR_TOKEN:?Set a private 32-256 character token}
+      MEDIA_PROCESSOR_HOST: 0.0.0.0
+      MEDIA_PROCESSOR_PORT: '19010'
+    networks: [rtp-network]
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+    mem_limit: ${MEDIA_PROCESSOR_MEMORY_LIMIT:-1g}
+    cpus: '${MEDIA_PROCESSOR_CPUS:-2.0}'
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:19010/health',{headers:{Authorization:'Bearer '+process.env.MEDIA_PROCESSOR_TOKEN}}).then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+
+  api:
+    environment:
+      MEDIA_PROCESSOR_URL: http://media-processor:19010
+      MEDIA_PROCESSOR_TOKEN: ${MEDIA_PROCESSOR_TOKEN:?Set a private 32-256 character token}
+    depends_on:
+      media-processor:
+        condition: service_healthy

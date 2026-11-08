@@ -4,6 +4,35 @@ This workspace runs the Sharp version pinned by the root lockfile. The Rust API
 sends stored image bytes to it; the service never downloads caller URLs or opens
 caller paths. Originals stay in storage and completed jobs publish derived files.
 
+## Docker Compose
+
+Use the optional overlay to build and start the processor on the private Compose
+network. Set one shared token in your shell or an untracked `.env` file; the
+overlay refuses to start without it.
+
+```sh
+export MEDIA_PROCESSOR_TOKEN="$(openssl rand -hex 32)"
+docker compose -f docker-compose.yml -f docker-compose.media.yml up -d --build db redis meili media-processor api
+```
+
+The overlay gives the API the processor's internal URL and token. The processor
+runs as a nonroot user, has a read-only filesystem, drops Linux capabilities,
+and exposes no host port. Its health check authenticates to `/health`. Memory
+and CPU defaults are 1 GiB and two CPUs; set `MEDIA_PROCESSOR_MEMORY_LIMIT` and
+`MEDIA_PROCESSOR_CPUS` to tune them for a measured workload. A valid object
+store and `CLAMD_ADDRESS` are still required for upload-to-variant processing:
+the worker fails closed when it cannot scan the stored original. The base
+Compose stack does not supply either service, so starting this overlay alone
+proves the private processor service, not a complete media upload pipeline.
+
+On 2026-11-08, the Docker image built on Apple silicon and a running container
+returned HTTP 401 without a token, HTTP 200 for authenticated health, and a
+decodable 512×512 WebP from a generated PNG. That sample was 377,747 bytes as
+PNG and 5,834 bytes as WebP. The production-dependency-only runtime image was
+400,841,624 bytes, versus 707,806,780 bytes when development dependencies
+were copied into it. These numbers describe one platform and one synthetic
+image, not a representative compression or speed benchmark.
+
 From the repository root, install with `pnpm install --frozen-lockfile`. Use Node
 26.13 or later. Generate a token with `openssl rand -hex 32`, then supply it through
 your environment to both processes (do not commit it):

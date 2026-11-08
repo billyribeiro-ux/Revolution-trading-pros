@@ -4,6 +4,16 @@
 
 All notable changes to this project. Format roughly follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); we don't strictly adhere to SemVer because the product isn't a published library.
 
+## [Unreleased] — 2026-11-08 — Docker media processor
+
+### Added
+
+- Added an optional Compose overlay and reproducible multi-stage Docker image for the private Imagify media processor. The overlay connects the Rust API to the processor with a required shared token and bounds container resources.
+
+### Validation and limits
+
+- Built the image and verified authenticated health, unauthenticated rejection, and actual PNG-to-WebP conversion inside the running container: 377,747 bytes to 5,834 bytes for one synthetic 512×512 sample. A separate production-dependency stage reduced the local runtime image from 707,806,780 to 400,841,624 bytes. The overlay still requires configured object storage and ClamAV for a complete API upload-to-variant run.
+
 ## [Unreleased] — 2026-11-08 — Additional plugin candidates
 
 ### Documented
