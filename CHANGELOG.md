@@ -4,6 +4,12 @@
 
 All notable changes to this project. Format roughly follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); we don't strictly adhere to SemVer because the product isn't a published library.
 
+## [Unreleased] — 2026-11-08 — Additional plugin candidates
+
+### Documented
+
+- Extended the first-party plugin inventory with registered site/room analytics, scheduling, search, security/site-health, and video modules, plus product modules that still need classification. The new rows explicitly mark untested end-to-end and portability boundaries.
+
 ## [Unreleased] — 2026-11-08 — Popup campaign targeting
 
 ### Fixed
