@@ -212,15 +212,21 @@ async fn get_active_popups(
 
             // Check UTM targeting
             if let Some(ref sources) = rules.utm_source
-                && let Some(ref user_source) = query.utm_source
-                && !sources.contains(user_source)
+                && !sources.is_empty()
+                && !query
+                    .utm_source
+                    .as_ref()
+                    .is_some_and(|source| sources.contains(source))
             {
                 return false;
             }
 
             if let Some(ref campaigns) = rules.utm_campaign
-                && let Some(ref user_campaign) = query.utm_campaign
-                && !campaigns.contains(user_campaign)
+                && !campaigns.is_empty()
+                && !query
+                    .utm_campaign
+                    .as_ref()
+                    .is_some_and(|campaign| campaigns.contains(campaign))
             {
                 return false;
             }
