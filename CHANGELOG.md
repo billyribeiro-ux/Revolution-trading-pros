@@ -4,6 +4,17 @@
 
 All notable changes to this project. Format roughly follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); we don't strictly adhere to SemVer because the product isn't a published library.
 
+## [Unreleased] — 2026-11-07 — Click-to-source plugin security
+
+### Fixed
+
+- Replace the development editor endpoint's shell command with argument-based spawning, a per-server request token, POST-only access, loopback-only default, and realpath validation within the project root.
+- Safely serialize runtime options and escape source path attributes. Add an explicit preprocessor root option, installation instructions, and security tests.
+
+### Validation and limits
+
+- The package build, TypeScript check, and Vite endpoint tests pass with the installed Svelte 5/Vite 8 stack. Other declared peer combinations and remote development hosts remain untested.
+
 ## [Unreleased] — 2026-11-07 — Marketing plugin runtime audit
 
 ### Fixed
