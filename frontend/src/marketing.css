@@ -31,6 +31,11 @@
    ═══════════════════════════════════════════════════════════════════════════ */
 
 .marketing-shell {
+	--rtp-primary-action: #1d4ed8;
+	--rtp-emerald-action: #047857;
+	--rtp-indigo-action: #4f46e5;
+	/* Long headings and contact addresses must reflow when text is enlarged. */
+	overflow-wrap: anywhere;
 	/* ── Canvas / surface stack ─────────────────────────────────────────── */
 	--rtp-bg: #0a0a0a; /* primary page background */
 	--rtp-bg-deep: #050505; /* hero halo backdrops, deeper sections */
@@ -72,6 +77,9 @@
 	--rtp-border-strong: rgba(255, 255, 255, 0.2);
 
 	/* ── Layout ─────────────────────────────────────────────────────────── */
+	--rtp-content-reading: 52rem; /* legal/support reading column */
+	--rtp-information-title: clamp(2rem, 5vw, 3.5rem);
+	--rtp-information-body: 1rem;
 	--rtp-content-max: 80rem; /* 1280px — default content shell (max-w-7xl) */
 	--rtp-content-wide: 100rem; /* 1600px — about/mentorship wide hero */
 	--rtp-nav-height: 5rem; /* matches --nav-height in NavBar.svelte */
@@ -238,7 +246,18 @@
    ═══════════════════════════════════════════════════════════════════════════ */
 @media (prefers-reduced-motion: reduce) {
 	.marketing-shell {
+		--rtp-primary-action: #1d4ed8;
+		--rtp-emerald-action: #047857;
+		--rtp-indigo-action: #4f46e5;
 		scroll-behavior: auto !important;
+	}
+	/* Component selectors must not override a user's motion preference. Svelte's
+	   Web Animations transitions are handled by animations/motion.ts separately. */
+	.marketing-shell *,
+	.marketing-shell *::before,
+	.marketing-shell *::after {
+		animation: none !important;
+		transition: none !important;
 	}
 }
 

@@ -164,6 +164,7 @@ pub fn api_router() -> Router<AppState> {
         .nest("/admin/page-layouts", admin_page_layouts::router())
         // Media Admin - ICT 7 Grade
         .nest("/admin/media", media::admin_router())
+        .nest("/media", media::public_router())
         // Forms - ICT 7 Grade (public + admin)
         .nest("/forms", forms::public_router())
         .nest("/admin/forms", forms::admin_router())

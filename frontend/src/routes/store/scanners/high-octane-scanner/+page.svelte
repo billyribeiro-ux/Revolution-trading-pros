@@ -524,7 +524,7 @@
 	}
 
 	.feature-card p {
-		color: #64748b;
+		color: #475569;
 		line-height: 1.6;
 	}
 
@@ -569,7 +569,7 @@
 
 	.benefit-item span {
 		font-size: 1.125rem;
-		color: #334155;
+		color: #475569;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -632,5 +632,8 @@
 		.cta-section h2 {
 			font-size: 2rem;
 		}
+	}
+	.savings-badge {
+		background: var(--rtp-emerald-action);
 	}
 </style>

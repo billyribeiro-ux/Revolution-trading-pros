@@ -1,0 +1,18 @@
+{
+	"routes": 6,
+	"widths_per_route": 10,
+	"axe_violations": 0,
+	"page_exceptions": 0,
+	"measured_clipping": 0,
+	"enlarged_heading_clipping": 0,
+	"legal_support_browser_cases": 12,
+	"combined_browser_cases": 154,
+	"seo_cases": 114,
+	"root_unit_passed": 3089,
+	"frontend_unit_passed": 3081,
+	"existing_unit_skips": 32,
+	"refund_and_disclaimer_body_text_preserved": true,
+	"privacy_and_terms_final_copy": "pending approval/publication",
+	"cookie_declaration_refresh": "failed before listener; passed after listener",
+	"dialog_history_teardown": "passed; no additional implementation repair needed"
+}

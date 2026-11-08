@@ -1,0 +1,240 @@
+
+Running 6 tests using 4 workers
+
+(node:25805) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:25808) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:25807) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:25806) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  3 [chromium] › tests/marketing-pages.spec.ts:29:2 › /about keeps heading text readable at 200% text size (559ms)
+  ✘  2 [chromium] › tests/marketing-pages.spec.ts:29:2 › /alerts/explosive-swings keeps heading text readable at 200% text size (603ms)
+  ✘  4 [chromium] › tests/marketing-pages.spec.ts:5:1 › About decoration stays within the page and ticker clears shared navigation (646ms)
+(node:25839) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:25904) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  6 [chromium] › tests/marketing-pages.spec.ts:52:1 › Swings plan selection fits a 320px screen and announces selected state (438ms)
+  ✘  1 [chromium] › tests/marketing-pages.spec.ts:41:2 › /about respects reduced motion, including preference changes (10.4s)
+  ✘  5 [chromium] › tests/marketing-pages.spec.ts:41:2 › /alerts/explosive-swings respects reduced motion, including preference changes (10.4s)
+
+
+  1) [chromium] › tests/marketing-pages.spec.ts:5:1 › About decoration stays within the page and ticker clears shared navigation
+
+    Error: expect(received).toBeGreaterThanOrEqual(expected)
+
+    Expected: >= 126.1875
+    Received:    0
+
+      20 | 		};
+      21 | 	});
+    > 22 | 	expect(geometry.atmosphere.top).toBeGreaterThanOrEqual(geometry.about.top);
+         | 	                                ^
+      23 | 	expect(geometry.atmosphere.bottom).toBeLessThanOrEqual(geometry.about.bottom);
+      24 | 	expect(geometry.ticker.top).toBeGreaterThanOrEqual(geometry.breadcrumb.bottom);
+      25 | 	expect(geometry.ticker.top).toBeGreaterThanOrEqual(geometry.navbar.bottom);
+        at /Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/marketing-pages.spec.ts:22:34
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/marketing-pages-About-deco-dba71-er-clears-shared-navigation-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/marketing-pages-About-deco-dba71-er-clears-shared-navigation-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/marketing-pages-About-deco-dba71-er-clears-shared-navigation-chromium/error-context.md
+
+  2) [chromium] › tests/marketing-pages.spec.ts:29:2 › /about keeps heading text readable at 200% text size
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  -  1
+    + Received  + 18
+
+    - Array []
+    + Array [
+    +   Object {
+    +     "left": 48,
+    +     "right": 433.8125,
+    +   },
+    +   Object {
+    +     "left": 48,
+    +     "right": 433.8125,
+    +   },
+    +   Object {
+    +     "left": 48,
+    +     "right": 503.65625,
+    +   },
+    +   Object {
+    +     "left": 48,
+    +     "right": 503.65625,
+    +   },
+    + ]
+
+      36 | 			return [...range.getClientRects()].filter(rect => rect.width > 0 && (rect.left < 0 || rect.right > document.documentElement.clientWidth)).map(rect => ({ left: rect.left, right: rect.right }));
+      37 | 		});
+    > 38 | 		expect(overflowing).toEqual([]);
+         | 		                    ^
+      39 | 	});
+      40 |
+      41 | 	test(`${route} respects reduced motion, including preference changes`, async ({ page }) => {
+        at /Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/marketing-pages.spec.ts:38:23
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/marketing-pages--about-kee-accd0-t-readable-at-200-text-size-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/marketing-pages--about-kee-accd0-t-readable-at-200-text-size-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/marketing-pages--about-kee-accd0-t-readable-at-200-text-size-chromium/error-context.md
+
+  3) [chromium] › tests/marketing-pages.spec.ts:41:2 › /about respects reduced motion, including preference changes
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 0
+    Received: 7
+
+    Call Log:
+    - Timeout 10000ms exceeded while waiting on the predicate
+
+      43 | 		await page.goto(route);
+      44 | 		const animated = () => page.locator('main').evaluate(element => element.getAnimations({ subtree: true }).filter(animation => animation.playState === 'running' && animation.effect?.getTiming().iterations === Infinity).length);
+    > 45 | 		await expect.poll(animated).toBe(0);
+         | 		                            ^
+      46 | 		await page.emulateMedia({ reducedMotion: 'no-preference' });
+      47 | 		await page.emulateMedia({ reducedMotion: 'reduce' });
+      48 | 		await expect.poll(animated).toBe(0);
+        at /Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/marketing-pages.spec.ts:45:31
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/marketing-pages--about-res-d4d8e-ncluding-preference-changes-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/marketing-pages--about-res-d4d8e-ncluding-preference-changes-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/marketing-pages--about-res-d4d8e-ncluding-preference-changes-chromium/error-context.md
+
+  4) [chromium] › tests/marketing-pages.spec.ts:29:2 › /alerts/explosive-swings keeps heading text readable at 200% text size
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  -  1
+    + Received  + 22
+
+    - Array []
+    + Array [
+    +   Object {
+    +     "left": 80.125,
+    +     "right": 510.875,
+    +   },
+    +   Object {
+    +     "left": 32,
+    +     "right": 559,
+    +   },
+    +   Object {
+    +     "left": 129.953125,
+    +     "right": 461.046875,
+    +   },
+    +   Object {
+    +     "left": 32,
+    +     "right": 559,
+    +   },
+    +   Object {
+    +     "left": 129.953125,
+    +     "right": 461.046875,
+    +   },
+    + ]
+
+      36 | 			return [...range.getClientRects()].filter(rect => rect.width > 0 && (rect.left < 0 || rect.right > document.documentElement.clientWidth)).map(rect => ({ left: rect.left, right: rect.right }));
+      37 | 		});
+    > 38 | 		expect(overflowing).toEqual([]);
+         | 		                    ^
+      39 | 	});
+      40 |
+      41 | 	test(`${route} respects reduced motion, including preference changes`, async ({ page }) => {
+        at /Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/marketing-pages.spec.ts:38:23
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/marketing-pages--alerts-ex-7edc5-t-readable-at-200-text-size-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/marketing-pages--alerts-ex-7edc5-t-readable-at-200-text-size-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/marketing-pages--alerts-ex-7edc5-t-readable-at-200-text-size-chromium/error-context.md
+
+  5) [chromium] › tests/marketing-pages.spec.ts:41:2 › /alerts/explosive-swings respects reduced motion, including preference changes
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 0
+    Received: 5
+
+    Call Log:
+    - Timeout 10000ms exceeded while waiting on the predicate
+
+      43 | 		await page.goto(route);
+      44 | 		const animated = () => page.locator('main').evaluate(element => element.getAnimations({ subtree: true }).filter(animation => animation.playState === 'running' && animation.effect?.getTiming().iterations === Infinity).length);
+    > 45 | 		await expect.poll(animated).toBe(0);
+         | 		                            ^
+      46 | 		await page.emulateMedia({ reducedMotion: 'no-preference' });
+      47 | 		await page.emulateMedia({ reducedMotion: 'reduce' });
+      48 | 		await expect.poll(animated).toBe(0);
+        at /Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/marketing-pages.spec.ts:45:31
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/marketing-pages--alerts-ex-ca93b-ncluding-preference-changes-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/marketing-pages--alerts-ex-ca93b-ncluding-preference-changes-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/marketing-pages--alerts-ex-ca93b-ncluding-preference-changes-chromium/error-context.md
+
+  6) [chromium] › tests/marketing-pages.spec.ts:52:1 › Swings plan selection fits a 320px screen and announces selected state
+
+    Error: expect(received).toBeGreaterThanOrEqual(expected)
+
+    Expected: >= 0
+    Received:    -3.984375
+
+      58 | 		const box = await button.boundingBox();
+      59 | 		expect(box).not.toBeNull();
+    > 60 | 		expect(box!.x).toBeGreaterThanOrEqual(0);
+         | 		               ^
+      61 | 		expect(box!.x + box!.width).toBeLessThanOrEqual(320);
+      62 | 		await button.focus();
+      63 | 		await page.keyboard.press('Space');
+        at /Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/marketing-pages.spec.ts:60:18
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/marketing-pages-Swings-pla-00731-nd-announces-selected-state-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/marketing-pages-Swings-pla-00731-nd-announces-selected-state-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/marketing-pages-Swings-pla-00731-nd-announces-selected-state-chromium/error-context.md
+
+  6 failed
+    [chromium] › tests/marketing-pages.spec.ts:5:1 › About decoration stays within the page and ticker clears shared navigation
+    [chromium] › tests/marketing-pages.spec.ts:29:2 › /about keeps heading text readable at 200% text size
+    [chromium] › tests/marketing-pages.spec.ts:41:2 › /about respects reduced motion, including preference changes
+    [chromium] › tests/marketing-pages.spec.ts:29:2 › /alerts/explosive-swings keeps heading text readable at 200% text size
+    [chromium] › tests/marketing-pages.spec.ts:41:2 › /alerts/explosive-swings respects reduced motion, including preference changes
+    [chromium] › tests/marketing-pages.spec.ts:52:1 › Swings plan selection fits a 320px screen and announces selected state
+Error: ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL
+
+  × "pnpm recursive exec" failed in /Users/billyribeiro/dev/revolution-
+  │ trading-pros/frontend

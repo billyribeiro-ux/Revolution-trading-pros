@@ -34,13 +34,13 @@
 		pagesPerSession: 0,
 		scrollDepth: 0,
 		clickRate: 0,
-		heatmapViews: 0
+		clickEvents: 0
 	});
 
 	// Top interactions
 	let topClicks = $state<{ element: string; count: number; page: string }[]>([]);
 	let topScrolls = $state<{ page: string; avgDepth: number; views: number }[]>([]);
-	let recordings = $state<{ id: string; duration: string; pages: number; date: string }[]>([]);
+	let sessions = $state<{ id: string; duration: string; pages: number; date: string }[]>([]);
 
 	// FIX-2026-04-26 (P2-10): route through SvelteKit proxy instead of `api.get`
 	// (which prepends the hardcoded backend URL and bypasses the cookie-based
@@ -67,12 +67,12 @@
 					pagesPerSession: data.pages_per_session || 0,
 					scrollDepth: data.avg_scroll_depth || 0,
 					clickRate: data.click_rate || 0,
-					heatmapViews: data.heatmap_views || 0
+					clickEvents: data.click_events || 0
 				};
 
 				topClicks = data.top_clicks || [];
 				topScrolls = data.top_scrolls || [];
-				recordings = data.recordings || [];
+				sessions = data.recent_sessions || [];
 			}
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to load behavior data';
@@ -110,7 +110,7 @@
 		<!-- Header - Centered Style -->
 		<header class="page-header">
 			<h1>Behavior Tracking</h1>
-			<p class="subtitle">Analyze user interactions, clicks, scrolls, and session recordings</p>
+			<p class="subtitle">Analyze consented clicks, scrolls, and session activity</p>
 				<div class="header-actions">
 					<div class="period-selector">
 						{#each periodOptions as option (option.value)}
@@ -186,7 +186,7 @@
 					</div>
 					<div class="metric-content">
 						<span class="metric-value">{metrics.clickRate}%</span>
-						<span class="metric-label">Click Rate</span>
+						<span class="metric-label">Click Events / All Events</span>
 					</div>
 				</div>
 
@@ -195,8 +195,8 @@
 						<IconCursor size={24} />
 					</div>
 					<div class="metric-content">
-						<span class="metric-value">{metrics.heatmapViews.toLocaleString()}</span>
-						<span class="metric-label">Heatmap Views</span>
+						<span class="metric-value">{metrics.clickEvents.toLocaleString()}</span>
+						<span class="metric-label">Click Events</span>
 					</div>
 				</div>
 			</div>
@@ -255,7 +255,7 @@
 									<div class="scroll-item">
 										<div class="scroll-info">
 											<span class="scroll-page">{scroll.page}</span>
-											<span class="scroll-views">{scroll.views} views</span>
+											<span class="scroll-views">{scroll.views} sessions</span>
 										</div>
 										<div class="scroll-bar-wrap">
 											<div class="scroll-bar" style:width={`${scroll.avgDepth}%`}></div>
@@ -273,20 +273,20 @@
 					<div class="panel-header">
 						<h3>
 							<IconPlay size={20} />
-							Recent Session Recordings
+							Recent Session Activity
 						</h3>
 						<a href="/admin/analytics/recordings" class="panel-link">View All</a>
 					</div>
 					<div class="panel-content">
-						{#if recordings.length === 0}
+						{#if sessions.length === 0}
 							<div class="empty-state">
 								<IconPlay size={32} />
-								<p>No session recordings available</p>
-								<span class="empty-hint">Session recordings help you understand user behavior</span>
+								<p>No session activity available</p>
+								<span class="empty-hint">Consent is required before activity is collected</span>
 							</div>
 						{:else}
 							<div class="recordings-grid">
-								{#each recordings as recording (recording.id)}
+								{#each sessions as recording (recording.id)}
 									<div class="recording-card">
 										<div class="recording-preview">
 											<IconPlay size={24} />

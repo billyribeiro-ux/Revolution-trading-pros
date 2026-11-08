@@ -1,0 +1,9 @@
+note: vp pack: using ./svelte-click-to-source (defaultPackage in vite.config.ts)
+ℹ entry: src/index.ts
+ℹ tsconfig: tsconfig.json
+ℹ Build start
+ℹ Cleaning 2 files
+ℹ dist/index.js    11.72 kB │ gzip: 4.11 kB
+ℹ dist/index.d.ts   0.58 kB │ gzip: 0.29 kB
+ℹ 2 files, total: 12.30 kB
+✔ Build complete in 989ms

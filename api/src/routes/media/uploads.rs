@@ -244,10 +244,13 @@ pub(super) async fn confirm_upload(
         .next()
         .ok_or_else(|| ApiError::validation_error("Invalid file key"))?;
     let id: i64 = sqlx::query_scalar("INSERT INTO media(filename,original_filename,mime_type,size,path,url,title,alt_text,caption,description,collection,width,height,created_by,scan_status,scan_result,is_optimized,created_at,updated_at) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,FALSE,NOW(),NOW()) RETURNING id")
-        .bind(filename).bind(payload.original_filename).bind(mime).bind(payload.size).bind(&final_key).bind(public_url).bind(metadata.title).bind(metadata.alt_text).bind(metadata.caption).bind(metadata.description).bind(metadata.collection)
+        .bind(filename).bind(payload.original_filename).bind(&mime).bind(payload.size).bind(&final_key).bind(public_url).bind(metadata.title).bind(metadata.alt_text).bind(metadata.caption).bind(metadata.description).bind(metadata.collection)
         .bind(info.as_ref().map(|i|i.width as i32)).bind(info.as_ref().map(|i|i.height as i32)).bind(_admin.0.id).bind(&scan.status).bind(serde_json::to_value(&scan).map_err(|_|ApiError::internal_error("Cannot serialize scan"))?)
         .fetch_one(&mut *tx).await.map_err(|e|ApiError::database_error(&e.to_string()))?;
     super::versions::record_current(&mut tx,id,Some(_admin.0.id),"Uploaded").await?;
+    crate::services::media_jobs::enqueue_default_if_image(
+        &state, &mut tx, id, &mime, &scan.status, 1,
+    ).await.map_err(|e|ApiError::database_error(&e.to_string()))?;
     sqlx::query("UPDATE media_upload_tickets SET confirmed_media_id=$2,cleanup_pending=TRUE WHERE file_key=$1")
         .bind(&payload.file_key)
         .bind(id)
@@ -307,7 +310,7 @@ pub(super) async fn direct_upload(
 ) -> Result<Json<serde_json::Value>, ApiError> {
     let mut fields = serde_json::Map::new();
     let mut files = Vec::new();
-    let mut optimize = false;
+    let mut optimize: Option<bool> = None;
     let mut total_bytes = 0;
     while let Some(field) = multipart
         .next_field()
@@ -322,8 +325,8 @@ pub(super) async fn direct_upload(
                 .map_err(|_| ApiError::validation_error("Invalid metadata field"))?;
             if matches!(name.as_str(), "optimize" | "generate_webp") {
                 match text.as_str() {
-                    "true" => optimize = true,
-                    "false" => {}
+                    "true" => optimize = Some(true),
+                    "false" => optimize = Some(false),
                     _ => {
                         return Err(ApiError::validation_error(
                             "Upload processing flags must be true or false",
@@ -375,17 +378,15 @@ pub(super) async fn direct_upload(
         serde_json::from_value(serde_json::Value::Object(fields))
             .map_err(|_| ApiError::validation_error("Unknown or invalid media metadata field"))?;
     super::helpers::validate_metadata(&metadata)?;
-    let preset = if optimize {
+    if optimize == Some(true) {
         if state.services.media_processor.is_none() {
             return Err(ApiError::new(
                 axum::http::StatusCode::SERVICE_UNAVAILABLE,
                 "Image processing is not configured",
             ));
         }
-        Some(super::processing::preset(&state, None).await?)
-    } else {
-        None
-    };
+        super::processing::preset(&state, None).await?;
+    }
     let mut scanned = Vec::new();
     for (filename, mime, data) in files {
         let scan = super::scanning::scan_for_malware(&data).await;
@@ -394,7 +395,7 @@ pub(super) async fn direct_upload(
                 "Malware detected; file was not uploaded",
             ));
         }
-        if optimize
+        if optimize == Some(true)
             && !matches!(
                 mime.as_str(),
                 "image/jpeg" | "image/png" | "image/webp" | "image/gif" | "image/avif"
@@ -422,13 +423,15 @@ pub(super) async fn direct_upload(
             keys.push(key.clone());
             let stored_filename = key.rsplit('/').next().unwrap_or(&key);
             let media: Media = sqlx::query_as("INSERT INTO media(filename,original_filename,mime_type,size,path,url,title,alt_text,caption,description,collection,tags,created_by,width,height,scan_status,scan_result,is_optimized,created_at,updated_at) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,FALSE,NOW(),NOW()) RETURNING id,filename,original_filename,mime_type,size,path,url,title,alt_text,caption,description,collection,is_optimized,width,height,scan_status,scan_result,created_at,updated_at")
-                .bind(stored_filename).bind(filename).bind(mime).bind(data.len() as i64).bind(&key).bind(url)
+                .bind(stored_filename).bind(filename).bind(&mime).bind(data.len() as i64).bind(&key).bind(url)
                 .bind(&metadata.title).bind(&metadata.alt_text).bind(&metadata.caption).bind(&metadata.description).bind(&metadata.collection).bind(serde_json::json!(metadata.tags.as_deref().unwrap_or_default())).bind(_admin.0.id)
                 .bind(info.as_ref().map(|i|i.width as i32)).bind(info.as_ref().map(|i|i.height as i32)).bind(&scan.status).bind(serde_json::to_value(&scan).map_err(|_|ApiError::internal_error("Cannot serialize scan"))?)
                 .fetch_one(&mut *tx).await.map_err(|e|ApiError::database_error(&e.to_string()))?;
             super::versions::record_current(&mut tx,media.id,Some(_admin.0.id),"Uploaded").await?;
-            if let Some(preset) = &preset {
-                sqlx::query("INSERT INTO media_optimization_jobs(media_id,preset) VALUES($1,$2)").bind(media.id).bind(serde_json::json!(preset)).execute(&mut *tx).await.map_err(|e|ApiError::database_error(&e.to_string()))?;
+            if optimize != Some(false) {
+                crate::services::media_jobs::enqueue_default_if_image(
+                    &state, &mut tx, media.id, &mime, &scan.status, 1,
+                ).await.map_err(|e|ApiError::database_error(&e.to_string()))?;
             }
             uploaded.push(media);
         }

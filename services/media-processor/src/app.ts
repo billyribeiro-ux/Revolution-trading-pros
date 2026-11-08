@@ -1,6 +1,7 @@
 import { createHash, timingSafeEqual } from 'node:crypto';
 import { createServer, type IncomingMessage, type ServerResponse } from 'node:http';
 import sharp from 'sharp';
+import { encodeWebp } from '@revolution/imagify';
 
 export const MAX_BYTES = 50 * 1024 * 1024;
 export const MAX_PIXELS = 16_000_000;
@@ -149,6 +150,23 @@ export function createProcessor(options: ProcessorOptions) {
 					422,
 					'Animated inputs require WebP or GIF output to preserve their frames'
 				);
+			if (format === 'webp') {
+				const output = await encodeWebp(input, { quality, width, height, lossless });
+				if (output.bytes.length > maxBytes)
+					throw new HttpError(413, 'Processed image exceeds the output size limit');
+				response.writeHead(200, {
+					'Content-Type': 'image/webp',
+					'Content-Length': output.bytes.length,
+					'Cache-Control': 'no-store',
+					'X-Content-Type-Options': 'nosniff',
+					'X-Image-Width': output.width,
+					'X-Image-Height': output.height,
+					'X-Image-Pages': output.pages,
+					'X-Image-Format': 'webp'
+				});
+				response.end(output.bytes);
+				return;
+			}
 			let pipeline = sharp(input, {
 				limitInputPixels: maxPixels,
 				failOn: 'error',

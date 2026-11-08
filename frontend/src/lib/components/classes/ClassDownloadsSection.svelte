@@ -51,7 +51,10 @@
 
 				const data = await response.json();
 				if (abortController.signal.aborted) return;
-				downloads = data.data || [];
+				if (data.success !== true || !Array.isArray(data.data?.downloads)) {
+					throw new Error('Invalid class downloads response');
+				}
+				downloads = data.data.downloads;
 			} catch (e) {
 				if (abortController.signal.aborted) return;
 				error = e instanceof Error ? e.message : 'Failed to load downloads';

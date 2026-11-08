@@ -1,0 +1,1283 @@
+{
+	"origin": "https://revolution-trading-pros.pages.dev",
+	"label": "live",
+	"console": [
+		{
+			"type": "error",
+			"text": "Connecting to 'https://cloudflareinsights.com/cdn-cgi/rum' violates the following Content Security Policy directive: \"connect-src 'self' wss: https://revolution-trading-pros.pages.dev https://api.stripe.com https://www.googleapis.com https://www.google-analytics.com https://static.cloudflareinsights.com https://*.mediadelivery.net https://vz-5a23b520-193.b-cdn.net\". The action has been blocked."
+		},
+		{
+			"type": "error",
+			"text": "Connecting to 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Open+Sans:wght@300;400;600;700;800&family=Open+Sans+Condensed:wght@700&family=Montserrat:wght@500;600;700;800&display=swap' violates the following Content Security Policy directive: \"connect-src 'self' wss: https://revolution-trading-pros.pages.dev https://api.stripe.com https://www.googleapis.com https://www.google-analytics.com https://static.cloudflareinsights.com https://*.mediadelivery.net https://vz-5a23b520-193.b-cdn.net\". The action has been blocked."
+		},
+		{
+			"type": "warning",
+			"text": "Couldn't load preload assets:  ProgressEvent"
+		},
+		{
+			"type": "error",
+			"text": "Connecting to 'https://cloudflareinsights.com/cdn-cgi/rum' violates the following Content Security Policy directive: \"connect-src 'self' wss: https://revolution-trading-pros.pages.dev https://api.stripe.com https://www.googleapis.com https://www.google-analytics.com https://static.cloudflareinsights.com https://*.mediadelivery.net https://vz-5a23b520-193.b-cdn.net\". The action has been blocked."
+		},
+		{
+			"type": "error",
+			"text": "Connecting to 'https://cloudflareinsights.com/cdn-cgi/rum' violates the following Content Security Policy directive: \"connect-src 'self' wss: https://revolution-trading-pros.pages.dev https://api.stripe.com https://www.googleapis.com https://www.google-analytics.com https://static.cloudflareinsights.com https://*.mediadelivery.net https://vz-5a23b520-193.b-cdn.net\". The action has been blocked."
+		},
+		{
+			"type": "error",
+			"text": "Connecting to 'https://cloudflareinsights.com/cdn-cgi/rum' violates the following Content Security Policy directive: \"connect-src 'self' wss: https://revolution-trading-pros.pages.dev https://api.stripe.com https://www.googleapis.com https://www.google-analytics.com https://static.cloudflareinsights.com https://*.mediadelivery.net https://vz-5a23b520-193.b-cdn.net\". The action has been blocked."
+		},
+		{
+			"type": "error",
+			"text": "Connecting to 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Open+Sans:wght@300;400;600;700;800&family=Open+Sans+Condensed:wght@700&family=Montserrat:wght@500;600;700;800&display=swap' violates the following Content Security Policy directive: \"connect-src 'self' wss: https://revolution-trading-pros.pages.dev https://api.stripe.com https://www.googleapis.com https://www.google-analytics.com https://static.cloudflareinsights.com https://*.mediadelivery.net https://vz-5a23b520-193.b-cdn.net\". The action has been blocked."
+		},
+		{
+			"type": "warning",
+			"text": "Couldn't load preload assets:  ProgressEvent"
+		},
+		{
+			"type": "error",
+			"text": "Connecting to 'https://cloudflareinsights.com/cdn-cgi/rum' violates the following Content Security Policy directive: \"connect-src 'self' wss: https://revolution-trading-pros.pages.dev https://api.stripe.com https://www.googleapis.com https://www.google-analytics.com https://static.cloudflareinsights.com https://*.mediadelivery.net https://vz-5a23b520-193.b-cdn.net\". The action has been blocked."
+		},
+		{
+			"type": "error",
+			"text": "Connecting to 'https://cloudflareinsights.com/cdn-cgi/rum' violates the following Content Security Policy directive: \"connect-src 'self' wss: https://revolution-trading-pros.pages.dev https://api.stripe.com https://www.googleapis.com https://www.google-analytics.com https://static.cloudflareinsights.com https://*.mediadelivery.net https://vz-5a23b520-193.b-cdn.net\". The action has been blocked."
+		},
+		{
+			"type": "error",
+			"text": "Connecting to 'https://cloudflareinsights.com/cdn-cgi/rum' violates the following Content Security Policy directive: \"connect-src 'self' wss: https://revolution-trading-pros.pages.dev https://api.stripe.com https://www.googleapis.com https://www.google-analytics.com https://static.cloudflareinsights.com https://*.mediadelivery.net https://vz-5a23b520-193.b-cdn.net\". The action has been blocked."
+		},
+		{
+			"type": "error",
+			"text": "Connecting to 'https://cloudflareinsights.com/cdn-cgi/rum' violates the following Content Security Policy directive: \"connect-src 'self' wss: https://revolution-trading-pros.pages.dev https://api.stripe.com https://www.googleapis.com https://www.google-analytics.com https://static.cloudflareinsights.com https://*.mediadelivery.net https://vz-5a23b520-193.b-cdn.net\". The action has been blocked."
+		},
+		{
+			"type": "error",
+			"text": "Connecting to 'https://cloudflareinsights.com/cdn-cgi/rum' violates the following Content Security Policy directive: \"connect-src 'self' wss: https://revolution-trading-pros.pages.dev https://api.stripe.com https://www.googleapis.com https://www.google-analytics.com https://static.cloudflareinsights.com https://*.mediadelivery.net https://vz-5a23b520-193.b-cdn.net\". The action has been blocked."
+		},
+		{
+			"type": "error",
+			"text": "Connecting to 'https://cloudflareinsights.com/cdn-cgi/rum' violates the following Content Security Policy directive: \"connect-src 'self' wss: https://revolution-trading-pros.pages.dev https://api.stripe.com https://www.googleapis.com https://www.google-analytics.com https://static.cloudflareinsights.com https://*.mediadelivery.net https://vz-5a23b520-193.b-cdn.net\". The action has been blocked."
+		},
+		{
+			"type": "error",
+			"text": "Connecting to 'https://cloudflareinsights.com/cdn-cgi/rum' violates the following Content Security Policy directive: \"connect-src 'self' wss: https://revolution-trading-pros.pages.dev https://api.stripe.com https://www.googleapis.com https://www.google-analytics.com https://static.cloudflareinsights.com https://*.mediadelivery.net https://vz-5a23b520-193.b-cdn.net\". The action has been blocked."
+		},
+		{
+			"type": "error",
+			"text": "Connecting to 'https://cloudflareinsights.com/cdn-cgi/rum' violates the following Content Security Policy directive: \"connect-src 'self' wss: https://revolution-trading-pros.pages.dev https://api.stripe.com https://www.googleapis.com https://www.google-analytics.com https://static.cloudflareinsights.com https://*.mediadelivery.net https://vz-5a23b520-193.b-cdn.net\". The action has been blocked."
+		},
+		{
+			"type": "error",
+			"text": "Connecting to 'https://cloudflareinsights.com/cdn-cgi/rum' violates the following Content Security Policy directive: \"connect-src 'self' wss: https://revolution-trading-pros.pages.dev https://api.stripe.com https://www.googleapis.com https://www.google-analytics.com https://static.cloudflareinsights.com https://*.mediadelivery.net https://vz-5a23b520-193.b-cdn.net\". The action has been blocked."
+		},
+		{
+			"type": "error",
+			"text": "Connecting to 'https://cloudflareinsights.com/cdn-cgi/rum' violates the following Content Security Policy directive: \"connect-src 'self' wss: https://revolution-trading-pros.pages.dev https://api.stripe.com https://www.googleapis.com https://www.google-analytics.com https://static.cloudflareinsights.com https://*.mediadelivery.net https://vz-5a23b520-193.b-cdn.net\". The action has been blocked."
+		},
+		{
+			"type": "error",
+			"text": "Connecting to 'https://cloudflareinsights.com/cdn-cgi/rum' violates the following Content Security Policy directive: \"connect-src 'self' wss: https://revolution-trading-pros.pages.dev https://api.stripe.com https://www.googleapis.com https://www.google-analytics.com https://static.cloudflareinsights.com https://*.mediadelivery.net https://vz-5a23b520-193.b-cdn.net\". The action has been blocked."
+		},
+		{
+			"type": "error",
+			"text": "Connecting to 'https://cloudflareinsights.com/cdn-cgi/rum' violates the following Content Security Policy directive: \"connect-src 'self' wss: https://revolution-trading-pros.pages.dev https://api.stripe.com https://www.googleapis.com https://www.google-analytics.com https://static.cloudflareinsights.com https://*.mediadelivery.net https://vz-5a23b520-193.b-cdn.net\". The action has been blocked."
+		},
+		{
+			"type": "error",
+			"text": "Connecting to 'https://cloudflareinsights.com/cdn-cgi/rum' violates the following Content Security Policy directive: \"connect-src 'self' wss: https://revolution-trading-pros.pages.dev https://api.stripe.com https://www.googleapis.com https://www.google-analytics.com https://static.cloudflareinsights.com https://*.mediadelivery.net https://vz-5a23b520-193.b-cdn.net\". The action has been blocked."
+		},
+		{
+			"type": "error",
+			"text": "Connecting to 'https://cloudflareinsights.com/cdn-cgi/rum' violates the following Content Security Policy directive: \"connect-src 'self' wss: https://revolution-trading-pros.pages.dev https://api.stripe.com https://www.googleapis.com https://www.google-analytics.com https://static.cloudflareinsights.com https://*.mediadelivery.net https://vz-5a23b520-193.b-cdn.net\". The action has been blocked."
+		},
+		{
+			"type": "error",
+			"text": "Connecting to 'https://cloudflareinsights.com/cdn-cgi/rum' violates the following Content Security Policy directive: \"connect-src 'self' wss: https://revolution-trading-pros.pages.dev https://api.stripe.com https://www.googleapis.com https://www.google-analytics.com https://static.cloudflareinsights.com https://*.mediadelivery.net https://vz-5a23b520-193.b-cdn.net\". The action has been blocked."
+		},
+		{
+			"type": "error",
+			"text": "Connecting to 'https://cloudflareinsights.com/cdn-cgi/rum' violates the following Content Security Policy directive: \"connect-src 'self' wss: https://revolution-trading-pros.pages.dev https://api.stripe.com https://www.googleapis.com https://www.google-analytics.com https://static.cloudflareinsights.com https://*.mediadelivery.net https://vz-5a23b520-193.b-cdn.net\". The action has been blocked."
+		},
+		{
+			"type": "error",
+			"text": "Connecting to 'https://cloudflareinsights.com/cdn-cgi/rum' violates the following Content Security Policy directive: \"connect-src 'self' wss: https://revolution-trading-pros.pages.dev https://api.stripe.com https://www.googleapis.com https://www.google-analytics.com https://static.cloudflareinsights.com https://*.mediadelivery.net https://vz-5a23b520-193.b-cdn.net\". The action has been blocked."
+		},
+		{
+			"type": "error",
+			"text": "Connecting to 'https://cloudflareinsights.com/cdn-cgi/rum' violates the following Content Security Policy directive: \"connect-src 'self' wss: https://revolution-trading-pros.pages.dev https://api.stripe.com https://www.googleapis.com https://www.google-analytics.com https://static.cloudflareinsights.com https://*.mediadelivery.net https://vz-5a23b520-193.b-cdn.net\". The action has been blocked."
+		},
+		{
+			"type": "error",
+			"text": "Connecting to 'https://cloudflareinsights.com/cdn-cgi/rum' violates the following Content Security Policy directive: \"connect-src 'self' wss: https://revolution-trading-pros.pages.dev https://api.stripe.com https://www.googleapis.com https://www.google-analytics.com https://static.cloudflareinsights.com https://*.mediadelivery.net https://vz-5a23b520-193.b-cdn.net\". The action has been blocked."
+		},
+		{
+			"type": "error",
+			"text": "Connecting to 'https://cloudflareinsights.com/cdn-cgi/rum' violates the following Content Security Policy directive: \"connect-src 'self' wss: https://revolution-trading-pros.pages.dev https://api.stripe.com https://www.googleapis.com https://www.google-analytics.com https://static.cloudflareinsights.com https://*.mediadelivery.net https://vz-5a23b520-193.b-cdn.net\". The action has been blocked."
+		},
+		{
+			"type": "error",
+			"text": "Connecting to 'https://cloudflareinsights.com/cdn-cgi/rum' violates the following Content Security Policy directive: \"connect-src 'self' wss: https://revolution-trading-pros.pages.dev https://api.stripe.com https://www.googleapis.com https://www.google-analytics.com https://static.cloudflareinsights.com https://*.mediadelivery.net https://vz-5a23b520-193.b-cdn.net\". The action has been blocked."
+		},
+		{
+			"type": "error",
+			"text": "Connecting to 'https://cloudflareinsights.com/cdn-cgi/rum' violates the following Content Security Policy directive: \"connect-src 'self' wss: https://revolution-trading-pros.pages.dev https://api.stripe.com https://www.googleapis.com https://www.google-analytics.com https://static.cloudflareinsights.com https://*.mediadelivery.net https://vz-5a23b520-193.b-cdn.net\". The action has been blocked."
+		},
+		{
+			"type": "error",
+			"text": "Connecting to 'https://cloudflareinsights.com/cdn-cgi/rum' violates the following Content Security Policy directive: \"connect-src 'self' wss: https://revolution-trading-pros.pages.dev https://api.stripe.com https://www.googleapis.com https://www.google-analytics.com https://static.cloudflareinsights.com https://*.mediadelivery.net https://vz-5a23b520-193.b-cdn.net\". The action has been blocked."
+		},
+		{
+			"type": "error",
+			"text": "Connecting to 'https://cloudflareinsights.com/cdn-cgi/rum' violates the following Content Security Policy directive: \"connect-src 'self' wss: https://revolution-trading-pros.pages.dev https://api.stripe.com https://www.googleapis.com https://www.google-analytics.com https://static.cloudflareinsights.com https://*.mediadelivery.net https://vz-5a23b520-193.b-cdn.net\". The action has been blocked."
+		},
+		{
+			"type": "error",
+			"text": "Connecting to 'https://cloudflareinsights.com/cdn-cgi/rum' violates the following Content Security Policy directive: \"connect-src 'self' wss: https://revolution-trading-pros.pages.dev https://api.stripe.com https://www.googleapis.com https://www.google-analytics.com https://static.cloudflareinsights.com https://*.mediadelivery.net https://vz-5a23b520-193.b-cdn.net\". The action has been blocked."
+		},
+		{
+			"type": "error",
+			"text": "Connecting to 'https://cloudflareinsights.com/cdn-cgi/rum' violates the following Content Security Policy directive: \"connect-src 'self' wss: https://revolution-trading-pros.pages.dev https://api.stripe.com https://www.googleapis.com https://www.google-analytics.com https://static.cloudflareinsights.com https://*.mediadelivery.net https://vz-5a23b520-193.b-cdn.net\". The action has been blocked."
+		},
+		{
+			"type": "error",
+			"text": "Connecting to 'https://cloudflareinsights.com/cdn-cgi/rum' violates the following Content Security Policy directive: \"connect-src 'self' wss: https://revolution-trading-pros.pages.dev https://api.stripe.com https://www.googleapis.com https://www.google-analytics.com https://static.cloudflareinsights.com https://*.mediadelivery.net https://vz-5a23b520-193.b-cdn.net\". The action has been blocked."
+		},
+		{
+			"type": "error",
+			"text": "Connecting to 'https://cloudflareinsights.com/cdn-cgi/rum' violates the following Content Security Policy directive: \"connect-src 'self' wss: https://revolution-trading-pros.pages.dev https://api.stripe.com https://www.googleapis.com https://www.google-analytics.com https://static.cloudflareinsights.com https://*.mediadelivery.net https://vz-5a23b520-193.b-cdn.net\". The action has been blocked."
+		},
+		{
+			"type": "error",
+			"text": "Connecting to 'https://cloudflareinsights.com/cdn-cgi/rum' violates the following Content Security Policy directive: \"connect-src 'self' wss: https://revolution-trading-pros.pages.dev https://api.stripe.com https://www.googleapis.com https://www.google-analytics.com https://static.cloudflareinsights.com https://*.mediadelivery.net https://vz-5a23b520-193.b-cdn.net\". The action has been blocked."
+		},
+		{
+			"type": "error",
+			"text": "Connecting to 'https://cloudflareinsights.com/cdn-cgi/rum' violates the following Content Security Policy directive: \"connect-src 'self' wss: https://revolution-trading-pros.pages.dev https://api.stripe.com https://www.googleapis.com https://www.google-analytics.com https://static.cloudflareinsights.com https://*.mediadelivery.net https://vz-5a23b520-193.b-cdn.net\". The action has been blocked."
+		},
+		{
+			"type": "error",
+			"text": "Connecting to 'https://cloudflareinsights.com/cdn-cgi/rum' violates the following Content Security Policy directive: \"connect-src 'self' wss: https://revolution-trading-pros.pages.dev https://api.stripe.com https://www.googleapis.com https://www.google-analytics.com https://static.cloudflareinsights.com https://*.mediadelivery.net https://vz-5a23b520-193.b-cdn.net\". The action has been blocked."
+		},
+		{
+			"type": "error",
+			"text": "Connecting to 'https://cloudflareinsights.com/cdn-cgi/rum' violates the following Content Security Policy directive: \"connect-src 'self' wss: https://revolution-trading-pros.pages.dev https://api.stripe.com https://www.googleapis.com https://www.google-analytics.com https://static.cloudflareinsights.com https://*.mediadelivery.net https://vz-5a23b520-193.b-cdn.net\". The action has been blocked."
+		}
+	],
+	"exceptions": [],
+	"network": [
+		{
+			"url": "https://cloudflareinsights.com/cdn-cgi/rum",
+			"failure": "csp"
+		},
+		{
+			"url": "https://revolution-trading-pros.pages.dev/api/auth/me?optional=1",
+			"status": 307
+		},
+		{
+			"url": "https://revolution-trading-pros.pages.dev/maintenance",
+			"status": 200
+		},
+		{
+			"url": "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Open+Sans:wght@300;400;600;700;800&family=Open+Sans+Condensed:wght@700&family=Montserrat:wght@500;600;700;800&display=swap",
+			"failure": "csp"
+		},
+		{
+			"url": "https://cloudflareinsights.com/cdn-cgi/rum",
+			"failure": "csp"
+		},
+		{
+			"url": "https://revolution-trading-pros.pages.dev/api/auth/me?optional=1",
+			"status": 307
+		},
+		{
+			"url": "https://revolution-trading-pros.pages.dev/maintenance",
+			"status": 200
+		},
+		{
+			"url": "https://cloudflareinsights.com/cdn-cgi/rum",
+			"failure": "csp"
+		},
+		{
+			"url": "https://revolution-trading-pros.pages.dev/api/auth/me?optional=1",
+			"status": 307
+		},
+		{
+			"url": "https://revolution-trading-pros.pages.dev/maintenance",
+			"status": 200
+		},
+		{
+			"url": "https://cloudflareinsights.com/cdn-cgi/rum",
+			"failure": "csp"
+		},
+		{
+			"url": "https://revolution-trading-pros.pages.dev/api/auth/me?optional=1",
+			"status": 307
+		},
+		{
+			"url": "https://revolution-trading-pros.pages.dev/maintenance",
+			"status": 200
+		},
+		{
+			"url": "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Open+Sans:wght@300;400;600;700;800&family=Open+Sans+Condensed:wght@700&family=Montserrat:wght@500;600;700;800&display=swap",
+			"failure": "csp"
+		},
+		{
+			"url": "https://cloudflareinsights.com/cdn-cgi/rum",
+			"failure": "csp"
+		},
+		{
+			"url": "https://revolution-trading-pros.pages.dev/api/auth/me?optional=1",
+			"status": 307
+		},
+		{
+			"url": "https://revolution-trading-pros.pages.dev/maintenance",
+			"status": 200
+		},
+		{
+			"url": "https://cloudflareinsights.com/cdn-cgi/rum",
+			"failure": "csp"
+		},
+		{
+			"url": "https://revolution-trading-pros.pages.dev/api/auth/me?optional=1",
+			"status": 307
+		},
+		{
+			"url": "https://revolution-trading-pros.pages.dev/maintenance",
+			"status": 200
+		},
+		{
+			"url": "https://revolution-trading-pros.pages.dev/about/__data.json?x-sveltekit-invalidated=10",
+			"status": 200
+		},
+		{
+			"url": "https://cloudflareinsights.com/cdn-cgi/rum",
+			"failure": "csp"
+		},
+		{
+			"url": "https://revolution-trading-pros.pages.dev/alerts/__data.json?x-sveltekit-invalidated=10",
+			"status": 200
+		},
+		{
+			"url": "https://cloudflareinsights.com/cdn-cgi/rum",
+			"failure": "csp"
+		},
+		{
+			"url": "https://revolution-trading-pros.pages.dev/alerts/explosive-swings/__data.json?x-sveltekit-invalidated=10",
+			"status": 200
+		},
+		{
+			"url": "https://cloudflareinsights.com/cdn-cgi/rum",
+			"failure": "csp"
+		},
+		{
+			"url": "https://cloudflareinsights.com/cdn-cgi/rum",
+			"failure": "csp"
+		},
+		{
+			"url": "https://revolution-trading-pros.pages.dev/alerts/__data.json?x-sveltekit-invalidated=10",
+			"status": 200
+		},
+		{
+			"url": "https://cloudflareinsights.com/cdn-cgi/rum",
+			"failure": "csp"
+		},
+		{
+			"url": "https://revolution-trading-pros.pages.dev/alerts/explosive-swings/__data.json?x-sveltekit-invalidated=10",
+			"status": 200
+		},
+		{
+			"url": "https://revolution-trading-pros.pages.dev/alerts/explosive-swings/__data.json?x-sveltekit-invalidated=10",
+			"status": 200
+		},
+		{
+			"url": "https://revolution-trading-pros.pages.dev/about/__data.json?x-sveltekit-invalidated=10",
+			"status": 200
+		},
+		{
+			"url": "https://cloudflareinsights.com/cdn-cgi/rum",
+			"failure": "csp"
+		},
+		{
+			"url": "https://revolution-trading-pros.pages.dev/alerts/__data.json?x-sveltekit-invalidated=10",
+			"status": 200
+		},
+		{
+			"url": "https://cloudflareinsights.com/cdn-cgi/rum",
+			"failure": "csp"
+		},
+		{
+			"url": "https://revolution-trading-pros.pages.dev/alerts/explosive-swings/__data.json?x-sveltekit-invalidated=10",
+			"status": 200
+		},
+		{
+			"url": "https://cloudflareinsights.com/cdn-cgi/rum",
+			"failure": "csp"
+		},
+		{
+			"url": "https://cloudflareinsights.com/cdn-cgi/rum",
+			"failure": "csp"
+		},
+		{
+			"url": "https://revolution-trading-pros.pages.dev/alerts/__data.json?x-sveltekit-invalidated=10",
+			"status": 200
+		},
+		{
+			"url": "https://cloudflareinsights.com/cdn-cgi/rum",
+			"failure": "csp"
+		},
+		{
+			"url": "https://revolution-trading-pros.pages.dev/alerts/explosive-swings/__data.json?x-sveltekit-invalidated=10",
+			"status": 200
+		},
+		{
+			"url": "https://revolution-trading-pros.pages.dev/alerts/explosive-swings/__data.json?x-sveltekit-invalidated=10",
+			"status": 200
+		},
+		{
+			"url": "https://revolution-trading-pros.pages.dev/about/__data.json?x-sveltekit-invalidated=10",
+			"status": 200
+		},
+		{
+			"url": "https://cloudflareinsights.com/cdn-cgi/rum",
+			"failure": "csp"
+		},
+		{
+			"url": "https://revolution-trading-pros.pages.dev/alerts/__data.json?x-sveltekit-invalidated=10",
+			"status": 200
+		},
+		{
+			"url": "https://cloudflareinsights.com/cdn-cgi/rum",
+			"failure": "csp"
+		},
+		{
+			"url": "https://revolution-trading-pros.pages.dev/alerts/explosive-swings/__data.json?x-sveltekit-invalidated=10",
+			"status": 200
+		},
+		{
+			"url": "https://cloudflareinsights.com/cdn-cgi/rum",
+			"failure": "csp"
+		},
+		{
+			"url": "https://cloudflareinsights.com/cdn-cgi/rum",
+			"failure": "csp"
+		},
+		{
+			"url": "https://revolution-trading-pros.pages.dev/alerts/__data.json?x-sveltekit-invalidated=10",
+			"status": 200
+		},
+		{
+			"url": "https://cloudflareinsights.com/cdn-cgi/rum",
+			"failure": "csp"
+		},
+		{
+			"url": "https://revolution-trading-pros.pages.dev/alerts/explosive-swings/__data.json?x-sveltekit-invalidated=10",
+			"status": 200
+		}
+	],
+	"pages": [
+		{
+			"path": "/about",
+			"status": 200,
+			"headers": {
+				"x-robots-tag": "noindex, nofollow"
+			}
+		},
+		{
+			"path": "/about",
+			"width": 320,
+			"documentWidth": 320,
+			"h1": {
+				"x": 24,
+				"y": 301.1875,
+				"width": 272,
+				"height": 324,
+				"right": 296,
+				"bottom": 625.1875
+			},
+			"font": "\"Source Serif Pro\", Georgia, \"Times New Roman\", serif",
+			"tokenSans": "\"Inter\", system-ui, -apple-system, sans-serif",
+			"tokenHeading": "",
+			"clipped": [],
+			"ticker": {
+				"x": 0,
+				"y": 0,
+				"width": 312,
+				"height": 40,
+				"right": 312,
+				"bottom": 40
+			},
+			"nav": {
+				"x": 0,
+				"y": 0,
+				"width": 0,
+				"height": 0,
+				"right": 0,
+				"bottom": 0
+			}
+		},
+		{
+			"path": "/about",
+			"width": 390,
+			"documentWidth": 382,
+			"h1": {
+				"x": 24,
+				"y": 301.1875,
+				"width": 334,
+				"height": 270,
+				"right": 358,
+				"bottom": 571.1875
+			},
+			"font": "\"Source Serif Pro\", Georgia, \"Times New Roman\", serif",
+			"tokenSans": "\"Inter\", system-ui, -apple-system, sans-serif",
+			"tokenHeading": "",
+			"clipped": [],
+			"ticker": {
+				"x": 0,
+				"y": 0,
+				"width": 382,
+				"height": 40,
+				"right": 382,
+				"bottom": 40
+			},
+			"nav": {
+				"x": 0,
+				"y": 0,
+				"width": 0,
+				"height": 0,
+				"right": 0,
+				"bottom": 0
+			}
+		},
+		{
+			"path": "/about",
+			"width": 639,
+			"documentWidth": 631,
+			"h1": {
+				"x": 24,
+				"y": 301.1875,
+				"width": 583,
+				"height": 162,
+				"right": 607,
+				"bottom": 463.1875
+			},
+			"font": "\"Source Serif Pro\", Georgia, \"Times New Roman\", serif",
+			"tokenSans": "\"Inter\", system-ui, -apple-system, sans-serif",
+			"tokenHeading": "",
+			"clipped": [],
+			"ticker": {
+				"x": 0,
+				"y": 0,
+				"width": 631,
+				"height": 40,
+				"right": 631,
+				"bottom": 40
+			},
+			"nav": {
+				"x": 0,
+				"y": 0,
+				"width": 0,
+				"height": 0,
+				"right": 0,
+				"bottom": 0
+			}
+		},
+		{
+			"path": "/about",
+			"width": 640,
+			"documentWidth": 632,
+			"h1": {
+				"x": 24,
+				"y": 301.1875,
+				"width": 584,
+				"height": 194.390625,
+				"right": 608,
+				"bottom": 495.578125
+			},
+			"font": "\"Source Serif Pro\", Georgia, \"Times New Roman\", serif",
+			"tokenSans": "\"Inter\", system-ui, -apple-system, sans-serif",
+			"tokenHeading": "",
+			"clipped": [],
+			"ticker": {
+				"x": 0,
+				"y": 0,
+				"width": 632,
+				"height": 40,
+				"right": 632,
+				"bottom": 40
+			},
+			"nav": {
+				"x": 0,
+				"y": 0,
+				"width": 0,
+				"height": 0,
+				"right": 0,
+				"bottom": 0
+			}
+		},
+		{
+			"path": "/about",
+			"width": 767,
+			"documentWidth": 759,
+			"h1": {
+				"x": 24,
+				"y": 301.1875,
+				"width": 711,
+				"height": 194.390625,
+				"right": 735,
+				"bottom": 495.578125
+			},
+			"font": "\"Source Serif Pro\", Georgia, \"Times New Roman\", serif",
+			"tokenSans": "\"Inter\", system-ui, -apple-system, sans-serif",
+			"tokenHeading": "",
+			"clipped": [],
+			"ticker": {
+				"x": 0,
+				"y": 0,
+				"width": 759,
+				"height": 40,
+				"right": 759,
+				"bottom": 40
+			},
+			"nav": {
+				"x": 0,
+				"y": 0,
+				"width": 0,
+				"height": 0,
+				"right": 0,
+				"bottom": 0
+			}
+		},
+		{
+			"path": "/about",
+			"width": 768,
+			"documentWidth": 760,
+			"h1": {
+				"x": 24,
+				"y": 311.1875,
+				"width": 712,
+				"height": 194.390625,
+				"right": 736,
+				"bottom": 505.578125
+			},
+			"font": "\"Source Serif Pro\", Georgia, \"Times New Roman\", serif",
+			"tokenSans": "\"Inter\", system-ui, -apple-system, sans-serif",
+			"tokenHeading": "",
+			"clipped": [],
+			"ticker": {
+				"x": 0,
+				"y": 0,
+				"width": 760,
+				"height": 40,
+				"right": 760,
+				"bottom": 40
+			},
+			"nav": {
+				"x": 0,
+				"y": 0,
+				"width": 0,
+				"height": 0,
+				"right": 0,
+				"bottom": 0
+			}
+		},
+		{
+			"path": "/about",
+			"width": 1023,
+			"documentWidth": 1015,
+			"h1": {
+				"x": 24,
+				"y": 311.1875,
+				"width": 967,
+				"height": 194.390625,
+				"right": 991,
+				"bottom": 505.578125
+			},
+			"font": "\"Source Serif Pro\", Georgia, \"Times New Roman\", serif",
+			"tokenSans": "\"Inter\", system-ui, -apple-system, sans-serif",
+			"tokenHeading": "",
+			"clipped": [],
+			"ticker": {
+				"x": 0,
+				"y": 0,
+				"width": 1015,
+				"height": 40,
+				"right": 1015,
+				"bottom": 40
+			},
+			"nav": {
+				"x": 0,
+				"y": 0,
+				"width": 0,
+				"height": 0,
+				"right": 0,
+				"bottom": 0
+			}
+		},
+		{
+			"path": "/about",
+			"width": 1024,
+			"documentWidth": 1016,
+			"h1": {
+				"x": 32,
+				"y": 307.1875,
+				"width": 591.90625,
+				"height": 575.9375,
+				"right": 623.90625,
+				"bottom": 883.125
+			},
+			"font": "\"Source Serif Pro\", Georgia, \"Times New Roman\", serif",
+			"tokenSans": "\"Inter\", system-ui, -apple-system, sans-serif",
+			"tokenHeading": "",
+			"clipped": [],
+			"ticker": {
+				"x": 0,
+				"y": 0,
+				"width": 1016,
+				"height": 40,
+				"right": 1016,
+				"bottom": 40
+			},
+			"nav": {
+				"x": 156,
+				"y": 22.5,
+				"width": 664,
+				"height": 34,
+				"right": 820,
+				"bottom": 56.5
+			}
+		},
+		{
+			"path": "/about",
+			"width": 1151,
+			"documentWidth": 1143,
+			"h1": {
+				"x": 32,
+				"y": 307.1875,
+				"width": 676.59375,
+				"height": 575.9375,
+				"right": 708.59375,
+				"bottom": 883.125
+			},
+			"font": "\"Source Serif Pro\", Georgia, \"Times New Roman\", serif",
+			"tokenSans": "\"Inter\", system-ui, -apple-system, sans-serif",
+			"tokenHeading": "",
+			"clipped": [],
+			"ticker": {
+				"x": 0,
+				"y": 0,
+				"width": 1143,
+				"height": 40,
+				"right": 1143,
+				"bottom": 40
+			},
+			"nav": {
+				"x": 156,
+				"y": 22.5,
+				"width": 791,
+				"height": 34,
+				"right": 947,
+				"bottom": 56.5
+			}
+		},
+		{
+			"path": "/about",
+			"width": 1152,
+			"documentWidth": 1144,
+			"h1": {
+				"x": 32,
+				"y": 315.1875,
+				"width": 677.265625,
+				"height": 575.9375,
+				"right": 709.265625,
+				"bottom": 891.125
+			},
+			"font": "\"Source Serif Pro\", Georgia, \"Times New Roman\", serif",
+			"tokenSans": "\"Inter\", system-ui, -apple-system, sans-serif",
+			"tokenHeading": "",
+			"clipped": [],
+			"ticker": {
+				"x": 0,
+				"y": 0,
+				"width": 1144,
+				"height": 40,
+				"right": 1144,
+				"bottom": 40
+			},
+			"nav": {
+				"x": 180,
+				"y": 25.5,
+				"width": 764,
+				"height": 36,
+				"right": 944,
+				"bottom": 61.5
+			}
+		},
+		{
+			"path": "/about",
+			"width": 1280,
+			"documentWidth": 1272,
+			"h1": {
+				"x": 32,
+				"y": 315.1875,
+				"width": 762.59375,
+				"height": 460.75,
+				"right": 794.59375,
+				"bottom": 775.9375
+			},
+			"font": "\"Source Serif Pro\", Georgia, \"Times New Roman\", serif",
+			"tokenSans": "\"Inter\", system-ui, -apple-system, sans-serif",
+			"tokenHeading": "",
+			"clipped": [],
+			"ticker": {
+				"x": 0,
+				"y": 0,
+				"width": 1272,
+				"height": 40,
+				"right": 1272,
+				"bottom": 40
+			},
+			"nav": {
+				"x": 180,
+				"y": 25.5,
+				"width": 892,
+				"height": 36,
+				"right": 1072,
+				"bottom": 61.5
+			}
+		},
+		{
+			"path": "/about",
+			"width": 1920,
+			"documentWidth": 1912,
+			"h1": {
+				"x": 156,
+				"y": 331.1875,
+				"width": 1023.953125,
+				"height": 345.5625,
+				"right": 1179.953125,
+				"bottom": 676.75
+			},
+			"font": "\"Source Serif Pro\", Georgia, \"Times New Roman\", serif",
+			"tokenSans": "\"Inter\", system-ui, -apple-system, sans-serif",
+			"tokenHeading": "",
+			"clipped": [],
+			"ticker": {
+				"x": 0,
+				"y": 0,
+				"width": 1912,
+				"height": 40,
+				"right": 1912,
+				"bottom": 40
+			},
+			"nav": {
+				"x": 232,
+				"y": 31.5,
+				"width": 1437.546875,
+				"height": 40,
+				"right": 1669.546875,
+				"bottom": 71.5
+			}
+		},
+		{
+			"path": "/about",
+			"axe": []
+		},
+		{
+			"path": "/about",
+			"reducedMotionAnimations": [
+				{
+					"target": "ticker__track svelte-cwls5q",
+					"duration": 40000,
+					"iterations": null
+				},
+				{
+					"target": "hero__pill-ping-ring svelte-cwls5q",
+					"duration": 1000,
+					"iterations": null
+				},
+				{
+					"target": "chart-card__scanner svelte-cwls5q",
+					"duration": 4000,
+					"iterations": null
+				},
+				{
+					"target": {},
+					"duration": 2000,
+					"iterations": null
+				}
+			]
+		},
+		{
+			"path": "/about",
+			"largerText": {
+				"viewport": 390,
+				"documentWidth": 375,
+				"h1Width": 279,
+				"h1Scroll": 456
+			}
+		},
+		{
+			"path": "/alerts/explosive-swings",
+			"status": 200,
+			"headers": {
+				"x-robots-tag": "noindex, nofollow"
+			}
+		},
+		{
+			"path": "/alerts/explosive-swings",
+			"width": 320,
+			"documentWidth": 320,
+			"h1": {
+				"x": 16,
+				"y": 256.1875,
+				"width": 288,
+				"height": 158.390625,
+				"right": 304,
+				"bottom": 414.578125
+			},
+			"font": "Inter, system-ui, -apple-system, sans-serif",
+			"tokenSans": "\"Inter\", system-ui, -apple-system, sans-serif",
+			"tokenHeading": "",
+			"clipped": [
+				{
+					"text": "Monthly",
+					"class": "relative z-10 px-6 py-2 rounded-lg font-bold text-sm transition-colors duration-200 text-slate-300 hover:text-white",
+					"rect": {
+						"x": -3.984375,
+						"y": 7056.828125,
+						"width": 109.140625,
+						"height": 40,
+						"right": 105.15625,
+						"bottom": 7096.828125
+					}
+				},
+				{
+					"text": "Annual",
+					"class": "relative z-10 px-6 py-2 rounded-lg font-bold text-sm transition-colors duration-200 text-slate-300 hover:text-white",
+					"rect": {
+						"x": 223.734375,
+						"y": 7056.828125,
+						"width": 100.265625,
+						"height": 40,
+						"right": 324,
+						"bottom": 7096.828125
+					}
+				}
+			],
+			"ticker": null,
+			"nav": {
+				"x": 0,
+				"y": 0,
+				"width": 0,
+				"height": 0,
+				"right": 0,
+				"bottom": 0
+			}
+		},
+		{
+			"path": "/alerts/explosive-swings",
+			"width": 390,
+			"documentWidth": 375,
+			"h1": {
+				"x": 16,
+				"y": 256.1875,
+				"width": 343,
+				"height": 158.390625,
+				"right": 359,
+				"bottom": 414.578125
+			},
+			"font": "Inter, system-ui, -apple-system, sans-serif",
+			"tokenSans": "\"Inter\", system-ui, -apple-system, sans-serif",
+			"tokenHeading": "",
+			"clipped": [],
+			"ticker": null,
+			"nav": {
+				"x": 0,
+				"y": 0,
+				"width": 0,
+				"height": 0,
+				"right": 0,
+				"bottom": 0
+			}
+		},
+		{
+			"path": "/alerts/explosive-swings",
+			"width": 639,
+			"documentWidth": 624,
+			"h1": {
+				"x": 16,
+				"y": 272.140625,
+				"width": 592,
+				"height": 105.59375,
+				"right": 608,
+				"bottom": 377.734375
+			},
+			"font": "Inter, system-ui, -apple-system, sans-serif",
+			"tokenSans": "\"Inter\", system-ui, -apple-system, sans-serif",
+			"tokenHeading": "",
+			"clipped": [],
+			"ticker": null,
+			"nav": {
+				"x": 0,
+				"y": 0,
+				"width": 0,
+				"height": 0,
+				"right": 0,
+				"bottom": 0
+			}
+		},
+		{
+			"path": "/alerts/explosive-swings",
+			"width": 640,
+			"documentWidth": 625,
+			"h1": {
+				"x": 24,
+				"y": 309.640625,
+				"width": 577,
+				"height": 105.59375,
+				"right": 601,
+				"bottom": 415.234375
+			},
+			"font": "Inter, system-ui, -apple-system, sans-serif",
+			"tokenSans": "\"Inter\", system-ui, -apple-system, sans-serif",
+			"tokenHeading": "",
+			"clipped": [],
+			"ticker": null,
+			"nav": {
+				"x": 0,
+				"y": 0,
+				"width": 0,
+				"height": 0,
+				"right": 0,
+				"bottom": 0
+			}
+		},
+		{
+			"path": "/alerts/explosive-swings",
+			"width": 767,
+			"documentWidth": 752,
+			"h1": {
+				"x": 40,
+				"y": 309.640625,
+				"width": 672,
+				"height": 105.59375,
+				"right": 712,
+				"bottom": 415.234375
+			},
+			"font": "Inter, system-ui, -apple-system, sans-serif",
+			"tokenSans": "\"Inter\", system-ui, -apple-system, sans-serif",
+			"tokenHeading": "",
+			"clipped": [],
+			"ticker": null,
+			"nav": {
+				"x": 0,
+				"y": 0,
+				"width": 0,
+				"height": 0,
+				"right": 0,
+				"bottom": 0
+			}
+		},
+		{
+			"path": "/alerts/explosive-swings",
+			"width": 768,
+			"documentWidth": 753,
+			"h1": {
+				"x": 40.5,
+				"y": 293.25,
+				"width": 672,
+				"height": 158.375,
+				"right": 712.5,
+				"bottom": 451.625
+			},
+			"font": "Inter, system-ui, -apple-system, sans-serif",
+			"tokenSans": "\"Inter\", system-ui, -apple-system, sans-serif",
+			"tokenHeading": "",
+			"clipped": [],
+			"ticker": null,
+			"nav": {
+				"x": 0,
+				"y": 0,
+				"width": 0,
+				"height": 0,
+				"right": 0,
+				"bottom": 0
+			}
+		},
+		{
+			"path": "/alerts/explosive-swings",
+			"width": 1023,
+			"documentWidth": 1008,
+			"h1": {
+				"x": 168,
+				"y": 293.25,
+				"width": 672,
+				"height": 158.375,
+				"right": 840,
+				"bottom": 451.625
+			},
+			"font": "Inter, system-ui, -apple-system, sans-serif",
+			"tokenSans": "\"Inter\", system-ui, -apple-system, sans-serif",
+			"tokenHeading": "",
+			"clipped": [],
+			"ticker": null,
+			"nav": {
+				"x": 0,
+				"y": 0,
+				"width": 0,
+				"height": 0,
+				"right": 0,
+				"bottom": 0
+			}
+		},
+		{
+			"path": "/alerts/explosive-swings",
+			"width": 1024,
+			"documentWidth": 1016,
+			"h1": {
+				"x": 32,
+				"y": 197.40625,
+				"width": 444,
+				"height": 237.5625,
+				"right": 476,
+				"bottom": 434.96875
+			},
+			"font": "Inter, system-ui, -apple-system, sans-serif",
+			"tokenSans": "\"Inter\", system-ui, -apple-system, sans-serif",
+			"tokenHeading": "",
+			"clipped": [],
+			"ticker": null,
+			"nav": {
+				"x": 156,
+				"y": 22.5,
+				"width": 664,
+				"height": 34,
+				"right": 820,
+				"bottom": 56.5
+			}
+		},
+		{
+			"path": "/alerts/explosive-swings",
+			"width": 1151,
+			"documentWidth": 1143,
+			"h1": {
+				"x": 32,
+				"y": 219.90625,
+				"width": 507.5,
+				"height": 237.5625,
+				"right": 539.5,
+				"bottom": 457.46875
+			},
+			"font": "Inter, system-ui, -apple-system, sans-serif",
+			"tokenSans": "\"Inter\", system-ui, -apple-system, sans-serif",
+			"tokenHeading": "",
+			"clipped": [],
+			"ticker": null,
+			"nav": {
+				"x": 156,
+				"y": 22.5,
+				"width": 791,
+				"height": 34,
+				"right": 947,
+				"bottom": 56.5
+			}
+		},
+		{
+			"path": "/alerts/explosive-swings",
+			"width": 1152,
+			"documentWidth": 1144,
+			"h1": {
+				"x": 32,
+				"y": 227.90625,
+				"width": 508,
+				"height": 237.5625,
+				"right": 540,
+				"bottom": 465.46875
+			},
+			"font": "Inter, system-ui, -apple-system, sans-serif",
+			"tokenSans": "\"Inter\", system-ui, -apple-system, sans-serif",
+			"tokenHeading": "",
+			"clipped": [],
+			"ticker": null,
+			"nav": {
+				"x": 180,
+				"y": 25.5,
+				"width": 764,
+				"height": 36,
+				"right": 944,
+				"bottom": 61.5
+			}
+		},
+		{
+			"path": "/alerts/explosive-swings",
+			"width": 1280,
+			"documentWidth": 1272,
+			"h1": {
+				"x": 32,
+				"y": 257.65625,
+				"width": 572,
+				"height": 237.5625,
+				"right": 604,
+				"bottom": 495.21875
+			},
+			"font": "Inter, system-ui, -apple-system, sans-serif",
+			"tokenSans": "\"Inter\", system-ui, -apple-system, sans-serif",
+			"tokenHeading": "",
+			"clipped": [],
+			"ticker": null,
+			"nav": {
+				"x": 180,
+				"y": 25.5,
+				"width": 892,
+				"height": 36,
+				"right": 1072,
+				"bottom": 61.5
+			}
+		},
+		{
+			"path": "/alerts/explosive-swings",
+			"width": 1920,
+			"documentWidth": 1912,
+			"h1": {
+				"x": 348,
+				"y": 273.65625,
+				"width": 576,
+				"height": 237.5625,
+				"right": 924,
+				"bottom": 511.21875
+			},
+			"font": "Inter, system-ui, -apple-system, sans-serif",
+			"tokenSans": "\"Inter\", system-ui, -apple-system, sans-serif",
+			"tokenHeading": "",
+			"clipped": [],
+			"ticker": null,
+			"nav": {
+				"x": 232,
+				"y": 31.5,
+				"width": 1437.546875,
+				"height": 40,
+				"right": 1669.546875,
+				"bottom": 71.5
+			}
+		},
+		{
+			"path": "/alerts/explosive-swings",
+			"axe": []
+		},
+		{
+			"path": "/alerts/explosive-swings",
+			"reducedMotionAnimations": [
+				{
+					"target": "hero__badge-pulse-ping svelte-t04ru6",
+					"duration": 1000,
+					"iterations": null
+				},
+				{
+					"target": "delivery__channel-dot delivery__channel-dot--emerald svelte-t04ru6",
+					"duration": 2000,
+					"iterations": null
+				},
+				{
+					"target": "delivery__channel-dot delivery__channel-dot--blue svelte-t04ru6",
+					"duration": 2000,
+					"iterations": null
+				},
+				{
+					"target": "delivery__channel-dot delivery__channel-dot--indigo svelte-t04ru6",
+					"duration": 2000,
+					"iterations": null
+				}
+			]
+		},
+		{
+			"path": "/alerts/explosive-swings",
+			"largerText": {
+				"viewport": 390,
+				"documentWidth": 375,
+				"h1Width": 527,
+				"h1Scroll": 527
+			}
+		}
+	],
+	"controls": [
+		{
+			"path": "/about",
+			"type": "faq-open",
+			"expanded": "true"
+		},
+		{
+			"path": "/about",
+			"type": "faq-keyboard-close",
+			"expanded": "false"
+		},
+		{
+			"path": "/alerts/explosive-swings",
+			"type": "plan",
+			"name": "Monthly",
+			"ariaPressed": null,
+			"bounds": {
+				"x": 27,
+				"y": 260.078125,
+				"width": 109.140625,
+				"height": 40
+			}
+		},
+		{
+			"path": "/alerts/explosive-swings",
+			"type": "plan",
+			"name": "Annual",
+			"ariaPressed": null,
+			"bounds": {
+				"x": 254.71875,
+				"y": 260.078125,
+				"width": 100.265625,
+				"height": 40
+			}
+		},
+		{
+			"path": "/alerts/explosive-swings",
+			"type": "plan",
+			"name": "Quarterly",
+			"ariaPressed": null,
+			"bounds": {
+				"x": 136.140625,
+				"y": 260.078125,
+				"width": 118.578125,
+				"height": 40
+			}
+		}
+	],
+	"navigation": [
+		{
+			"action": "footer-about",
+			"url": "https://revolution-trading-pros.pages.dev/alerts/explosive-swings",
+			"h1": "Catch the\nInstitutional Moves."
+		},
+		{
+			"action": "hub-swings",
+			"url": "https://revolution-trading-pros.pages.dev/alerts",
+			"h1": "Trade Alerts\nDelivered."
+		},
+		{
+			"action": "footer-about",
+			"url": "https://revolution-trading-pros.pages.dev/alerts/explosive-swings",
+			"h1": "Catch the\nInstitutional Moves."
+		},
+		{
+			"action": "hub-swings",
+			"url": "https://revolution-trading-pros.pages.dev/alerts/explosive-swings",
+			"h1": "Catch the\nInstitutional Moves."
+		},
+		{
+			"action": "footer-about",
+			"url": "https://revolution-trading-pros.pages.dev/alerts/explosive-swings",
+			"h1": "Catch the\nInstitutional Moves."
+		},
+		{
+			"action": "hub-swings",
+			"url": "https://revolution-trading-pros.pages.dev/alerts/explosive-swings",
+			"h1": "Catch the\nInstitutional Moves."
+		}
+	],
+	"version": "{\"version\":\"0e3678098bd0f531b63882aec315817faa3e4e66\"}"
+}

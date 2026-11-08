@@ -1,0 +1,1399 @@
+{
+	"config": {
+		"argv": [
+			"/Users/billyribeiro/.local/share/vite-plus/js_runtime/node/26.13.0/bin/node",
+			"/Users/billyribeiro/dev/revolution-trading-pros/node_modules/.pnpm/playwright@1.64.1/node_modules/playwright/cli.js",
+			"test",
+			"tests/all-marketing.spec.ts",
+			"--project=chromium"
+		],
+		"configFile": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/playwright.config.ts",
+		"rootDir": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/tests",
+		"failOnFlakyTests": false,
+		"forbidOnly": false,
+		"fullyParallel": true,
+		"globalSetup": null,
+		"globalTeardown": null,
+		"globalTimeout": 0,
+		"grep": {},
+		"grepInvert": null,
+		"maxFailures": 0,
+		"metadata": {
+			"actualWorkers": 4
+		},
+		"preserveOutput": "always",
+		"projects": [
+			{
+				"outputDir": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/test-results",
+				"repeatEach": 1,
+				"retries": 0,
+				"metadata": {
+					"actualWorkers": 4
+				},
+				"id": "chromium",
+				"name": "chromium",
+				"testDir": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/tests",
+				"testIgnore": [],
+				"testMatch": ["**/*.@(spec|test).?(c|m)[jt]s?(x)"],
+				"timeout": 60000
+			}
+		],
+		"filteredProjects": [
+			{
+				"grep": {},
+				"grepInvert": null,
+				"outputDir": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/test-results",
+				"repeatEach": 1,
+				"retries": 0,
+				"metadata": {
+					"actualWorkers": 4
+				},
+				"name": "chromium",
+				"testDir": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/tests",
+				"snapshotDir": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/tests",
+				"testIgnore": [],
+				"testMatch": "**/*.@(spec|test).?(c|m)[jt]s?(x)",
+				"timeout": 60000,
+				"use": {
+					"baseURL": "http://127.0.0.1:4185",
+					"trace": "on-first-retry",
+					"screenshot": "only-on-failure",
+					"video": "retain-on-failure",
+					"actionTimeout": 15000,
+					"navigationTimeout": 30000,
+					"userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.8078.4 Safari/537.36",
+					"viewport": {
+						"width": 1280,
+						"height": 720
+					},
+					"screen": {
+						"width": 1920,
+						"height": 1080
+					},
+					"deviceScaleFactor": 1,
+					"isMobile": false,
+					"hasTouch": false,
+					"defaultBrowserType": "chromium"
+				},
+				"dependencies": [],
+				"ignoreSnapshots": false,
+				"__projectId": "chromium"
+			}
+		],
+		"quiet": false,
+		"reporter": [
+			["list", null],
+			[
+				"html",
+				{
+					"open": "never"
+				}
+			],
+			[
+				"json",
+				{
+					"outputFile": "test-results/results.json"
+				}
+			],
+			[
+				"junit",
+				{
+					"outputFile": "test-results/junit.xml"
+				}
+			]
+		],
+		"reportSlowTests": {
+			"max": 5,
+			"threshold": 300000
+		},
+		"shard": null,
+		"tags": [],
+		"updateSnapshots": "default",
+		"updateSourceMethod": "patch",
+		"version": "1.64.1",
+		"workers": 4,
+		"webServer": {
+			"command": "pnpm dev",
+			"url": "http://127.0.0.1:4185",
+			"reuseExistingServer": true,
+			"timeout": 120000
+		}
+	},
+	"suites": [
+		{
+			"title": "all-marketing.spec.ts",
+			"file": "all-marketing.spec.ts",
+			"column": 0,
+			"line": 0,
+			"specs": [
+				{
+					"title": "public indicator moving-averages matches the catalog instead of another product",
+					"ok": false,
+					"tags": [],
+					"tests": [
+						{
+							"timeout": 60000,
+							"annotations": [],
+							"expectedStatus": "passed",
+							"projectId": "chromium",
+							"projectName": "chromium",
+							"results": [
+								{
+									"workerIndex": 0,
+									"parallelIndex": 0,
+									"status": "failed",
+									"duration": 10921,
+									"error": {
+										"message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('h1')\nExpected: \u001b[32m\"\u001b[7mMoving Averages (SMA/EMA\u001b[27m)\"\u001b[39m\nReceived: \u001b[31m\"\u001b[7mVolume Max Tool Kit (formerly VWAP\u001b[27m)\"\u001b[39m\nTimeout:  10000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveText\" locator('h1') with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('h1')\u001b[22m\n\u001b[2m    24 × locator resolved to <h1 class=\"svelte-lejqfj\">Volume Max Tool Kit (formerly VWAP)</h1>\u001b[22m\n\u001b[2m       - unexpected value \"Volume Max Tool Kit (formerly VWAP)\"\u001b[22m\n",
+										"stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('h1')\nExpected: \u001b[32m\"\u001b[7mMoving Averages (SMA/EMA\u001b[27m)\"\u001b[39m\nReceived: \u001b[31m\"\u001b[7mVolume Max Tool Kit (formerly VWAP\u001b[27m)\"\u001b[39m\nTimeout:  10000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveText\" locator('h1') with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('h1')\u001b[22m\n\u001b[2m    24 × locator resolved to <h1 class=\"svelte-lejqfj\">Volume Max Tool Kit (formerly VWAP)</h1>\u001b[22m\n\u001b[2m       - unexpected value \"Volume Max Tool Kit (formerly VWAP)\"\u001b[22m\n\n    at /Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts:13:36",
+										"location": {
+											"file": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts",
+											"column": 36,
+											"line": 13
+										},
+										"snippet": "  11 | \ttest(`public indicator ${slug} matches the catalog instead of another product`, async ({ page }) => {\n  12 | \t\tawait page.goto(`/indicators/${slug}`);\n> 13 | \t\tawait expect(page.locator('h1')).toHaveText(name);\n     | \t\t                                 ^\n  14 | \t\tawait expect(page.locator('a[href*=\"st-download-file\"]')).toHaveCount(0);\n  15 | \t\tawait expect(page.locator('[aria-label=\"Breadcrumb\"]')).toHaveCount(1);\n  16 | \t\tawait expect(page.locator('main')).not.toContainText('Volume Max Tool Kit');"
+									},
+									"errors": [
+										{
+											"location": {
+												"file": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts",
+												"column": 36,
+												"line": 13
+											},
+											"message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('h1')\nExpected: \u001b[32m\"\u001b[7mMoving Averages (SMA/EMA\u001b[27m)\"\u001b[39m\nReceived: \u001b[31m\"\u001b[7mVolume Max Tool Kit (formerly VWAP\u001b[27m)\"\u001b[39m\nTimeout:  10000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveText\" locator('h1') with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('h1')\u001b[22m\n\u001b[2m    24 × locator resolved to <h1 class=\"svelte-lejqfj\">Volume Max Tool Kit (formerly VWAP)</h1>\u001b[22m\n\u001b[2m       - unexpected value \"Volume Max Tool Kit (formerly VWAP)\"\u001b[22m\n\n\n  11 | \ttest(`public indicator ${slug} matches the catalog instead of another product`, async ({ page }) => {\n  12 | \t\tawait page.goto(`/indicators/${slug}`);\n> 13 | \t\tawait expect(page.locator('h1')).toHaveText(name);\n     | \t\t                                 ^\n  14 | \t\tawait expect(page.locator('a[href*=\"st-download-file\"]')).toHaveCount(0);\n  15 | \t\tawait expect(page.locator('[aria-label=\"Breadcrumb\"]')).toHaveCount(1);\n  16 | \t\tawait expect(page.locator('main')).not.toContainText('Volume Max Tool Kit');\n    at /Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts:13:36"
+										}
+									],
+									"stdout": [],
+									"stderr": [],
+									"retry": 0,
+									"startTime": "2026-11-06T02:05:49.840Z",
+									"annotations": [],
+									"attachments": [
+										{
+											"name": "screenshot",
+											"contentType": "image/png",
+											"path": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/test-results/all-marketing-public-indic-9648e--instead-of-another-product-chromium/test-failed-1.png"
+										},
+										{
+											"name": "video",
+											"contentType": "video/webm",
+											"path": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/test-results/all-marketing-public-indic-9648e--instead-of-another-product-chromium/video.webm"
+										},
+										{
+											"name": "error-context",
+											"contentType": "text/markdown",
+											"path": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/test-results/all-marketing-public-indic-9648e--instead-of-another-product-chromium/error-context.md"
+										}
+									],
+									"errorLocation": {
+										"file": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts",
+										"column": 36,
+										"line": 13
+									}
+								}
+							],
+							"status": "unexpected"
+						}
+					],
+					"id": "c172d79fa116aa81f3ec-31d1992e1fdc8edf148b",
+					"file": "all-marketing.spec.ts",
+					"line": 11,
+					"column": 2
+				},
+				{
+					"title": "public indicator bollinger-bands matches the catalog instead of another product",
+					"ok": false,
+					"tags": [],
+					"tests": [
+						{
+							"timeout": 60000,
+							"annotations": [],
+							"expectedStatus": "passed",
+							"projectId": "chromium",
+							"projectName": "chromium",
+							"results": [
+								{
+									"workerIndex": 1,
+									"parallelIndex": 1,
+									"status": "failed",
+									"duration": 10925,
+									"error": {
+										"message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('h1')\nExpected: \u001b[32m\"\u001b[7mB\u001b[27mol\u001b[7mlinger Bands\u001b[27m\"\u001b[39m\nReceived: \u001b[31m\"\u001b[7mV\u001b[27mol\u001b[7mume Max Tool Kit (formerly VWAP)\u001b[27m\"\u001b[39m\nTimeout:  10000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveText\" locator('h1') with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('h1')\u001b[22m\n\u001b[2m    24 × locator resolved to <h1 class=\"svelte-lejqfj\">Volume Max Tool Kit (formerly VWAP)</h1>\u001b[22m\n\u001b[2m       - unexpected value \"Volume Max Tool Kit (formerly VWAP)\"\u001b[22m\n",
+										"stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('h1')\nExpected: \u001b[32m\"\u001b[7mB\u001b[27mol\u001b[7mlinger Bands\u001b[27m\"\u001b[39m\nReceived: \u001b[31m\"\u001b[7mV\u001b[27mol\u001b[7mume Max Tool Kit (formerly VWAP)\u001b[27m\"\u001b[39m\nTimeout:  10000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveText\" locator('h1') with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('h1')\u001b[22m\n\u001b[2m    24 × locator resolved to <h1 class=\"svelte-lejqfj\">Volume Max Tool Kit (formerly VWAP)</h1>\u001b[22m\n\u001b[2m       - unexpected value \"Volume Max Tool Kit (formerly VWAP)\"\u001b[22m\n\n    at /Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts:13:36",
+										"location": {
+											"file": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts",
+											"column": 36,
+											"line": 13
+										},
+										"snippet": "  11 | \ttest(`public indicator ${slug} matches the catalog instead of another product`, async ({ page }) => {\n  12 | \t\tawait page.goto(`/indicators/${slug}`);\n> 13 | \t\tawait expect(page.locator('h1')).toHaveText(name);\n     | \t\t                                 ^\n  14 | \t\tawait expect(page.locator('a[href*=\"st-download-file\"]')).toHaveCount(0);\n  15 | \t\tawait expect(page.locator('[aria-label=\"Breadcrumb\"]')).toHaveCount(1);\n  16 | \t\tawait expect(page.locator('main')).not.toContainText('Volume Max Tool Kit');"
+									},
+									"errors": [
+										{
+											"location": {
+												"file": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts",
+												"column": 36,
+												"line": 13
+											},
+											"message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('h1')\nExpected: \u001b[32m\"\u001b[7mB\u001b[27mol\u001b[7mlinger Bands\u001b[27m\"\u001b[39m\nReceived: \u001b[31m\"\u001b[7mV\u001b[27mol\u001b[7mume Max Tool Kit (formerly VWAP)\u001b[27m\"\u001b[39m\nTimeout:  10000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveText\" locator('h1') with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('h1')\u001b[22m\n\u001b[2m    24 × locator resolved to <h1 class=\"svelte-lejqfj\">Volume Max Tool Kit (formerly VWAP)</h1>\u001b[22m\n\u001b[2m       - unexpected value \"Volume Max Tool Kit (formerly VWAP)\"\u001b[22m\n\n\n  11 | \ttest(`public indicator ${slug} matches the catalog instead of another product`, async ({ page }) => {\n  12 | \t\tawait page.goto(`/indicators/${slug}`);\n> 13 | \t\tawait expect(page.locator('h1')).toHaveText(name);\n     | \t\t                                 ^\n  14 | \t\tawait expect(page.locator('a[href*=\"st-download-file\"]')).toHaveCount(0);\n  15 | \t\tawait expect(page.locator('[aria-label=\"Breadcrumb\"]')).toHaveCount(1);\n  16 | \t\tawait expect(page.locator('main')).not.toContainText('Volume Max Tool Kit');\n    at /Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts:13:36"
+										}
+									],
+									"stdout": [],
+									"stderr": [],
+									"retry": 0,
+									"startTime": "2026-11-06T02:05:49.838Z",
+									"annotations": [],
+									"attachments": [
+										{
+											"name": "screenshot",
+											"contentType": "image/png",
+											"path": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/test-results/all-marketing-public-indic-e1d03--instead-of-another-product-chromium/test-failed-1.png"
+										},
+										{
+											"name": "video",
+											"contentType": "video/webm",
+											"path": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/test-results/all-marketing-public-indic-e1d03--instead-of-another-product-chromium/video.webm"
+										},
+										{
+											"name": "error-context",
+											"contentType": "text/markdown",
+											"path": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/test-results/all-marketing-public-indic-e1d03--instead-of-another-product-chromium/error-context.md"
+										}
+									],
+									"errorLocation": {
+										"file": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts",
+										"column": 36,
+										"line": 13
+									}
+								}
+							],
+							"status": "unexpected"
+						}
+					],
+					"id": "c172d79fa116aa81f3ec-738701a09941c363526d",
+					"file": "all-marketing.spec.ts",
+					"line": 11,
+					"column": 2
+				},
+				{
+					"title": "public indicator vwap matches the catalog instead of another product",
+					"ok": false,
+					"tags": [],
+					"tests": [
+						{
+							"timeout": 60000,
+							"annotations": [],
+							"expectedStatus": "passed",
+							"projectId": "chromium",
+							"projectName": "chromium",
+							"results": [
+								{
+									"workerIndex": 2,
+									"parallelIndex": 2,
+									"status": "failed",
+									"duration": 10936,
+									"error": {
+										"message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('h1')\nExpected: \u001b[32m\"V\u001b[7mWAP - Volume Weighted Average Price\u001b[27m\"\u001b[39m\nReceived: \u001b[31m\"V\u001b[7molume Max Tool Kit (formerly VWAP)\u001b[27m\"\u001b[39m\nTimeout:  10000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveText\" locator('h1') with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('h1')\u001b[22m\n\u001b[2m    24 × locator resolved to <h1 class=\"svelte-lejqfj\">Volume Max Tool Kit (formerly VWAP)</h1>\u001b[22m\n\u001b[2m       - unexpected value \"Volume Max Tool Kit (formerly VWAP)\"\u001b[22m\n",
+										"stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('h1')\nExpected: \u001b[32m\"V\u001b[7mWAP - Volume Weighted Average Price\u001b[27m\"\u001b[39m\nReceived: \u001b[31m\"V\u001b[7molume Max Tool Kit (formerly VWAP)\u001b[27m\"\u001b[39m\nTimeout:  10000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveText\" locator('h1') with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('h1')\u001b[22m\n\u001b[2m    24 × locator resolved to <h1 class=\"svelte-lejqfj\">Volume Max Tool Kit (formerly VWAP)</h1>\u001b[22m\n\u001b[2m       - unexpected value \"Volume Max Tool Kit (formerly VWAP)\"\u001b[22m\n\n    at /Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts:13:36",
+										"location": {
+											"file": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts",
+											"column": 36,
+											"line": 13
+										},
+										"snippet": "  11 | \ttest(`public indicator ${slug} matches the catalog instead of another product`, async ({ page }) => {\n  12 | \t\tawait page.goto(`/indicators/${slug}`);\n> 13 | \t\tawait expect(page.locator('h1')).toHaveText(name);\n     | \t\t                                 ^\n  14 | \t\tawait expect(page.locator('a[href*=\"st-download-file\"]')).toHaveCount(0);\n  15 | \t\tawait expect(page.locator('[aria-label=\"Breadcrumb\"]')).toHaveCount(1);\n  16 | \t\tawait expect(page.locator('main')).not.toContainText('Volume Max Tool Kit');"
+									},
+									"errors": [
+										{
+											"location": {
+												"file": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts",
+												"column": 36,
+												"line": 13
+											},
+											"message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('h1')\nExpected: \u001b[32m\"V\u001b[7mWAP - Volume Weighted Average Price\u001b[27m\"\u001b[39m\nReceived: \u001b[31m\"V\u001b[7molume Max Tool Kit (formerly VWAP)\u001b[27m\"\u001b[39m\nTimeout:  10000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveText\" locator('h1') with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('h1')\u001b[22m\n\u001b[2m    24 × locator resolved to <h1 class=\"svelte-lejqfj\">Volume Max Tool Kit (formerly VWAP)</h1>\u001b[22m\n\u001b[2m       - unexpected value \"Volume Max Tool Kit (formerly VWAP)\"\u001b[22m\n\n\n  11 | \ttest(`public indicator ${slug} matches the catalog instead of another product`, async ({ page }) => {\n  12 | \t\tawait page.goto(`/indicators/${slug}`);\n> 13 | \t\tawait expect(page.locator('h1')).toHaveText(name);\n     | \t\t                                 ^\n  14 | \t\tawait expect(page.locator('a[href*=\"st-download-file\"]')).toHaveCount(0);\n  15 | \t\tawait expect(page.locator('[aria-label=\"Breadcrumb\"]')).toHaveCount(1);\n  16 | \t\tawait expect(page.locator('main')).not.toContainText('Volume Max Tool Kit');\n    at /Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts:13:36"
+										}
+									],
+									"stdout": [],
+									"stderr": [],
+									"retry": 0,
+									"startTime": "2026-11-06T02:05:49.839Z",
+									"annotations": [],
+									"attachments": [
+										{
+											"name": "screenshot",
+											"contentType": "image/png",
+											"path": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/test-results/all-marketing-public-indic-bb5aa--instead-of-another-product-chromium/test-failed-1.png"
+										},
+										{
+											"name": "video",
+											"contentType": "video/webm",
+											"path": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/test-results/all-marketing-public-indic-bb5aa--instead-of-another-product-chromium/video.webm"
+										},
+										{
+											"name": "error-context",
+											"contentType": "text/markdown",
+											"path": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/test-results/all-marketing-public-indic-bb5aa--instead-of-another-product-chromium/error-context.md"
+										}
+									],
+									"errorLocation": {
+										"file": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts",
+										"column": 36,
+										"line": 13
+									}
+								}
+							],
+							"status": "unexpected"
+						}
+					],
+					"id": "c172d79fa116aa81f3ec-24f54a2d6e3af651ac20",
+					"file": "all-marketing.spec.ts",
+					"line": 11,
+					"column": 2
+				},
+				{
+					"title": "public indicator stochastic matches the catalog instead of another product",
+					"ok": false,
+					"tags": [],
+					"tests": [
+						{
+							"timeout": 60000,
+							"annotations": [],
+							"expectedStatus": "passed",
+							"projectId": "chromium",
+							"projectName": "chromium",
+							"results": [
+								{
+									"workerIndex": 3,
+									"parallelIndex": 3,
+									"status": "failed",
+									"duration": 11081,
+									"error": {
+										"message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('h1')\nExpected: \u001b[32m\"Stochastic Oscillator\"\u001b[39m\nReceived: \u001b[31m\"Volume Max Tool Kit (formerly VWAP)\"\u001b[39m\nTimeout:  10000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveText\" locator('h1') with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('h1')\u001b[22m\n\u001b[2m    24 × locator resolved to <h1 class=\"svelte-lejqfj\">Volume Max Tool Kit (formerly VWAP)</h1>\u001b[22m\n\u001b[2m       - unexpected value \"Volume Max Tool Kit (formerly VWAP)\"\u001b[22m\n",
+										"stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('h1')\nExpected: \u001b[32m\"Stochastic Oscillator\"\u001b[39m\nReceived: \u001b[31m\"Volume Max Tool Kit (formerly VWAP)\"\u001b[39m\nTimeout:  10000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveText\" locator('h1') with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('h1')\u001b[22m\n\u001b[2m    24 × locator resolved to <h1 class=\"svelte-lejqfj\">Volume Max Tool Kit (formerly VWAP)</h1>\u001b[22m\n\u001b[2m       - unexpected value \"Volume Max Tool Kit (formerly VWAP)\"\u001b[22m\n\n    at /Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts:13:36",
+										"location": {
+											"file": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts",
+											"column": 36,
+											"line": 13
+										},
+										"snippet": "  11 | \ttest(`public indicator ${slug} matches the catalog instead of another product`, async ({ page }) => {\n  12 | \t\tawait page.goto(`/indicators/${slug}`);\n> 13 | \t\tawait expect(page.locator('h1')).toHaveText(name);\n     | \t\t                                 ^\n  14 | \t\tawait expect(page.locator('a[href*=\"st-download-file\"]')).toHaveCount(0);\n  15 | \t\tawait expect(page.locator('[aria-label=\"Breadcrumb\"]')).toHaveCount(1);\n  16 | \t\tawait expect(page.locator('main')).not.toContainText('Volume Max Tool Kit');"
+									},
+									"errors": [
+										{
+											"location": {
+												"file": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts",
+												"column": 36,
+												"line": 13
+											},
+											"message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveText\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('h1')\nExpected: \u001b[32m\"Stochastic Oscillator\"\u001b[39m\nReceived: \u001b[31m\"Volume Max Tool Kit (formerly VWAP)\"\u001b[39m\nTimeout:  10000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveText\" locator('h1') with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('h1')\u001b[22m\n\u001b[2m    24 × locator resolved to <h1 class=\"svelte-lejqfj\">Volume Max Tool Kit (formerly VWAP)</h1>\u001b[22m\n\u001b[2m       - unexpected value \"Volume Max Tool Kit (formerly VWAP)\"\u001b[22m\n\n\n  11 | \ttest(`public indicator ${slug} matches the catalog instead of another product`, async ({ page }) => {\n  12 | \t\tawait page.goto(`/indicators/${slug}`);\n> 13 | \t\tawait expect(page.locator('h1')).toHaveText(name);\n     | \t\t                                 ^\n  14 | \t\tawait expect(page.locator('a[href*=\"st-download-file\"]')).toHaveCount(0);\n  15 | \t\tawait expect(page.locator('[aria-label=\"Breadcrumb\"]')).toHaveCount(1);\n  16 | \t\tawait expect(page.locator('main')).not.toContainText('Volume Max Tool Kit');\n    at /Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts:13:36"
+										}
+									],
+									"stdout": [],
+									"stderr": [],
+									"retry": 0,
+									"startTime": "2026-11-06T02:05:49.838Z",
+									"annotations": [],
+									"attachments": [
+										{
+											"name": "screenshot",
+											"contentType": "image/png",
+											"path": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/test-results/all-marketing-public-indic-aa149--instead-of-another-product-chromium/test-failed-1.png"
+										},
+										{
+											"name": "video",
+											"contentType": "video/webm",
+											"path": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/test-results/all-marketing-public-indic-aa149--instead-of-another-product-chromium/video.webm"
+										},
+										{
+											"name": "error-context",
+											"contentType": "text/markdown",
+											"path": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/test-results/all-marketing-public-indic-aa149--instead-of-another-product-chromium/error-context.md"
+										}
+									],
+									"errorLocation": {
+										"file": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts",
+										"column": 36,
+										"line": 13
+									}
+								}
+							],
+							"status": "unexpected"
+						}
+					],
+					"id": "c172d79fa116aa81f3ec-a536d9a75dd70e13ceeb",
+					"file": "all-marketing.spec.ts",
+					"line": 11,
+					"column": 2
+				},
+				{
+					"title": "/contact keeps enlarged heading text in its viewport",
+					"ok": false,
+					"tags": [],
+					"tests": [
+						{
+							"timeout": 60000,
+							"annotations": [],
+							"expectedStatus": "passed",
+							"projectId": "chromium",
+							"projectName": "chromium",
+							"results": [
+								{
+									"workerIndex": 4,
+									"parallelIndex": 0,
+									"status": "failed",
+									"duration": 1741,
+									"error": {
+										"message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\n\u001b[32m- Expected  - 1\u001b[39m\n\u001b[31m+ Received  + 3\u001b[39m\n\n\u001b[32m- Array []\u001b[39m\n\u001b[31m+ Array [\u001b[39m\n\u001b[31m+   427.171875,\u001b[39m\n\u001b[31m+ ]\u001b[39m",
+										"stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\n\u001b[32m- Expected  - 1\u001b[39m\n\u001b[31m+ Received  + 3\u001b[39m\n\n\u001b[32m- Array []\u001b[39m\n\u001b[31m+ Array [\u001b[39m\n\u001b[31m+   427.171875,\u001b[39m\n\u001b[31m+ ]\u001b[39m\n    at /Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts:29:20",
+										"location": {
+											"file": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts",
+											"column": 20,
+											"line": 29
+										},
+										"snippet": "  27 | \t\t\treturn [...range.getClientRects()].filter(rect => rect.width > 0 && (rect.left < 0 || rect.right > document.documentElement.clientWidth)).map(rect => rect.right);\n  28 | \t\t}));\n> 29 | \t\texpect(overflow).toEqual([]);\n     | \t\t                 ^\n  30 | \t});\n  31 | }\n  32 |"
+									},
+									"errors": [
+										{
+											"location": {
+												"file": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts",
+												"column": 20,
+												"line": 29
+											},
+											"message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\n\u001b[32m- Expected  - 1\u001b[39m\n\u001b[31m+ Received  + 3\u001b[39m\n\n\u001b[32m- Array []\u001b[39m\n\u001b[31m+ Array [\u001b[39m\n\u001b[31m+   427.171875,\u001b[39m\n\u001b[31m+ ]\u001b[39m\n\n  27 | \t\t\treturn [...range.getClientRects()].filter(rect => rect.width > 0 && (rect.left < 0 || rect.right > document.documentElement.clientWidth)).map(rect => rect.right);\n  28 | \t\t}));\n> 29 | \t\texpect(overflow).toEqual([]);\n     | \t\t                 ^\n  30 | \t});\n  31 | }\n  32 |\n    at /Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts:29:20"
+										}
+									],
+									"stdout": [],
+									"stderr": [],
+									"retry": 0,
+									"startTime": "2026-11-06T02:06:01.122Z",
+									"annotations": [],
+									"attachments": [
+										{
+											"name": "screenshot",
+											"contentType": "image/png",
+											"path": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/test-results/all-marketing--contact-kee-a21ef-eading-text-in-its-viewport-chromium/test-failed-1.png"
+										},
+										{
+											"name": "video",
+											"contentType": "video/webm",
+											"path": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/test-results/all-marketing--contact-kee-a21ef-eading-text-in-its-viewport-chromium/video.webm"
+										},
+										{
+											"name": "error-context",
+											"contentType": "text/markdown",
+											"path": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/test-results/all-marketing--contact-kee-a21ef-eading-text-in-its-viewport-chromium/error-context.md"
+										}
+									],
+									"errorLocation": {
+										"file": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts",
+										"column": 20,
+										"line": 29
+									}
+								}
+							],
+							"status": "unexpected"
+						}
+					],
+					"id": "c172d79fa116aa81f3ec-c0797e7f199fd7f24535",
+					"file": "all-marketing.spec.ts",
+					"line": 21,
+					"column": 2
+				},
+				{
+					"title": "/courses/options-trading keeps enlarged heading text in its viewport",
+					"ok": false,
+					"tags": [],
+					"tests": [
+						{
+							"timeout": 60000,
+							"annotations": [],
+							"expectedStatus": "passed",
+							"projectId": "chromium",
+							"projectName": "chromium",
+							"results": [
+								{
+									"workerIndex": 5,
+									"parallelIndex": 1,
+									"status": "failed",
+									"duration": 358,
+									"error": {
+										"message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\n\u001b[32m- Expected  - 1\u001b[39m\n\u001b[31m+ Received  + 4\u001b[39m\n\n\u001b[32m- Array []\u001b[39m\n\u001b[31m+ Array [\u001b[39m\n\u001b[31m+   464.40625,\u001b[39m\n\u001b[31m+   464.40625,\u001b[39m\n\u001b[31m+ ]\u001b[39m",
+										"stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\n\u001b[32m- Expected  - 1\u001b[39m\n\u001b[31m+ Received  + 4\u001b[39m\n\n\u001b[32m- Array []\u001b[39m\n\u001b[31m+ Array [\u001b[39m\n\u001b[31m+   464.40625,\u001b[39m\n\u001b[31m+   464.40625,\u001b[39m\n\u001b[31m+ ]\u001b[39m\n    at /Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts:29:20",
+										"location": {
+											"file": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts",
+											"column": 20,
+											"line": 29
+										},
+										"snippet": "  27 | \t\t\treturn [...range.getClientRects()].filter(rect => rect.width > 0 && (rect.left < 0 || rect.right > document.documentElement.clientWidth)).map(rect => rect.right);\n  28 | \t\t}));\n> 29 | \t\texpect(overflow).toEqual([]);\n     | \t\t                 ^\n  30 | \t});\n  31 | }\n  32 |"
+									},
+									"errors": [
+										{
+											"location": {
+												"file": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts",
+												"column": 20,
+												"line": 29
+											},
+											"message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\n\u001b[32m- Expected  - 1\u001b[39m\n\u001b[31m+ Received  + 4\u001b[39m\n\n\u001b[32m- Array []\u001b[39m\n\u001b[31m+ Array [\u001b[39m\n\u001b[31m+   464.40625,\u001b[39m\n\u001b[31m+   464.40625,\u001b[39m\n\u001b[31m+ ]\u001b[39m\n\n  27 | \t\t\treturn [...range.getClientRects()].filter(rect => rect.width > 0 && (rect.left < 0 || rect.right > document.documentElement.clientWidth)).map(rect => rect.right);\n  28 | \t\t}));\n> 29 | \t\texpect(overflow).toEqual([]);\n     | \t\t                 ^\n  30 | \t});\n  31 | }\n  32 |\n    at /Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts:29:20"
+										}
+									],
+									"stdout": [],
+									"stderr": [],
+									"retry": 0,
+									"startTime": "2026-11-06T02:06:01.120Z",
+									"annotations": [],
+									"attachments": [
+										{
+											"name": "screenshot",
+											"contentType": "image/png",
+											"path": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/test-results/all-marketing--courses-opt-63edf-eading-text-in-its-viewport-chromium/test-failed-1.png"
+										},
+										{
+											"name": "video",
+											"contentType": "video/webm",
+											"path": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/test-results/all-marketing--courses-opt-63edf-eading-text-in-its-viewport-chromium/video.webm"
+										},
+										{
+											"name": "error-context",
+											"contentType": "text/markdown",
+											"path": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/test-results/all-marketing--courses-opt-63edf-eading-text-in-its-viewport-chromium/error-context.md"
+										}
+									],
+									"errorLocation": {
+										"file": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts",
+										"column": 20,
+										"line": 29
+									}
+								}
+							],
+							"status": "unexpected"
+						}
+					],
+					"id": "c172d79fa116aa81f3ec-0f3011b4cab0fec7dce9",
+					"file": "all-marketing.spec.ts",
+					"line": 21,
+					"column": 2
+				},
+				{
+					"title": "/live-trading-rooms keeps enlarged heading text in its viewport",
+					"ok": false,
+					"tags": [],
+					"tests": [
+						{
+							"timeout": 60000,
+							"annotations": [],
+							"expectedStatus": "passed",
+							"projectId": "chromium",
+							"projectName": "chromium",
+							"results": [
+								{
+									"workerIndex": 6,
+									"parallelIndex": 2,
+									"status": "failed",
+									"duration": 457,
+									"error": {
+										"message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\n\u001b[32m- Expected  - 1\u001b[39m\n\u001b[31m+ Received  + 6\u001b[39m\n\n\u001b[32m- Array []\u001b[39m\n\u001b[31m+ Array [\u001b[39m\n\u001b[31m+   644.328125,\u001b[39m\n\u001b[31m+   527.4375,\u001b[39m\n\u001b[31m+   644.328125,\u001b[39m\n\u001b[31m+   644.328125,\u001b[39m\n\u001b[31m+ ]\u001b[39m",
+										"stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\n\u001b[32m- Expected  - 1\u001b[39m\n\u001b[31m+ Received  + 6\u001b[39m\n\n\u001b[32m- Array []\u001b[39m\n\u001b[31m+ Array [\u001b[39m\n\u001b[31m+   644.328125,\u001b[39m\n\u001b[31m+   527.4375,\u001b[39m\n\u001b[31m+   644.328125,\u001b[39m\n\u001b[31m+   644.328125,\u001b[39m\n\u001b[31m+ ]\u001b[39m\n    at /Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts:29:20",
+										"location": {
+											"file": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts",
+											"column": 20,
+											"line": 29
+										},
+										"snippet": "  27 | \t\t\treturn [...range.getClientRects()].filter(rect => rect.width > 0 && (rect.left < 0 || rect.right > document.documentElement.clientWidth)).map(rect => rect.right);\n  28 | \t\t}));\n> 29 | \t\texpect(overflow).toEqual([]);\n     | \t\t                 ^\n  30 | \t});\n  31 | }\n  32 |"
+									},
+									"errors": [
+										{
+											"location": {
+												"file": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts",
+												"column": 20,
+												"line": 29
+											},
+											"message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\n\u001b[32m- Expected  - 1\u001b[39m\n\u001b[31m+ Received  + 6\u001b[39m\n\n\u001b[32m- Array []\u001b[39m\n\u001b[31m+ Array [\u001b[39m\n\u001b[31m+   644.328125,\u001b[39m\n\u001b[31m+   527.4375,\u001b[39m\n\u001b[31m+   644.328125,\u001b[39m\n\u001b[31m+   644.328125,\u001b[39m\n\u001b[31m+ ]\u001b[39m\n\n  27 | \t\t\treturn [...range.getClientRects()].filter(rect => rect.width > 0 && (rect.left < 0 || rect.right > document.documentElement.clientWidth)).map(rect => rect.right);\n  28 | \t\t}));\n> 29 | \t\texpect(overflow).toEqual([]);\n     | \t\t                 ^\n  30 | \t});\n  31 | }\n  32 |\n    at /Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts:29:20"
+										}
+									],
+									"stdout": [],
+									"stderr": [],
+									"retry": 0,
+									"startTime": "2026-11-06T02:06:01.130Z",
+									"annotations": [],
+									"attachments": [
+										{
+											"name": "screenshot",
+											"contentType": "image/png",
+											"path": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/test-results/all-marketing--live-tradin-959a5-eading-text-in-its-viewport-chromium/test-failed-1.png"
+										},
+										{
+											"name": "video",
+											"contentType": "video/webm",
+											"path": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/test-results/all-marketing--live-tradin-959a5-eading-text-in-its-viewport-chromium/video.webm"
+										},
+										{
+											"name": "error-context",
+											"contentType": "text/markdown",
+											"path": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/test-results/all-marketing--live-tradin-959a5-eading-text-in-its-viewport-chromium/error-context.md"
+										}
+									],
+									"errorLocation": {
+										"file": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts",
+										"column": 20,
+										"line": 29
+									}
+								}
+							],
+							"status": "unexpected"
+						}
+					],
+					"id": "c172d79fa116aa81f3ec-d4310a44ae7ea710b012",
+					"file": "all-marketing.spec.ts",
+					"line": 21,
+					"column": 2
+				},
+				{
+					"title": "/mentorship keeps enlarged heading text in its viewport",
+					"ok": false,
+					"tags": [],
+					"tests": [
+						{
+							"timeout": 60000,
+							"annotations": [],
+							"expectedStatus": "passed",
+							"projectId": "chromium",
+							"projectName": "chromium",
+							"results": [
+								{
+									"workerIndex": 7,
+									"parallelIndex": 3,
+									"status": "failed",
+									"duration": 368,
+									"error": {
+										"message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\n\u001b[32m- Expected  - 1\u001b[39m\n\u001b[31m+ Received  + 3\u001b[39m\n\n\u001b[32m- Array []\u001b[39m\n\u001b[31m+ Array [\u001b[39m\n\u001b[31m+   489.578125,\u001b[39m\n\u001b[31m+ ]\u001b[39m",
+										"stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\n\u001b[32m- Expected  - 1\u001b[39m\n\u001b[31m+ Received  + 3\u001b[39m\n\n\u001b[32m- Array []\u001b[39m\n\u001b[31m+ Array [\u001b[39m\n\u001b[31m+   489.578125,\u001b[39m\n\u001b[31m+ ]\u001b[39m\n    at /Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts:29:20",
+										"location": {
+											"file": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts",
+											"column": 20,
+											"line": 29
+										},
+										"snippet": "  27 | \t\t\treturn [...range.getClientRects()].filter(rect => rect.width > 0 && (rect.left < 0 || rect.right > document.documentElement.clientWidth)).map(rect => rect.right);\n  28 | \t\t}));\n> 29 | \t\texpect(overflow).toEqual([]);\n     | \t\t                 ^\n  30 | \t});\n  31 | }\n  32 |"
+									},
+									"errors": [
+										{
+											"location": {
+												"file": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts",
+												"column": 20,
+												"line": 29
+											},
+											"message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\n\u001b[32m- Expected  - 1\u001b[39m\n\u001b[31m+ Received  + 3\u001b[39m\n\n\u001b[32m- Array []\u001b[39m\n\u001b[31m+ Array [\u001b[39m\n\u001b[31m+   489.578125,\u001b[39m\n\u001b[31m+ ]\u001b[39m\n\n  27 | \t\t\treturn [...range.getClientRects()].filter(rect => rect.width > 0 && (rect.left < 0 || rect.right > document.documentElement.clientWidth)).map(rect => rect.right);\n  28 | \t\t}));\n> 29 | \t\texpect(overflow).toEqual([]);\n     | \t\t                 ^\n  30 | \t});\n  31 | }\n  32 |\n    at /Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts:29:20"
+										}
+									],
+									"stdout": [],
+									"stderr": [],
+									"retry": 0,
+									"startTime": "2026-11-06T02:06:01.285Z",
+									"annotations": [],
+									"attachments": [
+										{
+											"name": "screenshot",
+											"contentType": "image/png",
+											"path": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/test-results/all-marketing--mentorship--b5d9c-eading-text-in-its-viewport-chromium/test-failed-1.png"
+										},
+										{
+											"name": "video",
+											"contentType": "video/webm",
+											"path": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/test-results/all-marketing--mentorship--b5d9c-eading-text-in-its-viewport-chromium/video.webm"
+										},
+										{
+											"name": "error-context",
+											"contentType": "text/markdown",
+											"path": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/test-results/all-marketing--mentorship--b5d9c-eading-text-in-its-viewport-chromium/error-context.md"
+										}
+									],
+									"errorLocation": {
+										"file": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts",
+										"column": 20,
+										"line": 29
+									}
+								}
+							],
+							"status": "unexpected"
+						}
+					],
+					"id": "c172d79fa116aa81f3ec-f0eaacd9f5a202d7b500",
+					"file": "all-marketing.spec.ts",
+					"line": 21,
+					"column": 2
+				},
+				{
+					"title": "/our-mission keeps enlarged heading text in its viewport",
+					"ok": false,
+					"tags": [],
+					"tests": [
+						{
+							"timeout": 60000,
+							"annotations": [],
+							"expectedStatus": "passed",
+							"projectId": "chromium",
+							"projectName": "chromium",
+							"results": [
+								{
+									"workerIndex": 8,
+									"parallelIndex": 1,
+									"status": "failed",
+									"duration": 395,
+									"error": {
+										"message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\n\u001b[32m- Expected  - 1\u001b[39m\n\u001b[31m+ Received  + 5\u001b[39m\n\n\u001b[32m- Array []\u001b[39m\n\u001b[31m+ Array [\u001b[39m\n\u001b[31m+   498.515625,\u001b[39m\n\u001b[31m+   506.71875,\u001b[39m\n\u001b[31m+   506.71875,\u001b[39m\n\u001b[31m+ ]\u001b[39m",
+										"stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\n\u001b[32m- Expected  - 1\u001b[39m\n\u001b[31m+ Received  + 5\u001b[39m\n\n\u001b[32m- Array []\u001b[39m\n\u001b[31m+ Array [\u001b[39m\n\u001b[31m+   498.515625,\u001b[39m\n\u001b[31m+   506.71875,\u001b[39m\n\u001b[31m+   506.71875,\u001b[39m\n\u001b[31m+ ]\u001b[39m\n    at /Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts:29:20",
+										"location": {
+											"file": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts",
+											"column": 20,
+											"line": 29
+										},
+										"snippet": "  27 | \t\t\treturn [...range.getClientRects()].filter(rect => rect.width > 0 && (rect.left < 0 || rect.right > document.documentElement.clientWidth)).map(rect => rect.right);\n  28 | \t\t}));\n> 29 | \t\texpect(overflow).toEqual([]);\n     | \t\t                 ^\n  30 | \t});\n  31 | }\n  32 |"
+									},
+									"errors": [
+										{
+											"location": {
+												"file": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts",
+												"column": 20,
+												"line": 29
+											},
+											"message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\n\u001b[32m- Expected  - 1\u001b[39m\n\u001b[31m+ Received  + 5\u001b[39m\n\n\u001b[32m- Array []\u001b[39m\n\u001b[31m+ Array [\u001b[39m\n\u001b[31m+   498.515625,\u001b[39m\n\u001b[31m+   506.71875,\u001b[39m\n\u001b[31m+   506.71875,\u001b[39m\n\u001b[31m+ ]\u001b[39m\n\n  27 | \t\t\treturn [...range.getClientRects()].filter(rect => rect.width > 0 && (rect.left < 0 || rect.right > document.documentElement.clientWidth)).map(rect => rect.right);\n  28 | \t\t}));\n> 29 | \t\texpect(overflow).toEqual([]);\n     | \t\t                 ^\n  30 | \t});\n  31 | }\n  32 |\n    at /Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts:29:20"
+										}
+									],
+									"stdout": [],
+									"stderr": [],
+									"retry": 0,
+									"startTime": "2026-11-06T02:06:01.842Z",
+									"annotations": [],
+									"attachments": [
+										{
+											"name": "screenshot",
+											"contentType": "image/png",
+											"path": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/test-results/all-marketing--our-mission-c9e50-eading-text-in-its-viewport-chromium/test-failed-1.png"
+										},
+										{
+											"name": "video",
+											"contentType": "video/webm",
+											"path": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/test-results/all-marketing--our-mission-c9e50-eading-text-in-its-viewport-chromium/video.webm"
+										},
+										{
+											"name": "error-context",
+											"contentType": "text/markdown",
+											"path": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/test-results/all-marketing--our-mission-c9e50-eading-text-in-its-viewport-chromium/error-context.md"
+										}
+									],
+									"errorLocation": {
+										"file": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts",
+										"column": 20,
+										"line": 29
+									}
+								}
+							],
+							"status": "unexpected"
+						}
+					],
+					"id": "c172d79fa116aa81f3ec-3036d9cee2e2d7776fbd",
+					"file": "all-marketing.spec.ts",
+					"line": 21,
+					"column": 2
+				},
+				{
+					"title": "SPX marketing page owns no second main landmark",
+					"ok": false,
+					"tags": [],
+					"tests": [
+						{
+							"timeout": 60000,
+							"annotations": [],
+							"expectedStatus": "passed",
+							"projectId": "chromium",
+							"projectName": "chromium",
+							"results": [
+								{
+									"workerIndex": 9,
+									"parallelIndex": 2,
+									"status": "failed",
+									"duration": 10461,
+									"error": {
+										"message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveCount\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('main')\nExpected: \u001b[32m1\u001b[39m\nReceived: \u001b[31m2\u001b[39m\nTimeout:  10000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveCount\" locator('main') with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('main')\u001b[22m\n\u001b[2m    24 × locator resolved to 2 elements\u001b[22m\n\u001b[2m       - unexpected value \"2\"\u001b[22m\n",
+										"stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveCount\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('main')\nExpected: \u001b[32m1\u001b[39m\nReceived: \u001b[31m2\u001b[39m\nTimeout:  10000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveCount\" locator('main') with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('main')\u001b[22m\n\u001b[2m    24 × locator resolved to 2 elements\u001b[22m\n\u001b[2m       - unexpected value \"2\"\u001b[22m\n\n    at /Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts:35:37",
+										"location": {
+											"file": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts",
+											"column": 37,
+											"line": 35
+										},
+										"snippet": "  33 | test('SPX marketing page owns no second main landmark', async ({ page }) => {\n  34 | \tawait page.goto('/alerts/spx-profit-pulse');\n> 35 | \tawait expect(page.locator('main')).toHaveCount(1);\n     | \t                                   ^\n  36 | });\n  37 |\n  38 | test('stock index region filter has an accessible name and changes results', async ({ page }) => {"
+									},
+									"errors": [
+										{
+											"location": {
+												"file": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts",
+												"column": 37,
+												"line": 35
+											},
+											"message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveCount\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator:  locator('main')\nExpected: \u001b[32m1\u001b[39m\nReceived: \u001b[31m2\u001b[39m\nTimeout:  10000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveCount\" locator('main') with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('main')\u001b[22m\n\u001b[2m    24 × locator resolved to 2 elements\u001b[22m\n\u001b[2m       - unexpected value \"2\"\u001b[22m\n\n\n  33 | test('SPX marketing page owns no second main landmark', async ({ page }) => {\n  34 | \tawait page.goto('/alerts/spx-profit-pulse');\n> 35 | \tawait expect(page.locator('main')).toHaveCount(1);\n     | \t                                   ^\n  36 | });\n  37 |\n  38 | test('stock index region filter has an accessible name and changes results', async ({ page }) => {\n    at /Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts:35:37"
+										}
+									],
+									"stdout": [],
+									"stderr": [],
+									"retry": 0,
+									"startTime": "2026-11-06T02:06:01.926Z",
+									"annotations": [],
+									"attachments": [
+										{
+											"name": "screenshot",
+											"contentType": "image/png",
+											"path": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/test-results/all-marketing-SPX-marketin-2a75c-wns-no-second-main-landmark-chromium/test-failed-1.png"
+										},
+										{
+											"name": "video",
+											"contentType": "video/webm",
+											"path": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/test-results/all-marketing-SPX-marketin-2a75c-wns-no-second-main-landmark-chromium/video.webm"
+										},
+										{
+											"name": "error-context",
+											"contentType": "text/markdown",
+											"path": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/test-results/all-marketing-SPX-marketin-2a75c-wns-no-second-main-landmark-chromium/error-context.md"
+										}
+									],
+									"errorLocation": {
+										"file": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts",
+										"column": 37,
+										"line": 35
+									}
+								}
+							],
+							"status": "unexpected"
+						}
+					],
+					"id": "c172d79fa116aa81f3ec-81a2e6659eafd1f4daf4",
+					"file": "all-marketing.spec.ts",
+					"line": 33,
+					"column": 1
+				},
+				{
+					"title": "stock index region filter has an accessible name and changes results",
+					"ok": false,
+					"tags": [],
+					"tests": [
+						{
+							"timeout": 60000,
+							"annotations": [],
+							"expectedStatus": "passed",
+							"projectId": "chromium",
+							"projectName": "chromium",
+							"results": [
+								{
+									"workerIndex": 10,
+									"parallelIndex": 3,
+									"status": "failed",
+									"duration": 11091,
+									"error": {
+										"message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('combobox', { name: /region/i })\nExpected: visible\nTimeout: 10000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByRole('combobox', { name: /region/i }) with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('combobox', { name: /region/i })\u001b[22m\n",
+										"stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('combobox', { name: /region/i })\nExpected: visible\nTimeout: 10000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByRole('combobox', { name: /region/i }) with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('combobox', { name: /region/i })\u001b[22m\n\n    at /Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts:41:23",
+										"location": {
+											"file": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts",
+											"column": 23,
+											"line": 41
+										},
+										"snippet": "  39 | \tawait page.goto('/resources/stock-indexes-list');\n  40 | \tconst region = page.getByRole('combobox', { name: /region/i });\n> 41 | \tawait expect(region).toBeVisible();\n     | \t                     ^\n  42 | \tawait region.selectOption('europe');\n  43 | \tawait expect(page.locator('.index-card')).not.toContainText('S&P 500');\n  44 | });"
+									},
+									"errors": [
+										{
+											"location": {
+												"file": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts",
+												"column": 23,
+												"line": 41
+											},
+											"message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('combobox', { name: /region/i })\nExpected: visible\nTimeout: 10000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByRole('combobox', { name: /region/i }) with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('combobox', { name: /region/i })\u001b[22m\n\n\n  39 | \tawait page.goto('/resources/stock-indexes-list');\n  40 | \tconst region = page.getByRole('combobox', { name: /region/i });\n> 41 | \tawait expect(region).toBeVisible();\n     | \t                     ^\n  42 | \tawait region.selectOption('europe');\n  43 | \tawait expect(page.locator('.index-card')).not.toContainText('S&P 500');\n  44 | });\n    at /Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts:41:23"
+										}
+									],
+									"stdout": [],
+									"stderr": [],
+									"retry": 0,
+									"startTime": "2026-11-06T02:06:01.978Z",
+									"annotations": [],
+									"attachments": [
+										{
+											"name": "screenshot",
+											"contentType": "image/png",
+											"path": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/test-results/all-marketing-stock-index--36350-le-name-and-changes-results-chromium/test-failed-1.png"
+										},
+										{
+											"name": "video",
+											"contentType": "video/webm",
+											"path": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/test-results/all-marketing-stock-index--36350-le-name-and-changes-results-chromium/video.webm"
+										},
+										{
+											"name": "error-context",
+											"contentType": "text/markdown",
+											"path": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/test-results/all-marketing-stock-index--36350-le-name-and-changes-results-chromium/error-context.md"
+										}
+									],
+									"errorLocation": {
+										"file": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts",
+										"column": 23,
+										"line": 41
+									}
+								}
+							],
+							"status": "unexpected"
+						}
+					],
+					"id": "c172d79fa116aa81f3ec-ab9b1e031b3ba909a463",
+					"file": "all-marketing.spec.ts",
+					"line": 38,
+					"column": 1
+				},
+				{
+					"title": "/ suppresses continuous animation for reduced motion",
+					"ok": false,
+					"tags": [],
+					"tests": [
+						{
+							"timeout": 60000,
+							"annotations": [],
+							"expectedStatus": "passed",
+							"projectId": "chromium",
+							"projectName": "chromium",
+							"results": [
+								{
+									"workerIndex": 11,
+									"parallelIndex": 1,
+									"status": "failed",
+									"duration": 10667,
+									"error": {
+										"message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m0\u001b[39m\nReceived: \u001b[31m12\u001b[39m\n\nCall Log:\n- Timeout 10000ms exceeded while waiting on the predicate",
+										"stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m0\u001b[39m\nReceived: \u001b[31m12\u001b[39m\n\nCall Log:\n- Timeout 10000ms exceeded while waiting on the predicate\n    at /Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts:50:239",
+										"location": {
+											"file": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts",
+											"column": 239,
+											"line": 50
+										},
+										"snippet": "  48 | \t\tawait page.emulateMedia({ reducedMotion: 'reduce' });\n  49 | \t\tawait page.goto(route);\n> 50 | \t\tawait expect.poll(() => page.locator('#main-content').evaluate(element => element.getAnimations({ subtree: true }).filter(animation => animation.playState === 'running' && animation.effect?.getTiming().iterations === Infinity).length)).toBe(0);\n     | \t\t                                                                                                                                                                                                                                            ^\n  51 | \t});\n  52 | }\n  53 |"
+									},
+									"errors": [
+										{
+											"location": {
+												"file": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts",
+												"column": 239,
+												"line": 50
+											},
+											"message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m0\u001b[39m\nReceived: \u001b[31m12\u001b[39m\n\nCall Log:\n- Timeout 10000ms exceeded while waiting on the predicate\n\n  48 | \t\tawait page.emulateMedia({ reducedMotion: 'reduce' });\n  49 | \t\tawait page.goto(route);\n> 50 | \t\tawait expect.poll(() => page.locator('#main-content').evaluate(element => element.getAnimations({ subtree: true }).filter(animation => animation.playState === 'running' && animation.effect?.getTiming().iterations === Infinity).length)).toBe(0);\n     | \t\t                                                                                                                                                                                                                                            ^\n  51 | \t});\n  52 | }\n  53 |\n    at /Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts:50:239"
+										}
+									],
+									"stdout": [],
+									"stderr": [],
+									"retry": 0,
+									"startTime": "2026-11-06T02:06:02.567Z",
+									"annotations": [],
+									"attachments": [
+										{
+											"name": "screenshot",
+											"contentType": "image/png",
+											"path": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/test-results/all-marketing--suppresses--e68ef-nimation-for-reduced-motion-chromium/test-failed-1.png"
+										},
+										{
+											"name": "video",
+											"contentType": "video/webm",
+											"path": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/test-results/all-marketing--suppresses--e68ef-nimation-for-reduced-motion-chromium/video.webm"
+										},
+										{
+											"name": "error-context",
+											"contentType": "text/markdown",
+											"path": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/test-results/all-marketing--suppresses--e68ef-nimation-for-reduced-motion-chromium/error-context.md"
+										}
+									],
+									"errorLocation": {
+										"file": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts",
+										"column": 239,
+										"line": 50
+									}
+								}
+							],
+							"status": "unexpected"
+						}
+					],
+					"id": "c172d79fa116aa81f3ec-bae82dc1d28d5169c386",
+					"file": "all-marketing.spec.ts",
+					"line": 47,
+					"column": 2
+				},
+				{
+					"title": "/alerts suppresses continuous animation for reduced motion",
+					"ok": false,
+					"tags": [],
+					"tests": [
+						{
+							"timeout": 60000,
+							"annotations": [],
+							"expectedStatus": "passed",
+							"projectId": "chromium",
+							"projectName": "chromium",
+							"results": [
+								{
+									"workerIndex": 12,
+									"parallelIndex": 0,
+									"status": "failed",
+									"duration": 10428,
+									"error": {
+										"message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m0\u001b[39m\nReceived: \u001b[31m1\u001b[39m\n\nCall Log:\n- Timeout 10000ms exceeded while waiting on the predicate",
+										"stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m0\u001b[39m\nReceived: \u001b[31m1\u001b[39m\n\nCall Log:\n- Timeout 10000ms exceeded while waiting on the predicate\n    at /Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts:50:239",
+										"location": {
+											"file": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts",
+											"column": 239,
+											"line": 50
+										},
+										"snippet": "  48 | \t\tawait page.emulateMedia({ reducedMotion: 'reduce' });\n  49 | \t\tawait page.goto(route);\n> 50 | \t\tawait expect.poll(() => page.locator('#main-content').evaluate(element => element.getAnimations({ subtree: true }).filter(animation => animation.playState === 'running' && animation.effect?.getTiming().iterations === Infinity).length)).toBe(0);\n     | \t\t                                                                                                                                                                                                                                            ^\n  51 | \t});\n  52 | }\n  53 |"
+									},
+									"errors": [
+										{
+											"location": {
+												"file": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts",
+												"column": 239,
+												"line": 50
+											},
+											"message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m0\u001b[39m\nReceived: \u001b[31m1\u001b[39m\n\nCall Log:\n- Timeout 10000ms exceeded while waiting on the predicate\n\n  48 | \t\tawait page.emulateMedia({ reducedMotion: 'reduce' });\n  49 | \t\tawait page.goto(route);\n> 50 | \t\tawait expect.poll(() => page.locator('#main-content').evaluate(element => element.getAnimations({ subtree: true }).filter(animation => animation.playState === 'running' && animation.effect?.getTiming().iterations === Infinity).length)).toBe(0);\n     | \t\t                                                                                                                                                                                                                                            ^\n  51 | \t});\n  52 | }\n  53 |\n    at /Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts:50:239"
+										}
+									],
+									"stdout": [],
+									"stderr": [],
+									"retry": 0,
+									"startTime": "2026-11-06T02:06:03.285Z",
+									"annotations": [],
+									"attachments": [
+										{
+											"name": "screenshot",
+											"contentType": "image/png",
+											"path": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/test-results/all-marketing--alerts-supp-5b108-nimation-for-reduced-motion-chromium/test-failed-1.png"
+										},
+										{
+											"name": "video",
+											"contentType": "video/webm",
+											"path": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/test-results/all-marketing--alerts-supp-5b108-nimation-for-reduced-motion-chromium/video.webm"
+										},
+										{
+											"name": "error-context",
+											"contentType": "text/markdown",
+											"path": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/test-results/all-marketing--alerts-supp-5b108-nimation-for-reduced-motion-chromium/error-context.md"
+										}
+									],
+									"errorLocation": {
+										"file": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts",
+										"column": 239,
+										"line": 50
+									}
+								}
+							],
+							"status": "unexpected"
+						}
+					],
+					"id": "c172d79fa116aa81f3ec-68a643621673cbb43c30",
+					"file": "all-marketing.spec.ts",
+					"line": 47,
+					"column": 2
+				},
+				{
+					"title": "/courses suppresses continuous animation for reduced motion",
+					"ok": false,
+					"tags": [],
+					"tests": [
+						{
+							"timeout": 60000,
+							"annotations": [],
+							"expectedStatus": "passed",
+							"projectId": "chromium",
+							"projectName": "chromium",
+							"results": [
+								{
+									"workerIndex": 13,
+									"parallelIndex": 2,
+									"status": "failed",
+									"duration": 12230,
+									"error": {
+										"message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m0\u001b[39m\nReceived: \u001b[31m1\u001b[39m\n\nCall Log:\n- Timeout 10000ms exceeded while waiting on the predicate",
+										"stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m0\u001b[39m\nReceived: \u001b[31m1\u001b[39m\n\nCall Log:\n- Timeout 10000ms exceeded while waiting on the predicate\n    at /Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts:50:239",
+										"location": {
+											"file": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts",
+											"column": 239,
+											"line": 50
+										},
+										"snippet": "  48 | \t\tawait page.emulateMedia({ reducedMotion: 'reduce' });\n  49 | \t\tawait page.goto(route);\n> 50 | \t\tawait expect.poll(() => page.locator('#main-content').evaluate(element => element.getAnimations({ subtree: true }).filter(animation => animation.playState === 'running' && animation.effect?.getTiming().iterations === Infinity).length)).toBe(0);\n     | \t\t                                                                                                                                                                                                                                            ^\n  51 | \t});\n  52 | }\n  53 |"
+									},
+									"errors": [
+										{
+											"location": {
+												"file": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts",
+												"column": 239,
+												"line": 50
+											},
+											"message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m0\u001b[39m\nReceived: \u001b[31m1\u001b[39m\n\nCall Log:\n- Timeout 10000ms exceeded while waiting on the predicate\n\n  48 | \t\tawait page.emulateMedia({ reducedMotion: 'reduce' });\n  49 | \t\tawait page.goto(route);\n> 50 | \t\tawait expect.poll(() => page.locator('#main-content').evaluate(element => element.getAnimations({ subtree: true }).filter(animation => animation.playState === 'running' && animation.effect?.getTiming().iterations === Infinity).length)).toBe(0);\n     | \t\t                                                                                                                                                                                                                                            ^\n  51 | \t});\n  52 | }\n  53 |\n    at /Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts:50:239"
+										}
+									],
+									"stdout": [],
+									"stderr": [],
+									"retry": 0,
+									"startTime": "2026-11-06T02:06:12.807Z",
+									"annotations": [],
+									"attachments": [
+										{
+											"name": "screenshot",
+											"contentType": "image/png",
+											"path": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/test-results/all-marketing--courses-sup-df47a-nimation-for-reduced-motion-chromium/test-failed-1.png"
+										},
+										{
+											"name": "video",
+											"contentType": "video/webm",
+											"path": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/test-results/all-marketing--courses-sup-df47a-nimation-for-reduced-motion-chromium/video.webm"
+										},
+										{
+											"name": "error-context",
+											"contentType": "text/markdown",
+											"path": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/test-results/all-marketing--courses-sup-df47a-nimation-for-reduced-motion-chromium/error-context.md"
+										}
+									],
+									"errorLocation": {
+										"file": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts",
+										"column": 239,
+										"line": 50
+									}
+								}
+							],
+							"status": "unexpected"
+						}
+					],
+					"id": "c172d79fa116aa81f3ec-5fa66cf4e18aa5aa9058",
+					"file": "all-marketing.spec.ts",
+					"line": 47,
+					"column": 2
+				},
+				{
+					"title": "/mentorship suppresses continuous animation for reduced motion",
+					"ok": false,
+					"tags": [],
+					"tests": [
+						{
+							"timeout": 60000,
+							"annotations": [],
+							"expectedStatus": "passed",
+							"projectId": "chromium",
+							"projectName": "chromium",
+							"results": [
+								{
+									"workerIndex": 14,
+									"parallelIndex": 3,
+									"status": "failed",
+									"duration": 10376,
+									"error": {
+										"message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m0\u001b[39m\nReceived: \u001b[31m1\u001b[39m\n\nCall Log:\n- Timeout 10000ms exceeded while waiting on the predicate",
+										"stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m0\u001b[39m\nReceived: \u001b[31m1\u001b[39m\n\nCall Log:\n- Timeout 10000ms exceeded while waiting on the predicate\n    at /Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts:50:239",
+										"location": {
+											"file": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts",
+											"column": 239,
+											"line": 50
+										},
+										"snippet": "  48 | \t\tawait page.emulateMedia({ reducedMotion: 'reduce' });\n  49 | \t\tawait page.goto(route);\n> 50 | \t\tawait expect.poll(() => page.locator('#main-content').evaluate(element => element.getAnimations({ subtree: true }).filter(animation => animation.playState === 'running' && animation.effect?.getTiming().iterations === Infinity).length)).toBe(0);\n     | \t\t                                                                                                                                                                                                                                            ^\n  51 | \t});\n  52 | }\n  53 |"
+									},
+									"errors": [
+										{
+											"location": {
+												"file": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts",
+												"column": 239,
+												"line": 50
+											},
+											"message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m0\u001b[39m\nReceived: \u001b[31m1\u001b[39m\n\nCall Log:\n- Timeout 10000ms exceeded while waiting on the predicate\n\n  48 | \t\tawait page.emulateMedia({ reducedMotion: 'reduce' });\n  49 | \t\tawait page.goto(route);\n> 50 | \t\tawait expect.poll(() => page.locator('#main-content').evaluate(element => element.getAnimations({ subtree: true }).filter(animation => animation.playState === 'running' && animation.effect?.getTiming().iterations === Infinity).length)).toBe(0);\n     | \t\t                                                                                                                                                                                                                                            ^\n  51 | \t});\n  52 | }\n  53 |\n    at /Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts:50:239"
+										}
+									],
+									"stdout": [],
+									"stderr": [],
+									"retry": 0,
+									"startTime": "2026-11-06T02:06:13.570Z",
+									"annotations": [],
+									"attachments": [
+										{
+											"name": "screenshot",
+											"contentType": "image/png",
+											"path": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/test-results/all-marketing--mentorship--02ba4-nimation-for-reduced-motion-chromium/test-failed-1.png"
+										},
+										{
+											"name": "video",
+											"contentType": "video/webm",
+											"path": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/test-results/all-marketing--mentorship--02ba4-nimation-for-reduced-motion-chromium/video.webm"
+										},
+										{
+											"name": "error-context",
+											"contentType": "text/markdown",
+											"path": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/test-results/all-marketing--mentorship--02ba4-nimation-for-reduced-motion-chromium/error-context.md"
+										}
+									],
+									"errorLocation": {
+										"file": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts",
+										"column": 239,
+										"line": 50
+									}
+								}
+							],
+							"status": "unexpected"
+						}
+					],
+					"id": "c172d79fa116aa81f3ec-8eb3ff6e61f84154569c",
+					"file": "all-marketing.spec.ts",
+					"line": 47,
+					"column": 2
+				},
+				{
+					"title": "/our-mission suppresses continuous animation for reduced motion",
+					"ok": false,
+					"tags": [],
+					"tests": [
+						{
+							"timeout": 60000,
+							"annotations": [],
+							"expectedStatus": "passed",
+							"projectId": "chromium",
+							"projectName": "chromium",
+							"results": [
+								{
+									"workerIndex": 15,
+									"parallelIndex": 1,
+									"status": "failed",
+									"duration": 10418,
+									"error": {
+										"message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m0\u001b[39m\nReceived: \u001b[31m3\u001b[39m\n\nCall Log:\n- Timeout 10000ms exceeded while waiting on the predicate",
+										"stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m0\u001b[39m\nReceived: \u001b[31m3\u001b[39m\n\nCall Log:\n- Timeout 10000ms exceeded while waiting on the predicate\n    at /Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts:50:239",
+										"location": {
+											"file": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts",
+											"column": 239,
+											"line": 50
+										},
+										"snippet": "  48 | \t\tawait page.emulateMedia({ reducedMotion: 'reduce' });\n  49 | \t\tawait page.goto(route);\n> 50 | \t\tawait expect.poll(() => page.locator('#main-content').evaluate(element => element.getAnimations({ subtree: true }).filter(animation => animation.playState === 'running' && animation.effect?.getTiming().iterations === Infinity).length)).toBe(0);\n     | \t\t                                                                                                                                                                                                                                            ^\n  51 | \t});\n  52 | }\n  53 |"
+									},
+									"errors": [
+										{
+											"location": {
+												"file": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts",
+												"column": 239,
+												"line": 50
+											},
+											"message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m0\u001b[39m\nReceived: \u001b[31m3\u001b[39m\n\nCall Log:\n- Timeout 10000ms exceeded while waiting on the predicate\n\n  48 | \t\tawait page.emulateMedia({ reducedMotion: 'reduce' });\n  49 | \t\tawait page.goto(route);\n> 50 | \t\tawait expect.poll(() => page.locator('#main-content').evaluate(element => element.getAnimations({ subtree: true }).filter(animation => animation.playState === 'running' && animation.effect?.getTiming().iterations === Infinity).length)).toBe(0);\n     | \t\t                                                                                                                                                                                                                                            ^\n  51 | \t});\n  52 | }\n  53 |\n    at /Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts:50:239"
+										}
+									],
+									"stdout": [],
+									"stderr": [],
+									"retry": 0,
+									"startTime": "2026-11-06T02:06:13.795Z",
+									"annotations": [],
+									"attachments": [
+										{
+											"name": "screenshot",
+											"contentType": "image/png",
+											"path": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/test-results/all-marketing--our-mission-306a1-nimation-for-reduced-motion-chromium/test-failed-1.png"
+										},
+										{
+											"name": "video",
+											"contentType": "video/webm",
+											"path": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/test-results/all-marketing--our-mission-306a1-nimation-for-reduced-motion-chromium/video.webm"
+										},
+										{
+											"name": "error-context",
+											"contentType": "text/markdown",
+											"path": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/test-results/all-marketing--our-mission-306a1-nimation-for-reduced-motion-chromium/error-context.md"
+										}
+									],
+									"errorLocation": {
+										"file": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts",
+										"column": 239,
+										"line": 50
+									}
+								}
+							],
+							"status": "unexpected"
+						}
+					],
+					"id": "c172d79fa116aa81f3ec-8b0d938440270989a074",
+					"file": "all-marketing.spec.ts",
+					"line": 47,
+					"column": 2
+				},
+				{
+					"title": "/live-trading-rooms/day-trading suppresses continuous animation for reduced motion",
+					"ok": false,
+					"tags": [],
+					"tests": [
+						{
+							"timeout": 60000,
+							"annotations": [],
+							"expectedStatus": "passed",
+							"projectId": "chromium",
+							"projectName": "chromium",
+							"results": [
+								{
+									"workerIndex": 16,
+									"parallelIndex": 0,
+									"status": "failed",
+									"duration": 9463,
+									"error": {
+										"message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m0\u001b[39m\nReceived: \u001b[31m4\u001b[39m\n\nCall Log:\n- Timeout 10000ms exceeded while waiting on the predicate",
+										"stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m0\u001b[39m\nReceived: \u001b[31m4\u001b[39m\n\nCall Log:\n- Timeout 10000ms exceeded while waiting on the predicate\n    at /Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts:50:239",
+										"location": {
+											"file": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts",
+											"column": 239,
+											"line": 50
+										},
+										"snippet": "  48 | \t\tawait page.emulateMedia({ reducedMotion: 'reduce' });\n  49 | \t\tawait page.goto(route);\n> 50 | \t\tawait expect.poll(() => page.locator('#main-content').evaluate(element => element.getAnimations({ subtree: true }).filter(animation => animation.playState === 'running' && animation.effect?.getTiming().iterations === Infinity).length)).toBe(0);\n     | \t\t                                                                                                                                                                                                                                            ^\n  51 | \t});\n  52 | }\n  53 |"
+									},
+									"errors": [
+										{
+											"location": {
+												"file": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts",
+												"column": 239,
+												"line": 50
+											},
+											"message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m0\u001b[39m\nReceived: \u001b[31m4\u001b[39m\n\nCall Log:\n- Timeout 10000ms exceeded while waiting on the predicate\n\n  48 | \t\tawait page.emulateMedia({ reducedMotion: 'reduce' });\n  49 | \t\tawait page.goto(route);\n> 50 | \t\tawait expect.poll(() => page.locator('#main-content').evaluate(element => element.getAnimations({ subtree: true }).filter(animation => animation.playState === 'running' && animation.effect?.getTiming().iterations === Infinity).length)).toBe(0);\n     | \t\t                                                                                                                                                                                                                                            ^\n  51 | \t});\n  52 | }\n  53 |\n    at /Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts:50:239"
+										}
+									],
+									"stdout": [],
+									"stderr": [],
+									"retry": 0,
+									"startTime": "2026-11-06T02:06:14.272Z",
+									"annotations": [],
+									"attachments": [
+										{
+											"name": "screenshot",
+											"contentType": "image/png",
+											"path": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/test-results/all-marketing--live-tradin-e4515-nimation-for-reduced-motion-chromium/test-failed-1.png"
+										},
+										{
+											"name": "video",
+											"contentType": "video/webm",
+											"path": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/test-results/all-marketing--live-tradin-e4515-nimation-for-reduced-motion-chromium/video.webm"
+										},
+										{
+											"name": "error-context",
+											"contentType": "text/markdown",
+											"path": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/test-results/all-marketing--live-tradin-e4515-nimation-for-reduced-motion-chromium/error-context.md"
+										}
+									],
+									"errorLocation": {
+										"file": "/Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts",
+										"column": 239,
+										"line": 50
+									}
+								}
+							],
+							"status": "unexpected"
+						}
+					],
+					"id": "c172d79fa116aa81f3ec-a723921bef01b9c97cce",
+					"file": "all-marketing.spec.ts",
+					"line": 47,
+					"column": 2
+				}
+			]
+		}
+	],
+	"errors": [],
+	"stats": {
+		"startTime": "2026-11-06T02:05:49.592Z",
+		"duration": 35605.746,
+		"expected": 0,
+		"skipped": 0,
+		"unexpected": 17,
+		"flaky": 0
+	}
+}

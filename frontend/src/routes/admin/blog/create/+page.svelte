@@ -352,7 +352,7 @@
 				});
 
 				// Store the uploaded media details
-				post.featured_image = result.file.url;
+				post.featured_image = result.file.cdn_url || result.file.url;
 				post.featured_media_id = parseInt(result.file.id);
 
 				// Pre-fill title from filename if not set

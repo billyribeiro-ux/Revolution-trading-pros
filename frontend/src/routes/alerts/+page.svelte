@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { scrollReveal } from '#lib/animations/scroll-reveal.js';
 	/**
 	 * Alert Services Index Page
 	 *
@@ -6,61 +7,6 @@
 	 * Matches Revolution Trading's product listing style.
 	 *
 	 */
-
-	import { onMount } from 'svelte';
-	import { browser } from '$app/env';
-
-	// --- GSAP ScrollTrigger Animations (Svelte 5 SSR-safe pattern) ---
-	onMount(() => {
-		if (!browser) return;
-
-		let ctx: ReturnType<typeof import('gsap').gsap.context> | null = null;
-
-		(async () => {
-			const { gsap } = await import('gsap');
-			const { ScrollTrigger } = await import('gsap/ScrollTrigger');
-			gsap.registerPlugin(ScrollTrigger);
-
-			const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-			if (prefersReducedMotion) {
-				gsap.set('[data-gsap]', { opacity: 1, y: 0 });
-				return;
-			}
-
-			// Use gsap.context() for scoped cleanup - prevents global ScrollTrigger destruction
-			ctx = gsap.context(() => {
-				// Only set initial hidden state for elements NOT yet in viewport
-				const elements = document.querySelectorAll('[data-gsap]');
-				elements.forEach((el) => {
-					const rect = el.getBoundingClientRect();
-					const isInViewport = rect.top < window.innerHeight * 0.85;
-					if (!isInViewport) {
-						gsap.set(el, { opacity: 0, y: 30 });
-					}
-				});
-
-				ScrollTrigger.batch('[data-gsap]', {
-					onEnter: (batch) => {
-						gsap.to(batch, {
-							opacity: 1,
-							y: 0,
-							duration: 0.8,
-							ease: 'power3.out',
-							stagger: 0.1,
-							overwrite: true
-						});
-					},
-					start: 'top 85%',
-					once: true
-				});
-
-				ScrollTrigger.refresh();
-			});
-		})();
-
-		return () => ctx?.revert();
-	});
 
 	// Alert Services Data
 	const alertServices = [
@@ -110,7 +56,7 @@
 	} as const satisfies Record<(typeof alertServices)[number]['color'], string>;
 </script>
 
-<div class="alerts-page">
+<div class="alerts-page" {@attach scrollReveal}>
 	<!-- Hero Section -->
 	<section class="hero">
 		<div class="hero-bg"></div>

@@ -1,36 +1,30 @@
 import type { PageServerLoad } from './$types';
-import { apiFetch, API_ENDPOINTS } from '#lib/api/config.js';
-import type { PaginatedPosts } from '#lib/types/post.js';
-
+import { error, isHttpError } from '@sveltejs/kit';
+import { readPublicPosts } from '#lib/server/public-posts.js';
 export const prerender = false;
-
-export const load: PageServerLoad = async ({ fetch: svelteKitFetch, url }) => {
-	const pageParam = Number(url.searchParams.get('page') ?? '1');
-	const pageNum = Number.isFinite(pageParam) && pageParam > 1 ? Math.floor(pageParam) : 1;
-
+export const load: PageServerLoad = async ({ url, setHeaders }) => {
+	const raw = url.searchParams.get('page') ?? '1';
+	if (!/^[1-9]\d{0,6}$/.test(raw)) error(400, 'Choose a positive blog page');
+	const pageNum = Number(raw);
 	try {
-		const endpoint =
-			pageNum > 1 ? `${API_ENDPOINTS.posts.list}?page=${pageNum}` : API_ENDPOINTS.posts.list;
-		const posts = await apiFetch<PaginatedPosts>(endpoint, {
-			fetch: svelteKitFetch
-		});
-
+		const posts = await readPublicPosts(pageNum);
+		if (pageNum > Math.max(1, posts.last_page)) error(404, 'Blog page not found');
 		return {
 			posts: posts.data,
+			postsUnavailable: false,
 			pagination: {
-				currentPage: posts.current_page || pageNum,
-				lastPage: posts.last_page || 1,
-				total: posts.total || posts.data.length
+				currentPage: posts.current_page,
+				lastPage: Math.max(1, posts.last_page),
+				total: posts.total
 			}
 		};
-	} catch {
+	} catch (cause) {
+		if (isHttpError(cause) && cause.status === 404) throw cause;
+		setHeaders({ 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex, nofollow' });
 		return {
 			posts: [],
-			pagination: {
-				currentPage: pageNum,
-				lastPage: 1,
-				total: 0
-			}
+			postsUnavailable: true,
+			pagination: { currentPage: pageNum, lastPage: 1, total: 0 }
 		};
 	}
 };

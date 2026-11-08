@@ -1,0 +1,14 @@
+
+Running 3 tests using 3 workers
+
+(node:70262) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:70263) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:70261) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  3 [chromium] › tests/marketing-content.spec.ts:53:1 › invalid public catalog pagination is rejected (28ms)
+  ✓  2 [chromium] › tests/marketing-content.spec.ts:8:1 › tutorials exposes the approved public library rather than foreign placeholder videos (519ms)
+  ✓  1 [chromium] › tests/marketing-content.spec.ts:32:1 › blog uses the real publication service and pagination follows browser history (1.7s)
+
+  3 passed (2.1s)

@@ -128,6 +128,9 @@ async fn main() -> anyhow::Result<()> {
         state.clone(),
     ));
     tokio::spawn(revolution_api::routes::crm::run_sequences(state.clone()));
+    tokio::spawn(revolution_api::routes::behavior::run_retention(
+        state.db.pool.clone(),
+    ));
     tracing::info!(
         "Media upload cleanup worker started; image jobs require a configured processor"
     );

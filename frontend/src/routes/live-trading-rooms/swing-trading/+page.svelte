@@ -1,8 +1,7 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import { slide } from 'svelte/transition';
+	import { scrollReveal } from '#lib/animations/scroll-reveal.js';
+	import { motionSlide as slide } from '#lib/animations/motion.js';
 	import { cubicOut } from 'svelte/easing';
-	import { browser } from '$app/env';
 	import IconArrowRight from '@tabler/icons-svelte-runes/icons/arrow-right';
 
 	// --- Pricing State (Svelte 5 Runes) ---
@@ -11,86 +10,6 @@
 	// --- FAQ Logic (Svelte 5 Runes) ---
 	let openFaq: number | null = $state(null);
 	const toggleFaq = (index: number) => (openFaq = openFaq === index ? null : index);
-
-	// --- GSAP ScrollTrigger Animations (Svelte 5 SSR-safe pattern) ---
-	onMount(() => {
-		if (!browser) return;
-
-		let isComponentMounted = true;
-		let ctx: ReturnType<typeof import('gsap').gsap.context> | null = null;
-
-		void (async () => {
-			try {
-				const { gsap } = await import('gsap');
-				const { ScrollTrigger } = await import('gsap/ScrollTrigger');
-				if (!isComponentMounted) return;
-
-				gsap.registerPlugin(ScrollTrigger);
-
-				const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-				if (prefersReducedMotion) {
-					gsap.set('[data-gsap]', { opacity: 1, y: 0 });
-					return;
-				}
-
-				// Use gsap.context() for scoped cleanup - prevents global ScrollTrigger destruction
-				ctx = gsap.context(() => {
-					const all = Array.from(document.querySelectorAll('[data-gsap]'));
-					gsap.set(all, { opacity: 0, y: 30 });
-
-					// Elements visible in viewport on mount get an immediate
-					// staggered entrance — ScrollTrigger.batch's onEnter does not
-					// fire for elements already past the trigger position at
-					// registration time, which would otherwise leave hero
-					// elements stuck invisible.
-					const visible: Element[] = [];
-					const hidden: Element[] = [];
-					all.forEach((el) => {
-						const r = el.getBoundingClientRect();
-						if (r.top < window.innerHeight && r.bottom > 0) visible.push(el);
-						else hidden.push(el);
-					});
-
-					if (visible.length > 0) {
-						gsap.to(visible, {
-							opacity: 1,
-							y: 0,
-							duration: 0.9,
-							ease: 'power3.out',
-							stagger: 0.1
-						});
-					}
-
-					if (hidden.length > 0) {
-						ScrollTrigger.batch(hidden, {
-							onEnter: (batch) => {
-								gsap.to(batch, {
-									opacity: 1,
-									y: 0,
-									duration: 0.8,
-									ease: 'power3.out',
-									stagger: 0.1,
-									overwrite: true
-								});
-							},
-							start: 'top 85%',
-							once: true
-						});
-					}
-
-					ScrollTrigger.refresh();
-				});
-			} catch (error) {
-				console.error('[SwingTrading] GSAP initialization failed:', error);
-			}
-		})();
-
-		return () => {
-			isComponentMounted = false;
-			if (ctx) ctx.revert();
-		};
-	});
 
 	// --- DATA SOURCE: FAQs (Single Source of Truth) ---
 	const faqList = [
@@ -149,7 +68,7 @@
 	// SEO schemas emitted via +page.ts (page.data.seo).
 </script>
 
-<div class="swing-trading">
+<div class="swing-trading" {@attach scrollReveal}>
 	<section class="hero">
 		<div class="hero__bg" aria-hidden="true">
 			<div class="hero__bg-grid"></div>
@@ -2225,5 +2144,21 @@
 		margin-block-start: 1.5rem;
 		font-size: 0.875rem;
 		color: color-mix(in oklab, #d1fae5 70%, transparent);
+	}
+
+	.hero__cta--primary,
+	.hero__alert-bonus,
+	.compare-card__ribbon,
+	.pricing-toggle__btn--active,
+	.plan__ribbon,
+	.plan__cta--primary {
+		background: var(--rtp-emerald-action);
+	}
+	.hero__alert-bonus-label {
+		opacity: 1;
+	}
+	.compare-card--bad,
+	.plan {
+		opacity: 1;
 	}
 </style>

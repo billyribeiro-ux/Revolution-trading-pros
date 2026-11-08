@@ -4,6 +4,7 @@ import { expect, test, type APIRequestContext } from '@playwright/test';
 const api = 'http://127.0.0.1:8281/api/admin/media';
 interface Media {
 	id: number;
+	processing_job_id?: number | null;
 	path: string;
 	url: string;
 	content_version: number;
@@ -24,9 +25,10 @@ interface Version {
 	url: string;
 }
 async function optimize(request: APIRequestContext, headers: Record<string, string>, id: number) {
-	const response = await request.post(`${api}/files/${id}/optimize`, { headers, data: {} });
-	expect(response.status(), await response.text()).toBe(202);
-	const jobId = ((await response.json()) as { data: { id: number } }).data.id;
+	const response = await request.get(`${api}/${id}`, { headers });
+	expect(response.ok(), await response.text()).toBe(true);
+	const jobId = ((await response.json()) as { data: Media }).data.processing_job_id;
+	expect(jobId).toBeGreaterThan(0);
 	await expect
 		.poll(
 			async () =>
@@ -93,18 +95,11 @@ test('replace, optimize the current revision, restore, and delete every retained
 		content_version: 2,
 		width: 200,
 		height: 100,
-		is_optimized: false,
 		alt_text: 'Preserve metadata'
 	});
 	expect(second.url).not.toBe(first.url);
 	expect(await (await request.get(first.url)).body()).toEqual(original);
 	expect(await (await request.get(second.url)).body()).toEqual(replacement);
-	const empty = (
-		(await (await request.get(`${api}/files/${first.id}/variants`, { headers })).json()) as {
-			data: Variant[];
-		}
-	).data;
-	expect(empty).toEqual([]);
 	expect(
 		(
 			await request.get(`${api}/content/${first.id}?variant_id=${originalVariants[0]?.id}`, {
@@ -126,7 +121,6 @@ test('replace, optimize the current revision, restore, and delete every retained
 		content_version: 3,
 		width: 1000,
 		height: 400,
-		is_optimized: false,
 		alt_text: 'Preserve metadata',
 		path: first.path,
 		url: first.url

@@ -8,6 +8,7 @@
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
+	import { recordingStatus } from '#lib/utils/recording-status.js';
 	// Svelte 5 January 2026 best practice - no destructuring
 	interface Props {
 		videoUrl: string;
@@ -20,6 +21,20 @@
 	}
 
 	let props: Props = $props();
+	let videoUnavailable = $state(false);
+	const recording = recordingStatus((value) => {
+		videoUnavailable = value;
+	});
+	function retryVideo(event: MouseEvent) {
+		const video =
+			event.currentTarget instanceof HTMLElement
+				? event.currentTarget.closest('.class-video-container')?.querySelector('video')
+				: null;
+		if (video) {
+			videoUnavailable = false;
+			video.load();
+		}
+	}
 </script>
 
 <div class="class-video-container current current-vid">
@@ -39,8 +54,10 @@
 	{/if}
 
 	<video
+		{@attach recording}
 		id={props.videoUrl}
 		controls
+		preload="metadata"
 		width="100%"
 		poster={props.poster}
 		style="aspect-ratio: 16/9;"
@@ -49,6 +66,12 @@
 		<source src={props.videoUrl} type="video/mp4" />
 		Your browser does not support the video tag.
 	</video>
+	{#if videoUnavailable}<p class="recording-error" role="status">
+			This recording is temporarily unavailable. <button type="button" onclick={retryVideo}
+				>Retry recording</button
+			>
+			or <a href="/contact">contact support</a>.
+		</p>{/if}
 </div>
 
 <style>
@@ -257,5 +280,14 @@
 		.video-overlay {
 			border-bottom-width: 2px;
 		}
+	}
+	.recording-error {
+		padding: 1rem;
+		color: #fff;
+	}
+	.recording-error a,
+	.recording-error button {
+		color: #93c5fd;
+		text-decoration: underline;
 	}
 </style>

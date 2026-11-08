@@ -2130,4 +2130,7 @@
 		inset: 0;
 		opacity: 0.2;
 	}
+	.filter-button.active {
+		background: var(--rtp-primary-action);
+	}
 </style>

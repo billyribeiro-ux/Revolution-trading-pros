@@ -4,16 +4,77 @@
 
 All notable changes to this project. Format roughly follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); we don't strictly adhere to SemVer because the product isn't a published library.
 
-## [Unreleased] — 2026-11-05 — Credential integration fixture retention
+## [Unreleased] — 2026-11-07 — Behavior analytics audit and repair
+
+### Added
+
+- Serve authenticated session event timelines and click/scroll heatmap aggregates from the existing `behavior_events` table. Replace the admin screens' missing endpoints and placeholder visuals with these measured results.
+- Normalize click coordinates to viewport percentages so activity from different screen sizes can be aggregated. Retain older absolute-coordinate rows for their other metrics without plotting them as normalized clicks.
+- Enforce 90-day behavior-event retention with a bounded background cleanup worker and supporting database index.
+
+### Changed
+
+- Remove the dormant consent-bypassing auto-initializer. Scrub URL queries, fragments, metadata, user IDs, CSS IDs and classes before browser buffering or retry storage; use short-lived random identifiers and exclude protected pages and sensitive controls.
+- Honor analytics consent, DNT and GPC; prevent delayed tracker initialization after consent withdrawal; record SvelteKit navigation and flush when the page becomes hidden.
+- Describe the admin timeline as session activity. It contains event types and paths, not DOM replay, captured form values, or video.
+- Redirect the broken public `/behavior` page to the authenticated admin dashboard and remove its unused client/store, which called nonexistent `/admin/behavior/*` endpoints.
+
+### Validation and limits
+
+- Tracker privacy/delivery tests, Rust compilation, Svelte checks, an isolated PostgreSQL integration scenario, and a real Chromium website-to-API smoke test cover the implementation. See [the behavior audit](docs/audits/behavior-2026-11-07.md) for exact results and environment limits. The SEO gate passes 111/114; three existing API-dependent checks fail while their content source is unavailable.
+- The system is first-party event analytics. It does not claim feature or performance parity with Hotjar, Microsoft, Google, or OpenAI; that would require measured production load, security review, and privacy/legal review.
+
+## [Unreleased] — 2026-11-07 — Portable image optimization and website delivery
+
+### Added
+
+- Add the independent `@revolution/imagify` package with a typed Node API, file and directory CLI, downloads-folder watcher, bounded WebP encoding, tests, benchmark, and installable tarball build.
+- Queue the default image optimization job automatically for direct uploads, confirmed presigned uploads, and replacements when the media processor is configured.
+- Add an opaque public image selector and website proxy. New blog featured-image uploads use the selector; blog images request responsive widths and select a supported smaller WebP or AVIF variant when available.
+
+### Changed
+
+- Use the portable encoder in the existing media processor WebP endpoint. Skip stored derivatives that are no smaller than the source while keeping the original for revisions, recovery, and later re-encoding.
+
+### Validation and limits
+
+- The package's six tests, processor HTTP tests, media selector unit test, frontend route/client regressions, repository unit suite, type checks, and production builds pass. The SEO browser suite passes 111/114 checks; three existing data-dependent checks fail while the API is unavailable in this environment.
+- Existing blog image URLs are not rewritten by this change. Live CDN and database integration require a running production-like stack; performance and vendor-parity claims are not asserted.
+
+## [Unreleased] — 2026-11-06 — Standard legal and support layout
+
+### Changed
+
+- Standardize Privacy, Terms, Refund, Risk Disclaimer, Cookie Policy and Contact with one marketing document component: shared reading width, responsive heading scale, Inter typography, prose spacing, accessible links and current-page navigation.
+- Replace Privacy/Terms implementation placeholders with an explicit pending-publication status and support link. Preserve existing page-update dates and published Refund/Disclaimer body wording; align placeholder SEO descriptions with their actual status.
+- Bring cookie controls, cards and tables into the same marketing token system while retaining language selection and consent receipt actions.
 
 ### Fixed
 
-- Retain the credential proof's test accounts and linked audit/email evidence in its isolated, stopped PostgreSQL cluster. Removing the accounts at the end of the proof violated the existing `email_logs_user_id_fkey` retention constraint; the schema and all 140 assertions remain unchanged.
+- Mount the existing consent preferences dialog on Cookie Policy so Cookie Settings opens a working dialog. Contain keyboard focus, restore the opener and previous scroll state, and honor live reduced-motion preferences. Refresh the cookie declaration after consent changes and clean up the listener on unmount.
 
 ### Validation
 
-- Independently reran the guarded account-authority wrapper against a new PostgreSQL cluster and owned Redis. The complete integration proof passed in 380.50 seconds, including recipient-bound verification/reset, one-use recovery, MFA, durable authority during real Redis loss, and the subsequent SMTP checks. Both fixture wrappers exited successfully; logs are retained at `/private/tmp/revolution-pending-files-review.log`.
-- Reviewed the separate six-process/48-check restart report and the progress notes. This does not establish completion of the pending combined frontend/browser proof.
+- Twelve new legal/support browser checks pass, including typography consistency, navigation/history, enlarged text, modal accessibility/focus, language switching and receipt download. Before/after measurements and captures are retained in [the audit](docs/audits/2026-11-06-legal-support/REPORT.md).
+- Privacy and Terms remain pending approved final policy content; this change does not create legal policies or claim compliance certification.
+
+## [Unreleased] — 2026-11-05 — Public marketing audit and repairs
+
+### Fixed
+
+- Render each indicator detail from its actual catalog entry; remove unrelated product downloads and unsupported zero-price metadata. Replace the foreign placeholder tutorial list with the approved public-video catalog.
+- Fetch public blog posts through the runtime backend without visitor credentials. Distinguish an outage from an empty library, validate responses, bound requests, and keep pagination/history synchronized through route loads.
+- Repair narrow and enlarged-text clipping across marketing headings, course grids/instructor cards, room heroes, mentorship and mission sections. Keep the calculator chart tabs scrollable and keyboard accessible; improve measured text/CTA contrast while preserving brand decoration.
+- Honor reduced motion across CSS, canvas, Svelte transitions and scoped GSAP contexts; cancel async setup and clean up route animations/timers. Keep Home headings readable in SSR and provide an automatic-slide Pause toggle.
+- Correct nested landmarks, duplicated breadcrumbs, the stock-region filter label, scanner-list roles and decorative chart focus. Contain About decoration and keep its illustrative ticker below navigation; repair the Swings billing selector and announce its selected state.
+- Use the confirmed support email for both support and sales and shared support defaults. Direct anonymous class visitors to sign in for protected downloads; parse the member API's nested downloads correctly. Permit only the existing class media origins, show recording failure/retry, and remove mismatched VideoObject URLs/dates. Replace failing remote noise textures with the existing local asset.
+- Allow the exact font preload and Cloudflare collection hosts required by configured integrations.
+
+### Validation and operations
+
+- Retain [the 56-route audit](docs/audits/2026-11-05-all-marketing/REPORT.md), reproducible browser scripts, failing baseline regressions, selected before/after captures and a trace. Remove redundant generated captures and duplicate animation/content code; preserve components still used by dashboards.
+- Validate empty, published and unavailable states using an owned loopback-only Rust API and disposable PostgreSQL fixture. The configured class-recording host still denies some existing files with HTTP 403; the page reports this explicitly. Replacement authorized media is an external content requirement.
+- Final command results and Git delivery are recorded in the audit report; test thresholds and security/entitlement gates are unchanged.
 
 ## [Unreleased] — 2026-11-03 — Admin console-error audit: layout, scroll, shortcuts, baseline DB
 

@@ -753,7 +753,7 @@
 
 	.modules-grid {
 		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+		grid-template-columns: repeat(auto-fit, minmax(min(100%, 350px), 1fr));
 		gap: 2rem;
 	}
 
@@ -1372,5 +1372,21 @@
 		.feature-card:hover {
 			transform: none;
 		}
+	}
+
+	@media (max-width: 767px) {
+		.instructor-card {
+			flex-direction: column;
+			padding: 1.5rem;
+			text-align: center;
+		}
+		.instructor-avatar {
+			margin-inline: auto;
+			width: 120px;
+			height: 120px;
+		}
+	}
+	.instructor-content {
+		min-width: 0;
 	}
 </style>

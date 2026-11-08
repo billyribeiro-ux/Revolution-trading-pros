@@ -1,9 +1,21 @@
 <script lang="ts">
+	import { recordingStatus } from '#lib/utils/recording-status.js';
+	import { authStore } from '#lib/stores/auth.svelte.js';
 	import { onMount } from 'svelte';
-	import DashboardBreadcrumbs from '#lib/components/dashboard/DashboardBreadcrumbs.svelte';
 	import HaveQuestionsSection from '#lib/components/sections/HaveQuestionsSection.svelte';
 	import ClassDownloads from '#lib/components/ClassDownloads.svelte';
 
+	let videoUnavailable = $state(false);
+	const recording = recordingStatus((value) => {
+		videoUnavailable = value;
+	});
+	function retryVideo() {
+		const video = document.getElementById('quickstart-recording');
+		if (video instanceof HTMLVideoElement) {
+			videoUnavailable = false;
+			video.load();
+		}
+	}
 	onMount(() => {
 		if (
 			typeof window !== 'undefined' &&
@@ -34,7 +46,6 @@
 </script>
 
 <!-- Breadcrumbs -->
-<DashboardBreadcrumbs />
 
 <!-- WordPress Wrapper Structure -->
 <div id="page" class="hfeed site grid-parent">
@@ -73,7 +84,9 @@
 							</div>
 							<div id="quickstart-to-precision-trading" class="class-video-player"></div>
 							<video
-								id="https://simpler-options.s3.amazonaws.com/Moxie/MoxieQuickstart_A1.mp4"
+								{@attach recording}
+								id="quickstart-recording"
+								preload="metadata"
 								controls
 								width="100%"
 								poster=""
@@ -86,6 +99,13 @@
 								/>
 								Your browser does not support the video tag.
 							</video>
+							{#if videoUnavailable}<p role="status" class="recording-error">
+									This recording is temporarily unavailable. <button
+										type="button"
+										onclick={retryVideo}>Retry recording</button
+									>
+									or <a href="/contact">contact support</a>.
+								</p>{/if}
 						</div>
 					</div>
 				</div>
@@ -96,11 +116,16 @@
 		<section class="class-section" id="downloads-section">
 			<div class="section-inner">
 				<div id="downloads-box">
-					<ClassDownloads
-						courseSlug="quickstart-precision-trading-c"
-						title="Class Downloads"
-						maxHeight="400px"
-					/>
+					{#if authStore.isAuthenticated}<ClassDownloads
+							courseSlug="quickstart-precision-trading-c"
+							title="Class Downloads"
+							maxHeight="400px"
+						/>{:else}<h2 class="downloads-heading">Class Downloads</h2>
+						<p class="downloads-access">
+							<a href="/login?redirect=/classes/quickstart-precision-trading-c"
+								>Sign in to access your class downloads</a
+							>.
+						</p>{/if}
 				</div>
 			</div>
 		</section>
@@ -108,11 +133,7 @@
 </div>
 
 <!-- Have Questions Section -->
-<HaveQuestionsSection
-	email="support@revolutiontradingpros.com"
-	phone="8002668659"
-	phoneDisplay="(800) 266-8659"
-/>
+<HaveQuestionsSection email="support@revolutiontradingpros.com" />
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -424,5 +445,28 @@
 		.class-video-container {
 			border-width: 2px;
 		}
+	}
+	.recording-error {
+		padding: 1rem;
+		color: #fff;
+		background: #111827;
+	}
+	.recording-error a,
+	.recording-error button {
+		color: #93c5fd;
+		text-decoration: underline;
+	}
+	.downloads-access {
+		color: #334155;
+	}
+	.downloads-access a {
+		color: #075985;
+		text-decoration: underline;
+	}
+	.downloads-heading {
+		color: #334155;
+		font-size: 1.5rem;
+		font-weight: 700;
+		margin-bottom: 1rem;
 	}
 </style>

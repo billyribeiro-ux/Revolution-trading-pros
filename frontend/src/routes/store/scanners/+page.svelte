@@ -49,7 +49,7 @@
 		<!-- Scanners Grid - Semantic Product Cards -->
 		<div class="scanners-grid" role="list">
 			{#each scanners as scanner, idx (scanner.id)}
-				<article
+				<div
 					class="scanner-card"
 					role="listitem"
 					itemscope
@@ -72,7 +72,10 @@
 
 					<div class="scanner-content">
 						<h2 itemprop="name">
-							<a href="/store/scanners/{scanner.slug}" style="color: inherit; text-decoration: none;">
+							<a
+								href="/store/scanners/{scanner.slug}"
+								style="color: inherit; text-decoration: none;"
+							>
 								{scanner.name}
 							</a>
 						</h2>
@@ -109,7 +112,7 @@
 							</a>
 						</div>
 					</div>
-				</article>
+				</div>
 			{/each}
 		</div>
 	</div>

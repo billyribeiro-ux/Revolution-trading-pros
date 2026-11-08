@@ -1,0 +1,425 @@
+{
+	"origin": "http://127.0.0.1:4185",
+	"label": "class-final",
+	"routes": [
+		{
+			"path": "/classes/tax-loss-harvest-c",
+			"console": [],
+			"exceptions": [],
+			"network": [
+				{
+					"url": "https://cloud-streaming.s3.amazonaws.com/chatrecordings/STWebinars/6941b999d4e2e95d75e7ddfb_Tax_Loss_Harvest_2025_JC_12-31-2025__03.00.276_PM.mp4",
+					"failure": "net::ERR_BLOCKED_BY_ORB"
+				},
+				{
+					"url": "https://cloud-streaming.s3.amazonaws.com/chatrecordings/STWebinars/6941b999d4e2e95d75e7ddfb_Tax_Loss_Harvest_2025_JC_12-31-2025__09.23.835_AM.mp4",
+					"failure": "net::ERR_BLOCKED_BY_ORB"
+				},
+				{
+					"url": "https://cloud-streaming.s3.amazonaws.com/chatrecordings/STWebinars/6941b999d4e2e95d75e7ddfb_Tax_Loss_Harvest_2025_Taylor_Horton_12-31-2025__12.30.925_PM.mp4",
+					"failure": "net::ERR_BLOCKED_BY_ORB"
+				},
+				{
+					"url": "https://cloud-streaming.s3.amazonaws.com/chatrecordings/STWebinars/6941b999d4e2e95d75e7ddfb_Tax_Loss_Harvest_2025_JC_12-18-2025__04.02.148_PM.mp4",
+					"failure": "net::ERR_BLOCKED_BY_ORB"
+				},
+				{
+					"url": "https://cloud-streaming.s3.amazonaws.com/chatrecordings/STWebinars/6941b999d4e2e95d75e7ddfb_Tax_Loss_Harvest_2025_HG_12-31-2025__02.00.196_PM.mp4",
+					"failure": "net::ERR_BLOCKED_BY_ORB"
+				},
+				{
+					"url": "https://cloud-streaming.s3.amazonaws.com/chatrecordings/STWebinars/6941b999d4e2e95d75e7ddfb_Tax_Loss_Harvest_2025_JC_12-31-2025__03.00.276_PM.mp4",
+					"failure": "net::ERR_BLOCKED_BY_ORB"
+				},
+				{
+					"url": "https://cloud-streaming.s3.amazonaws.com/chatrecordings/STWebinars/6941b999d4e2e95d75e7ddfb_Tax_Loss_Harvest_2025_JC_12-18-2025__04.02.148_PM.mp4",
+					"failure": "net::ERR_BLOCKED_BY_ORB"
+				},
+				{
+					"url": "https://cloud-streaming.s3.amazonaws.com/chatrecordings/STWebinars/6941b999d4e2e95d75e7ddfb_Tax_Loss_Harvest_2025_HG_12-31-2025__02.00.196_PM.mp4",
+					"failure": "net::ERR_BLOCKED_BY_ORB"
+				},
+				{
+					"url": "https://cloud-streaming.s3.amazonaws.com/chatrecordings/STWebinars/6941b999d4e2e95d75e7ddfb_Tax_Loss_Harvest_2025_Taylor_Horton_12-31-2025__12.30.925_PM.mp4",
+					"failure": "net::ERR_BLOCKED_BY_ORB"
+				},
+				{
+					"url": "https://cloud-streaming.s3.amazonaws.com/chatrecordings/STWebinars/6941b999d4e2e95d75e7ddfb_Tax_Loss_Harvest_2025_JC_12-31-2025__09.23.835_AM.mp4",
+					"failure": "net::ERR_BLOCKED_BY_ORB"
+				},
+				{
+					"url": "https://cloud-streaming.s3.amazonaws.com/chatrecordings/STWebinars/6941b999d4e2e95d75e7ddfb_Tax_Loss_Harvest_2025_JC_12-31-2025__03.00.276_PM.mp4",
+					"failure": "net::ERR_BLOCKED_BY_ORB"
+				},
+				{
+					"url": "https://cloud-streaming.s3.amazonaws.com/chatrecordings/STWebinars/6941b999d4e2e95d75e7ddfb_Tax_Loss_Harvest_2025_JC_12-18-2025__04.02.148_PM.mp4",
+					"failure": "net::ERR_BLOCKED_BY_ORB"
+				},
+				{
+					"url": "https://cloud-streaming.s3.amazonaws.com/chatrecordings/STWebinars/6941b999d4e2e95d75e7ddfb_Tax_Loss_Harvest_2025_HG_12-31-2025__02.00.196_PM.mp4",
+					"failure": "net::ERR_BLOCKED_BY_ORB"
+				},
+				{
+					"url": "https://cloud-streaming.s3.amazonaws.com/chatrecordings/STWebinars/6941b999d4e2e95d75e7ddfb_Tax_Loss_Harvest_2025_JC_12-31-2025__09.23.835_AM.mp4",
+					"failure": "net::ERR_BLOCKED_BY_ORB"
+				},
+				{
+					"url": "https://cloud-streaming.s3.amazonaws.com/chatrecordings/STWebinars/6941b999d4e2e95d75e7ddfb_Tax_Loss_Harvest_2025_Taylor_Horton_12-31-2025__12.30.925_PM.mp4",
+					"failure": "net::ERR_BLOCKED_BY_ORB"
+				},
+				{
+					"url": "https://cloud-streaming.s3.amazonaws.com/chatrecordings/STWebinars/6941b999d4e2e95d75e7ddfb_Tax_Loss_Harvest_2025_JC_12-31-2025__09.23.835_AM.mp4",
+					"failure": "net::ERR_BLOCKED_BY_ORB"
+				},
+				{
+					"url": "https://cloud-streaming.s3.amazonaws.com/chatrecordings/STWebinars/6941b999d4e2e95d75e7ddfb_Tax_Loss_Harvest_2025_JC_12-31-2025__03.00.276_PM.mp4",
+					"failure": "net::ERR_BLOCKED_BY_ORB"
+				},
+				{
+					"url": "https://cloud-streaming.s3.amazonaws.com/chatrecordings/STWebinars/6941b999d4e2e95d75e7ddfb_Tax_Loss_Harvest_2025_JC_12-18-2025__04.02.148_PM.mp4",
+					"failure": "net::ERR_BLOCKED_BY_ORB"
+				},
+				{
+					"url": "https://cloud-streaming.s3.amazonaws.com/chatrecordings/STWebinars/6941b999d4e2e95d75e7ddfb_Tax_Loss_Harvest_2025_HG_12-31-2025__02.00.196_PM.mp4",
+					"failure": "net::ERR_BLOCKED_BY_ORB"
+				}
+			],
+			"viewports": [
+				{
+					"width": 320,
+					"viewport": 320,
+					"documentWidth": 320,
+					"problems": []
+				},
+				{
+					"width": 390,
+					"viewport": 390,
+					"documentWidth": 382,
+					"problems": []
+				},
+				{
+					"width": 639,
+					"viewport": 639,
+					"documentWidth": 631,
+					"problems": []
+				},
+				{
+					"width": 640,
+					"viewport": 640,
+					"documentWidth": 632,
+					"problems": []
+				},
+				{
+					"width": 767,
+					"viewport": 767,
+					"documentWidth": 759,
+					"problems": []
+				},
+				{
+					"width": 768,
+					"viewport": 768,
+					"documentWidth": 760,
+					"problems": []
+				},
+				{
+					"width": 1023,
+					"viewport": 1023,
+					"documentWidth": 1015,
+					"problems": []
+				},
+				{
+					"width": 1024,
+					"viewport": 1024,
+					"documentWidth": 1016,
+					"problems": []
+				},
+				{
+					"width": 1151,
+					"viewport": 1151,
+					"documentWidth": 1143,
+					"problems": []
+				},
+				{
+					"width": 1152,
+					"viewport": 1152,
+					"documentWidth": 1144,
+					"problems": []
+				},
+				{
+					"width": 1279,
+					"viewport": 1279,
+					"documentWidth": 1271,
+					"problems": []
+				},
+				{
+					"width": 1280,
+					"viewport": 1280,
+					"documentWidth": 1272,
+					"problems": []
+				},
+				{
+					"width": 1439,
+					"viewport": 1439,
+					"documentWidth": 1431,
+					"problems": []
+				},
+				{
+					"width": 1440,
+					"viewport": 1440,
+					"documentWidth": 1432,
+					"problems": []
+				},
+				{
+					"width": 1535,
+					"viewport": 1535,
+					"documentWidth": 1527,
+					"problems": []
+				},
+				{
+					"width": 1536,
+					"viewport": 1536,
+					"documentWidth": 1528,
+					"problems": []
+				},
+				{
+					"width": 1920,
+					"viewport": 1920,
+					"documentWidth": 1912,
+					"problems": []
+				}
+			],
+			"controls": [],
+			"navigation": ["/", "/classes/tax-loss-harvest-c", "/", "/classes/tax-loss-harvest-c"],
+			"status": 200,
+			"destination": "/classes/tax-loss-harvest-c",
+			"title": "Tax Loss Harvest Strategy Class | Revolution Trading Pros",
+			"h1": ["Tax Loss Harvest"],
+			"mainCount": 1,
+			"links": [
+				"#main-content",
+				"/",
+				"/mentorship",
+				"/our-mission",
+				"/about",
+				"/blog",
+				"/pricing",
+				"/login",
+				"/classes",
+				"/contact",
+				"/login?redirect=/classes/tax-loss-harvest-c",
+				"https://facebook.com/revolutiontradingpros",
+				"https://twitter.com/revtradingpros",
+				"https://instagram.com/revolutiontradingpros",
+				"https://youtube.com/@RevolutionTradingPros",
+				"/live-trading-rooms",
+				"/alerts",
+				"/courses",
+				"/indicators",
+				"/store/scanners",
+				"/tools/options-calculator",
+				"/team",
+				"/resources",
+				"/tutorials",
+				"/careers",
+				"/terms",
+				"/privacy",
+				"/cookie-policy",
+				"/disclaimer",
+				"/refund"
+			],
+			"forms": [],
+			"motion": [],
+			"axe": [],
+			"largeText": {
+				"viewport": 390,
+				"documentWidth": 382,
+				"problems": []
+			}
+		},
+		{
+			"path": "/classes/quickstart-precision-trading-c",
+			"console": [],
+			"exceptions": [],
+			"network": [
+				{
+					"url": "https://simpler-options.s3.amazonaws.com/Moxie/MoxieQuickstart_A1.mp4",
+					"failure": "net::ERR_ABORTED"
+				},
+				{
+					"url": "https://simpler-options.s3.amazonaws.com/Moxie/MoxieQuickstart_A1.mp4",
+					"failure": "net::ERR_ABORTED"
+				},
+				{
+					"url": "https://simpler-options.s3.amazonaws.com/Moxie/MoxieQuickstart_A1.mp4",
+					"failure": "net::ERR_ABORTED"
+				},
+				{
+					"url": "https://simpler-options.s3.amazonaws.com/Moxie/MoxieQuickstart_A1.mp4",
+					"failure": "net::ERR_ABORTED"
+				},
+				{
+					"url": "https://simpler-options.s3.amazonaws.com/Moxie/MoxieQuickstart_A1.mp4",
+					"failure": "net::ERR_ABORTED"
+				}
+			],
+			"viewports": [
+				{
+					"width": 320,
+					"viewport": 320,
+					"documentWidth": 320,
+					"problems": []
+				},
+				{
+					"width": 390,
+					"viewport": 390,
+					"documentWidth": 382,
+					"problems": []
+				},
+				{
+					"width": 639,
+					"viewport": 639,
+					"documentWidth": 631,
+					"problems": []
+				},
+				{
+					"width": 640,
+					"viewport": 640,
+					"documentWidth": 632,
+					"problems": []
+				},
+				{
+					"width": 767,
+					"viewport": 767,
+					"documentWidth": 759,
+					"problems": []
+				},
+				{
+					"width": 768,
+					"viewport": 768,
+					"documentWidth": 760,
+					"problems": []
+				},
+				{
+					"width": 1023,
+					"viewport": 1023,
+					"documentWidth": 1015,
+					"problems": []
+				},
+				{
+					"width": 1024,
+					"viewport": 1024,
+					"documentWidth": 1016,
+					"problems": []
+				},
+				{
+					"width": 1151,
+					"viewport": 1151,
+					"documentWidth": 1143,
+					"problems": []
+				},
+				{
+					"width": 1152,
+					"viewport": 1152,
+					"documentWidth": 1144,
+					"problems": []
+				},
+				{
+					"width": 1279,
+					"viewport": 1279,
+					"documentWidth": 1271,
+					"problems": []
+				},
+				{
+					"width": 1280,
+					"viewport": 1280,
+					"documentWidth": 1272,
+					"problems": []
+				},
+				{
+					"width": 1439,
+					"viewport": 1439,
+					"documentWidth": 1431,
+					"problems": []
+				},
+				{
+					"width": 1440,
+					"viewport": 1440,
+					"documentWidth": 1432,
+					"problems": []
+				},
+				{
+					"width": 1535,
+					"viewport": 1535,
+					"documentWidth": 1527,
+					"problems": []
+				},
+				{
+					"width": 1536,
+					"viewport": 1536,
+					"documentWidth": 1528,
+					"problems": []
+				},
+				{
+					"width": 1920,
+					"viewport": 1920,
+					"documentWidth": 1912,
+					"problems": []
+				}
+			],
+			"controls": [],
+			"navigation": [
+				"/",
+				"/classes/quickstart-precision-trading-c",
+				"/",
+				"/classes/quickstart-precision-trading-c"
+			],
+			"status": 200,
+			"destination": "/classes/quickstart-precision-trading-c",
+			"title": "Quickstart To Precision Trading | Revolution Trading Pros",
+			"h1": ["Quickstart To Precision Trading"],
+			"mainCount": 1,
+			"links": [
+				"#main-content",
+				"/",
+				"/mentorship",
+				"/our-mission",
+				"/about",
+				"/blog",
+				"/pricing",
+				"/login",
+				"/classes",
+				"/login?redirect=/classes/quickstart-precision-trading-c",
+				"mailto:support@revolutiontradingpros.com",
+				"https://facebook.com/revolutiontradingpros",
+				"https://twitter.com/revtradingpros",
+				"https://instagram.com/revolutiontradingpros",
+				"https://youtube.com/@RevolutionTradingPros",
+				"/live-trading-rooms",
+				"/alerts",
+				"/courses",
+				"/indicators",
+				"/store/scanners",
+				"/tools/options-calculator",
+				"/team",
+				"/resources",
+				"/tutorials",
+				"/contact",
+				"/careers",
+				"/terms",
+				"/privacy",
+				"/cookie-policy",
+				"/disclaimer",
+				"/refund"
+			],
+			"forms": [],
+			"motion": [],
+			"axe": [],
+			"largeText": {
+				"viewport": 390,
+				"documentWidth": 382,
+				"problems": []
+			}
+		}
+	],
+	"discovered": []
+}

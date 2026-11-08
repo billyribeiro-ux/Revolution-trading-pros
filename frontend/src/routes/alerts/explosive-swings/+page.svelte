@@ -1,8 +1,9 @@
 <script lang="ts">
 	import type { Attachment } from 'svelte/attachments';
-	import { slide } from 'svelte/transition';
+	import { motionSlide as slide } from '#lib/animations/motion.js';
 	import { cubicOut } from 'svelte/easing';
 	import { onMount } from 'svelte';
+	import { prefersReducedMotion } from 'svelte/motion';
 	import { browser } from '$app/env';
 	import PricingSection from './_sections/PricingSection.svelte';
 	import { faqData } from './faq-data';
@@ -31,7 +32,7 @@
 	onMount(() => {
 		if (!browser) return;
 
-		let ctx: ReturnType<typeof import('gsap').gsap.context> | null = null;
+		let media: ReturnType<typeof import('gsap').gsap.matchMedia> | null = null;
 		let cancelled = false;
 
 		void (async () => {
@@ -45,49 +46,48 @@
 
 				gsap.registerPlugin(ScrollTrigger);
 
-				// Respect reduced motion preference
-				const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+				// Revert transforms/triggers when the preference changes or the route unmounts.
+				media = gsap.matchMedia();
+				media.add(
+					'(prefers-reduced-motion: no-preference)',
+					(context) => {
+						// Transform-only entrance for elements NOT yet in viewport (preserves SSR text visibility & contrast)
+						const elements = root.querySelectorAll('[data-gsap]');
+						elements.forEach((el) => {
+							const rect = el.getBoundingClientRect();
+							const isInViewport = rect.top < window.innerHeight * 0.85;
+							if (!isInViewport) {
+								gsap.set(el, { y: 24 });
+							}
+						});
 
-				if (prefersReducedMotion) {
-					gsap.set(root.querySelectorAll('[data-gsap]'), { opacity: 1, y: 0 });
-					return;
-				}
+						// Create ScrollTrigger batch for optimal performance
+						ScrollTrigger.batch(elements, {
+							onEnter: (batch) => {
+								if (cancelled) return;
 
-				// Use gsap.context() for scoped cleanup - prevents global ScrollTrigger destruction
-				ctx = gsap.context(() => {
-					// Transform-only entrance for elements NOT yet in viewport (preserves SSR text visibility & contrast)
-					const elements = root.querySelectorAll('[data-gsap]');
-					elements.forEach((el) => {
-						const rect = el.getBoundingClientRect();
-						const isInViewport = rect.top < window.innerHeight * 0.85;
-						if (!isInViewport) {
-							gsap.set(el, { y: 24 });
-						}
-					});
+								context.add(() =>
+									gsap.to(batch, {
+										y: 0,
+										duration: 0.8,
+										ease: 'power3.out',
+										stagger: 0.1,
+										overwrite: true
+									})
+								);
+							},
+							start: 'top 85%',
+							once: true
+						});
 
-					// Create ScrollTrigger batch for optimal performance
-					ScrollTrigger.batch('[data-gsap]', {
-						onEnter: (batch) => {
-							if (cancelled) return;
-
-							gsap.to(batch, {
-								y: 0,
-								duration: 0.8,
-								ease: 'power3.out',
-								stagger: 0.1,
-								overwrite: true
-							});
-						},
-						start: 'top 85%',
-						once: true
-					});
-
-					ScrollTrigger.refresh();
-				}, root);
+						ScrollTrigger.refresh();
+					},
+					root
+				);
 
 				if (cancelled) {
-					ctx.revert();
-					ctx = null;
+					media.revert();
+					media = null;
 				}
 			} catch (error) {
 				if (!cancelled) {
@@ -98,8 +98,8 @@
 
 		return () => {
 			cancelled = true;
-			ctx?.revert();
-			ctx = null;
+			media?.revert();
+			media = null;
 		};
 	});
 
@@ -684,7 +684,13 @@
 							>
 						</button>
 						{#if openFaq === i}
-							<div transition:slide={{ duration: 300, easing: cubicOut }} class="faq__panel">
+							<div
+								transition:slide={{
+									duration: prefersReducedMotion.current ? 0 : 300,
+									easing: cubicOut
+								}}
+								class="faq__panel"
+							>
 								{item.a}
 							</div>
 						{/if}
@@ -744,6 +750,7 @@
 		--es-red-mid: #ef4444; /* red-500 — × bullets */
 
 		width: 100%;
+		overflow-wrap: anywhere;
 		background: var(--es-bg);
 		color: var(--rtp-text-soft);
 		font-family: var(--rtp-font-sans);
@@ -808,6 +815,7 @@
 	}
 
 	.hero__grid {
+		width: 100%;
 		position: relative;
 		z-index: 10;
 		max-width: var(--rtp-content-max);
@@ -825,7 +833,7 @@
 	@media (min-width: 1024px) {
 		.hero__grid {
 			padding-inline: 2rem;
-			grid-template-columns: 1fr 1fr;
+			grid-template-columns: repeat(2, minmax(0, 1fr));
 		}
 	}
 
@@ -2044,5 +2052,14 @@
 		height: 0.25rem;
 		background: #6ee7b7; /* emerald-300 */
 		border-radius: 50%;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.es :global(*),
+		.es :global(*::before),
+		.es :global(*::after) {
+			animation: none;
+			transition: none;
+		}
 	}
 </style>

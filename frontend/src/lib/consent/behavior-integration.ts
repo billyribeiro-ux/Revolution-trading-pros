@@ -21,6 +21,8 @@ import type { BehaviorEventType } from '#lib/behavior/types.js';
  */
 let trackerInitialized = false;
 let trackerEnabled = false;
+let consentGeneration = 0;
+let enabling: Promise<void> | null = null;
 
 /**
  * Reference to the behavior tracker instance.
@@ -48,18 +50,16 @@ export async function initConsentAwareBehaviorTracking(): Promise<void> {
 	}
 
 	trackerInitialized = true;
-
-	// Get initial consent state
-	const consent = get(consentStore);
-
-	// Only start tracking if analytics consent is granted
-	if (consent.analytics) {
-		await enableTracking();
-		logger.debug('[BehaviorIntegration] Tracking initialized (consent granted)');
+	try {
+		localStorage.removeItem('behavior_visitor_id');
+	} catch {
+		/* Storage may be unavailable. */
 	}
 
-	// Subscribe to consent changes
-	consentUnsubscribe = consentStore.subscribe(handleConsentChange);
+	// Subscription immediately receives the current state and every change.
+	consentUnsubscribe = consentStore.subscribe((consent) => {
+		void handleConsentChange(consent);
+	});
 }
 
 /**
@@ -71,7 +71,13 @@ async function handleConsentChange(consent: ConsentState): Promise<void> {
 	if (consent.analytics && !trackerEnabled) {
 		// Consent granted - enable tracking
 		await enableTracking();
-	} else if (!consent.analytics && trackerEnabled) {
+	} else if (!consent.analytics) {
+		consentGeneration++;
+		try {
+			localStorage.removeItem('behavior_failed_batches');
+		} catch {
+			/* Storage may be unavailable. */
+		}
 		// Consent revoked - disable tracking
 		disableTracking();
 	}
@@ -82,41 +88,61 @@ async function handleConsentChange(consent: ConsentState): Promise<void> {
  */
 async function enableTracking(): Promise<void> {
 	if (!browser || trackerEnabled) return;
+	if (enabling) return enabling;
 
-	try {
-		// Dynamically import the behavior tracker
-		const { BehaviorTracker } = await import('#lib/behavior/tracker.js');
+	const generation = consentGeneration;
+	enabling = (async () => {
+		try {
+			// Dynamically import the behavior tracker
+			const { BehaviorTracker } = await import('#lib/behavior/tracker.js');
+			if (generation !== consentGeneration || !get(consentStore).analytics) return;
 
-		behaviorTracker = new BehaviorTracker({
-			apiEndpoint: '/api/behavior/events',
-			trackScrollDepth: true,
-			trackRageClicks: true,
-			trackHoverIntent: true,
-			trackFormBehavior: true,
-			trackIdleTime: true,
-			sampleRate: 1.0,
-			// Enhanced privacy settings
-			maskPII: true,
-			respectDNT: false, // We handle DNT via consent
-			anonymizeIP: true
-		});
+			behaviorTracker = new BehaviorTracker({
+				apiEndpoint: '/api/behavior/events',
+				trackScrollDepth: true,
+				trackRageClicks: true,
+				trackHoverIntent: false,
+				trackFormBehavior: false,
+				trackIdleTime: false,
+				sampleRate: 1.0,
+				// Enhanced privacy settings
+				maskPII: true,
+				respectDNT: true,
+				anonymizeIP: true
+			});
+			if (!behaviorTracker.isActive()) {
+				behaviorTracker = null;
+				return;
+			}
 
-		// Expose for consent analytics integration
-		(window as Window & { __behaviorTracker?: BehaviorTracker | null }).__behaviorTracker =
-			behaviorTracker;
+			// Expose for consent analytics integration
+			(window as Window & { __behaviorTracker?: BehaviorTracker | null }).__behaviorTracker =
+				behaviorTracker;
 
-		trackerEnabled = true;
-		logger.debug('[BehaviorIntegration] Tracking enabled');
-	} catch (error) {
-		logger.error('[BehaviorIntegration] Failed to enable tracking', { error });
-	}
+			trackerEnabled = true;
+			logger.debug('[BehaviorIntegration] Tracking enabled');
+		} catch (error) {
+			logger.error('[BehaviorIntegration] Failed to enable tracking', { error });
+		} finally {
+			enabling = null;
+			if (
+				generation !== consentGeneration &&
+				trackerInitialized &&
+				get(consentStore).analytics &&
+				!trackerEnabled
+			) {
+				void enableTracking();
+			}
+		}
+	})();
+	return enabling;
 }
 
 /**
  * Disable the behavior tracker.
  */
 function disableTracking(): void {
-	if (!browser || !trackerEnabled) return;
+	if (!browser) return;
 
 	try {
 		if (behaviorTracker && typeof behaviorTracker.destroy === 'function') {
@@ -141,7 +167,7 @@ export function setBehaviorUserId(userId: string | null): void {
 
 	if (userId && typeof behaviorTracker.setUserId === 'function') {
 		behaviorTracker.setUserId(userId);
-		logger.debug('[BehaviorIntegration] Set user ID');
+		logger.debug('[BehaviorIntegration] Identity omitted from behavior telemetry');
 	}
 }
 
@@ -187,6 +213,7 @@ export function getBehaviorTracker(): BehaviorTracker | null {
  * Cleanup - call on unmount.
  */
 export function cleanupBehaviorIntegration(): void {
+	consentGeneration++;
 	if (consentUnsubscribe) {
 		consentUnsubscribe();
 		consentUnsubscribe = null;

@@ -54,7 +54,9 @@
 								clip-rule="evenodd"
 							/>
 						</svg>
-						<a href="/guides/swing-entry" class="resource-card__link">Swing Trading Entry Timing Guide</a>
+						<a href="/guides/swing-entry" class="resource-card__link"
+							>Swing Trading Entry Timing Guide</a
+						>
 					</li>
 					<li class="resource-card__item">
 						<svg
@@ -69,7 +71,9 @@
 								clip-rule="evenodd"
 							/>
 						</svg>
-						<a href="/guides/exit-strategies" class="resource-card__link">Trade Exit Strategies & Profit Taking</a>
+						<a href="/guides/exit-strategies" class="resource-card__link"
+							>Trade Exit Strategies & Profit Taking</a
+						>
 					</li>
 					<li class="resource-card__item">
 						<svg
@@ -84,7 +88,9 @@
 								clip-rule="evenodd"
 							/>
 						</svg>
-						<a href="/guides/position-sizing" class="resource-card__link">Position Sizing & Capital Allocation Guide</a>
+						<a href="/guides/position-sizing" class="resource-card__link"
+							>Position Sizing & Capital Allocation Guide</a
+						>
 					</li>
 					<li class="resource-card__item">
 						<svg
@@ -99,7 +105,9 @@
 								clip-rule="evenodd"
 							/>
 						</svg>
-						<a href="/guides/risk-management" class="resource-card__link">Risk Management for Active Traders</a>
+						<a href="/guides/risk-management" class="resource-card__link"
+							>Risk Management for Active Traders</a
+						>
 					</li>
 				</ul>
 			</div>
@@ -137,7 +145,9 @@
 								clip-rule="evenodd"
 							/>
 						</svg>
-						<a href="/guides/position-sizing" class="resource-card__link">Position Size & Risk Calculator Guide</a>
+						<a href="/guides/position-sizing" class="resource-card__link"
+							>Position Size & Risk Calculator Guide</a
+						>
 					</li>
 					<li class="resource-card__item">
 						<svg
@@ -152,7 +162,9 @@
 								clip-rule="evenodd"
 							/>
 						</svg>
-						<a href="/store/scanners" class="resource-card__link">Market Scanners & Screening Tools</a>
+						<a href="/store/scanners" class="resource-card__link"
+							>Market Scanners & Screening Tools</a
+						>
 					</li>
 					<li class="resource-card__item">
 						<svg
@@ -167,7 +179,9 @@
 								clip-rule="evenodd"
 							/>
 						</svg>
-						<a href="/tools/options-calculator" class="resource-card__link">Black-Scholes Options Profit Calculator</a>
+						<a href="/tools/options-calculator" class="resource-card__link"
+							>Black-Scholes Options Profit Calculator</a
+						>
 					</li>
 					<li class="resource-card__item">
 						<svg
@@ -265,7 +279,9 @@
 								clip-rule="evenodd"
 							/>
 						</svg>
-						<a href="/live-trading-rooms" class="resource-card__link">Live Trade Walkthroughs in Our Rooms</a>
+						<a href="/live-trading-rooms" class="resource-card__link"
+							>Live Trade Walkthroughs in Our Rooms</a
+						>
 					</li>
 				</ul>
 			</div>
@@ -318,7 +334,9 @@
 								clip-rule="evenodd"
 							/>
 						</svg>
-						<a href="/resources/etf-stocks-list" class="resource-card__link">Top ETF & Stocks Watchlist Directory</a>
+						<a href="/resources/etf-stocks-list" class="resource-card__link"
+							>Top ETF & Stocks Watchlist Directory</a
+						>
 					</li>
 					<li class="resource-card__item">
 						<svg
@@ -333,7 +351,9 @@
 								clip-rule="evenodd"
 							/>
 						</svg>
-						<a href="/resources/stock-indexes-list" class="resource-card__link">Major Stock Market Indexes Directory</a>
+						<a href="/resources/stock-indexes-list" class="resource-card__link"
+							>Major Stock Market Indexes Directory</a
+						>
 					</li>
 					<li class="resource-card__item">
 						<svg
@@ -348,7 +368,9 @@
 								clip-rule="evenodd"
 							/>
 						</svg>
-						<a href="/alerts" class="resource-card__link">Real-Time Trade Alerts & Sector Analysis</a>
+						<a href="/alerts" class="resource-card__link"
+							>Real-Time Trade Alerts & Sector Analysis</a
+						>
 					</li>
 				</ul>
 			</div>
@@ -431,7 +453,9 @@
 								clip-rule="evenodd"
 							/>
 						</svg>
-						<a href="/mentorship" class="resource-card__link">1-on-1 Trading Psychology Mentorship</a>
+						<a href="/mentorship" class="resource-card__link"
+							>1-on-1 Trading Psychology Mentorship</a
+						>
 					</li>
 				</ul>
 			</div>
@@ -469,7 +493,9 @@
 								clip-rule="evenodd"
 							/>
 						</svg>
-						<a href="/pricing" class="resource-card__link">Membership Plans & Frequently Asked Questions</a>
+						<a href="/pricing" class="resource-card__link"
+							>Membership Plans & Frequently Asked Questions</a
+						>
 					</li>
 					<li class="resource-card__item">
 						<svg
@@ -484,7 +510,9 @@
 								clip-rule="evenodd"
 							/>
 						</svg>
-						<a href="/disclaimer" class="resource-card__link">Risk Disclosure & Regulatory Disclaimer</a>
+						<a href="/disclaimer" class="resource-card__link"
+							>Risk Disclosure & Regulatory Disclaimer</a
+						>
 					</li>
 					<li class="resource-card__item">
 						<svg
@@ -886,5 +914,8 @@
 		.resources-cta__btn {
 			padding: 1rem 3rem;
 		}
+	}
+	.resources-cta__btn {
+		color: var(--rtp-primary-action);
 	}
 </style>

@@ -1,0 +1,32 @@
+[
+	{
+		"path": "/sitemap.xml",
+		"status": 404,
+		"contentType": "application/json",
+		"errorText": "Public publication not found"
+	},
+	{
+		"path": "/api/seo/public-articles?per_page=1000",
+		"status": 404,
+		"contentType": "text/html;charset=utf-8",
+		"errorText": null
+	},
+	{
+		"path": "/api/seo/public-videos?per_page=1000",
+		"status": 404,
+		"contentType": "text/html;charset=utf-8",
+		"errorText": null
+	},
+	{
+		"path": "/api/seo/sitemaps/news?per_page=1000",
+		"status": 404,
+		"contentType": "text/html;charset=utf-8",
+		"errorText": null
+	},
+	{
+		"path": "/api/seo/sitemaps/video?per_page=1000",
+		"status": 404,
+		"contentType": "text/html;charset=utf-8",
+		"errorText": null
+	}
+]

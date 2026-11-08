@@ -1,0 +1,35 @@
+{
+	"routes": 56,
+	"widths_per_route": 17,
+	"measured_clipping": 0,
+	"axe_violations": 0,
+	"uncaught_exceptions": 0,
+	"reduced_motion_infinite_animations": 0,
+	"browser_tests": {
+		"passed": 145,
+		"seo": 114,
+		"marketing": 31
+	},
+	"root_units": {
+		"passed": 3089,
+		"skipped_existing": 32
+	},
+	"frontend_units": {
+		"passed": 3081,
+		"skipped_existing": 32
+	},
+	"published_fixture_browser_tests": 3,
+	"outage_recovery": {
+		"blogUnavailable": " Posts temporarily unavailable Published posts are temporarily unavailable. Please try again.  Try Again",
+		"tutorialStatus": 503,
+		"recoveredPosts": 20,
+		"recoveredVideo": true,
+		"removedPlaceholderStatus": 404
+	},
+	"rust_fixture": {
+		"build": "passed",
+		"clippy_warnings_as_errors": "passed",
+		"format": "passed"
+	},
+	"remaining_external_requirement": "Tax class host denies existing recording URLs; authorized replacement media required."
+}

@@ -1,0 +1,50 @@
+{
+	"commands": [
+		{
+			"command": "vp check",
+			"exit_code": 0
+		},
+		{
+			"command": "vp test (CI=true)",
+			"exit_code": 0
+		},
+		{
+			"command": "vp build",
+			"exit_code": 0
+		},
+		{
+			"command": "vp pack",
+			"exit_code": 0
+		},
+		{
+			"command": "pnpm --filter revolution-svelte check",
+			"exit_code": 0
+		},
+		{
+			"command": "pnpm --filter revolution-svelte lint",
+			"exit_code": 0
+		},
+		{
+			"command": "pnpm --filter revolution-svelte test:unit",
+			"exit_code": 0
+		},
+		{
+			"command": "pnpm --filter revolution-svelte build",
+			"exit_code": 0
+		},
+		{
+			"command": "FRONTEND_URL=http://127.0.0.1:4174 pnpm test:seo",
+			"exit_code": 1
+		}
+	],
+	"regressions": {
+		"before_failed": 6,
+		"after_passed": 6
+	},
+	"seo": {
+		"full_passed": 112,
+		"full_failed": 2,
+		"targeted_passed": 16
+	},
+	"deployed": false
+}

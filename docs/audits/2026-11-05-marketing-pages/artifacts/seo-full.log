@@ -1,0 +1,180 @@
+$ pnpm --filter revolution-svelte test:seo
+$ FRONTEND_URL=${FRONTEND_URL:-http://127.0.0.1:4173} playwright test tests/seo --project=chromium
+
+Running 114 tests using 4 workers
+
+(node:28382) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:28383) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:28381) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:28384) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓    4 [chromium] › tests/seo/canonical.spec.ts:6:3 › Canonical URL Hygiene & Tracking Param Stripping (URL-01..05) › Canonical on /pricing is absolute HTTPS production origin without trailing slash (431ms)
+  ✓    3 [chromium] › tests/seo/canonical.spec.ts:6:3 › Canonical URL Hygiene & Tracking Param Stripping (URL-01..05) › Canonical on /alerts/explosive-swings is absolute HTTPS production origin without trailing slash (484ms)
+  ✓    2 [chromium] › tests/seo/canonical.spec.ts:6:3 › Canonical URL Hygiene & Tracking Param Stripping (URL-01..05) › Canonical on /about is absolute HTTPS production origin without trailing slash (556ms)
+  ✓    1 [chromium] › tests/seo/canonical.spec.ts:6:3 › Canonical URL Hygiene & Tracking Param Stripping (URL-01..05) › Canonical on / is absolute HTTPS production origin without trailing slash (616ms)
+  ✓    6 [chromium] › tests/seo/canonical.spec.ts:6:3 › Canonical URL Hygiene & Tracking Param Stripping (URL-01..05) › Canonical on /courses/day-trading-masterclass is absolute HTTPS production origin without trailing slash (388ms)
+  ✓    5 [chromium] › tests/seo/canonical.spec.ts:6:3 › Canonical URL Hygiene & Tracking Param Stripping (URL-01..05) › Canonical on /live-trading-rooms/day-trading is absolute HTTPS production origin without trailing slash (468ms)
+  ✓    7 [chromium] › tests/seo/canonical.spec.ts:6:3 › Canonical URL Hygiene & Tracking Param Stripping (URL-01..05) › Canonical on /indicators/rsi is absolute HTTPS production origin without trailing slash (356ms)
+  ✓    8 [chromium] › tests/seo/canonical.spec.ts:6:3 › Canonical URL Hygiene & Tracking Param Stripping (URL-01..05) › Canonical on /authors/billy-ribeiro is absolute HTTPS production origin without trailing slash (328ms)
+  ✓    9 [chromium] › tests/seo/canonical.spec.ts:6:3 › Canonical URL Hygiene & Tracking Param Stripping (URL-01..05) › Canonical on /guides/swing-entry is absolute HTTPS production origin without trailing slash (379ms)
+  ✓   10 [chromium] › tests/seo/canonical.spec.ts:6:3 › Canonical URL Hygiene & Tracking Param Stripping (URL-01..05) › Canonical on /resources/etf-stocks-list is absolute HTTPS production origin without trailing slash (405ms)
+  ✓   12 [chromium] › tests/seo/canonical.spec.ts:6:3 › Canonical URL Hygiene & Tracking Param Stripping (URL-01..05) › Canonical on /classes is absolute HTTPS production origin without trailing slash (426ms)
+  ✓   11 [chromium] › tests/seo/canonical.spec.ts:6:3 › Canonical URL Hygiene & Tracking Param Stripping (URL-01..05) › Canonical on /blog is absolute HTTPS production origin without trailing slash (539ms)
+  ✓   13 [chromium] › tests/seo/canonical.spec.ts:6:3 › Canonical URL Hygiene & Tracking Param Stripping (URL-01..05) › Canonical on /cookie-policy is absolute HTTPS production origin without trailing slash (366ms)
+  ✓   14 [chromium] › tests/seo/canonical.spec.ts:19:2 › Canonical URL Hygiene & Tracking Param Stripping (URL-01..05) › Tracking parameters (utm_source, gclid, fbclid) are stripped from canonical (362ms)
+  ✓   16 [chromium] › tests/seo/cwv-and-images.spec.ts:6:3 › Core Web Vitals (CLS) & Image Hygiene (PERF-01..07) › Image dimensions, alt text, above-fold eager loading & CLS <= 0.1 on /about (1.3s)
+  ✓   15 [chromium] › tests/seo/cwv-and-images.spec.ts:6:3 › Core Web Vitals (CLS) & Image Hygiene (PERF-01..07) › Image dimensions, alt text, above-fold eager loading & CLS <= 0.1 on / (1.4s)
+  ✓   18 [chromium] › tests/seo/cwv-and-images.spec.ts:6:3 › Core Web Vitals (CLS) & Image Hygiene (PERF-01..07) › Image dimensions, alt text, above-fold eager loading & CLS <= 0.1 on /alerts/explosive-swings (1.2s)
+  ✓   17 [chromium] › tests/seo/cwv-and-images.spec.ts:6:3 › Core Web Vitals (CLS) & Image Hygiene (PERF-01..07) › Image dimensions, alt text, above-fold eager loading & CLS <= 0.1 on /pricing (1.3s)
+  ✓   19 [chromium] › tests/seo/cwv-and-images.spec.ts:6:3 › Core Web Vitals (CLS) & Image Hygiene (PERF-01..07) › Image dimensions, alt text, above-fold eager loading & CLS <= 0.1 on /live-trading-rooms/day-trading (1.3s)
+  ✓   20 [chromium] › tests/seo/cwv-and-images.spec.ts:6:3 › Core Web Vitals (CLS) & Image Hygiene (PERF-01..07) › Image dimensions, alt text, above-fold eager loading & CLS <= 0.1 on /courses/day-trading-masterclass (1.2s)
+  ✓   21 [chromium] › tests/seo/cwv-and-images.spec.ts:6:3 › Core Web Vitals (CLS) & Image Hygiene (PERF-01..07) › Image dimensions, alt text, above-fold eager loading & CLS <= 0.1 on /indicators/rsi (1.2s)
+  ✓   22 [chromium] › tests/seo/cwv-and-images.spec.ts:6:3 › Core Web Vitals (CLS) & Image Hygiene (PERF-01..07) › Image dimensions, alt text, above-fold eager loading & CLS <= 0.1 on /authors/billy-ribeiro (1.2s)
+  ✓   23 [chromium] › tests/seo/cwv-and-images.spec.ts:6:3 › Core Web Vitals (CLS) & Image Hygiene (PERF-01..07) › Image dimensions, alt text, above-fold eager loading & CLS <= 0.1 on /guides/swing-entry (1.3s)
+  ✓   25 [chromium] › tests/seo/cwv-and-images.spec.ts:6:3 › Core Web Vitals (CLS) & Image Hygiene (PERF-01..07) › Image dimensions, alt text, above-fold eager loading & CLS <= 0.1 on /blog (1.2s)
+  ✓   24 [chromium] › tests/seo/cwv-and-images.spec.ts:6:3 › Core Web Vitals (CLS) & Image Hygiene (PERF-01..07) › Image dimensions, alt text, above-fold eager loading & CLS <= 0.1 on /resources/etf-stocks-list (1.3s)
+  ✓   26 [chromium] › tests/seo/cwv-and-images.spec.ts:6:3 › Core Web Vitals (CLS) & Image Hygiene (PERF-01..07) › Image dimensions, alt text, above-fold eager loading & CLS <= 0.1 on /classes (1.3s)
+  ✓   30 [chromium] › tests/seo/i18n.spec.ts:6:3 › Internationalization & Document Language (I18N-01..03) › <html lang> and dir attributes on /pricing (376ms)
+  ✓   29 [chromium] › tests/seo/i18n.spec.ts:6:3 › Internationalization & Document Language (I18N-01..03) › <html lang> and dir attributes on /about (515ms)
+  ✓   28 [chromium] › tests/seo/i18n.spec.ts:6:3 › Internationalization & Document Language (I18N-01..03) › <html lang> and dir attributes on / (661ms)
+  ✓   32 [chromium] › tests/seo/i18n.spec.ts:6:3 › Internationalization & Document Language (I18N-01..03) › <html lang> and dir attributes on /live-trading-rooms/day-trading (441ms)
+  ✓   31 [chromium] › tests/seo/i18n.spec.ts:6:3 › Internationalization & Document Language (I18N-01..03) › <html lang> and dir attributes on /alerts/explosive-swings (455ms)
+  ✓   33 [chromium] › tests/seo/i18n.spec.ts:6:3 › Internationalization & Document Language (I18N-01..03) › <html lang> and dir attributes on /courses/day-trading-masterclass (370ms)
+  ✓   27 [chromium] › tests/seo/cwv-and-images.spec.ts:6:3 › Core Web Vitals (CLS) & Image Hygiene (PERF-01..07) › Image dimensions, alt text, above-fold eager loading & CLS <= 0.1 on /cookie-policy (1.3s)
+  ✓   34 [chromium] › tests/seo/i18n.spec.ts:6:3 › Internationalization & Document Language (I18N-01..03) › <html lang> and dir attributes on /indicators/rsi (357ms)
+  ✓   35 [chromium] › tests/seo/i18n.spec.ts:6:3 › Internationalization & Document Language (I18N-01..03) › <html lang> and dir attributes on /authors/billy-ribeiro (358ms)
+  ✓   36 [chromium] › tests/seo/i18n.spec.ts:6:3 › Internationalization & Document Language (I18N-01..03) › <html lang> and dir attributes on /guides/swing-entry (346ms)
+  ✓   37 [chromium] › tests/seo/i18n.spec.ts:6:3 › Internationalization & Document Language (I18N-01..03) › <html lang> and dir attributes on /resources/etf-stocks-list (396ms)
+  ✓   39 [chromium] › tests/seo/i18n.spec.ts:6:3 › Internationalization & Document Language (I18N-01..03) › <html lang> and dir attributes on /classes (379ms)
+  ✓   40 [chromium] › tests/seo/i18n.spec.ts:6:3 › Internationalization & Document Language (I18N-01..03) › <html lang> and dir attributes on /cookie-policy (382ms)
+  ✓   38 [chromium] › tests/seo/i18n.spec.ts:6:3 › Internationalization & Document Language (I18N-01..03) › <html lang> and dir attributes on /blog (442ms)
+  ✓   43 [chromium] › tests/seo/jsonld.spec.ts:20:3 › Structured Data / JSON-LD Validity & Visible Parity (SD-01..15) › JSON-LD validity & visible parity on /pricing (product) (389ms)
+  ✓   44 [chromium] › tests/seo/jsonld.spec.ts:20:3 › Structured Data / JSON-LD Validity & Visible Parity (SD-01..15) › JSON-LD validity & visible parity on /alerts/explosive-swings (product) (431ms)
+  ✓   42 [chromium] › tests/seo/jsonld.spec.ts:20:3 › Structured Data / JSON-LD Validity & Visible Parity (SD-01..15) › JSON-LD validity & visible parity on /about (static) (531ms)
+  ✓   41 [chromium] › tests/seo/jsonld.spec.ts:20:3 › Structured Data / JSON-LD Validity & Visible Parity (SD-01..15) › JSON-LD validity & visible parity on / (home) (638ms)
+  ✓   46 [chromium] › tests/seo/jsonld.spec.ts:20:3 › Structured Data / JSON-LD Validity & Visible Parity (SD-01..15) › JSON-LD validity & visible parity on /courses/day-trading-masterclass (course) (377ms)
+  ✓   47 [chromium] › tests/seo/jsonld.spec.ts:20:3 › Structured Data / JSON-LD Validity & Visible Parity (SD-01..15) › JSON-LD validity & visible parity on /indicators/rsi (software) (359ms)
+  ✓   45 [chromium] › tests/seo/jsonld.spec.ts:20:3 › Structured Data / JSON-LD Validity & Visible Parity (SD-01..15) › JSON-LD validity & visible parity on /live-trading-rooms/day-trading (product) (449ms)
+  ✓   48 [chromium] › tests/seo/jsonld.spec.ts:20:3 › Structured Data / JSON-LD Validity & Visible Parity (SD-01..15) › JSON-LD validity & visible parity on /authors/billy-ribeiro (profile) (331ms)
+  ✓   49 [chromium] › tests/seo/jsonld.spec.ts:20:3 › Structured Data / JSON-LD Validity & Visible Parity (SD-01..15) › JSON-LD validity & visible parity on /guides/swing-entry (article) (367ms)
+  ✓   50 [chromium] › tests/seo/jsonld.spec.ts:20:3 › Structured Data / JSON-LD Validity & Visible Parity (SD-01..15) › JSON-LD validity & visible parity on /resources/etf-stocks-list (article) (391ms)
+  ✓   52 [chromium] › tests/seo/jsonld.spec.ts:20:3 › Structured Data / JSON-LD Validity & Visible Parity (SD-01..15) › JSON-LD validity & visible parity on /classes (listing) (373ms)
+  ✓   51 [chromium] › tests/seo/jsonld.spec.ts:20:3 › Structured Data / JSON-LD Validity & Visible Parity (SD-01..15) › JSON-LD validity & visible parity on /blog (listing) (481ms)
+  ✓   53 [chromium] › tests/seo/jsonld.spec.ts:20:3 › Structured Data / JSON-LD Validity & Visible Parity (SD-01..15) › JSON-LD validity & visible parity on /cookie-policy (static) (410ms)
+  ✓   56 [chromium] › tests/seo/links.spec.ts:16:3 › Internal Linking & Anchor Text Quality (LINK-01..05) › Crawlable <a href> links and descriptive anchor text on /pricing (370ms)
+  ✓   55 [chromium] › tests/seo/links.spec.ts:16:3 › Internal Linking & Anchor Text Quality (LINK-01..05) › Crawlable <a href> links and descriptive anchor text on /about (513ms)
+  ✓   54 [chromium] › tests/seo/links.spec.ts:16:3 › Internal Linking & Anchor Text Quality (LINK-01..05) › Crawlable <a href> links and descriptive anchor text on / (619ms)
+  ✓   57 [chromium] › tests/seo/links.spec.ts:16:3 › Internal Linking & Anchor Text Quality (LINK-01..05) › Crawlable <a href> links and descriptive anchor text on /alerts/explosive-swings (464ms)
+  ✓   58 [chromium] › tests/seo/links.spec.ts:16:3 › Internal Linking & Anchor Text Quality (LINK-01..05) › Crawlable <a href> links and descriptive anchor text on /live-trading-rooms/day-trading (432ms)
+  ✓   59 [chromium] › tests/seo/links.spec.ts:16:3 › Internal Linking & Anchor Text Quality (LINK-01..05) › Crawlable <a href> links and descriptive anchor text on /courses/day-trading-masterclass (371ms)
+  ✓   60 [chromium] › tests/seo/links.spec.ts:16:3 › Internal Linking & Anchor Text Quality (LINK-01..05) › Crawlable <a href> links and descriptive anchor text on /indicators/rsi (367ms)
+  ✓   61 [chromium] › tests/seo/links.spec.ts:16:3 › Internal Linking & Anchor Text Quality (LINK-01..05) › Crawlable <a href> links and descriptive anchor text on /authors/billy-ribeiro (349ms)
+  ✓   62 [chromium] › tests/seo/links.spec.ts:16:3 › Internal Linking & Anchor Text Quality (LINK-01..05) › Crawlable <a href> links and descriptive anchor text on /guides/swing-entry (358ms)
+  ✓   63 [chromium] › tests/seo/links.spec.ts:16:3 › Internal Linking & Anchor Text Quality (LINK-01..05) › Crawlable <a href> links and descriptive anchor text on /resources/etf-stocks-list (377ms)
+  ✓   64 [chromium] › tests/seo/links.spec.ts:16:3 › Internal Linking & Anchor Text Quality (LINK-01..05) › Crawlable <a href> links and descriptive anchor text on /blog (468ms)
+  ✓   65 [chromium] › tests/seo/links.spec.ts:16:3 › Internal Linking & Anchor Text Quality (LINK-01..05) › Crawlable <a href> links and descriptive anchor text on /classes (364ms)
+  ✓   66 [chromium] › tests/seo/links.spec.ts:16:3 › Internal Linking & Anchor Text Quality (LINK-01..05) › Crawlable <a href> links and descriptive anchor text on /cookie-policy (371ms)
+  ✓   69 [chromium] › tests/seo/meta.spec.ts:9:3 › Metadata, Open Graph & Twitter Card Completeness (META-01..07) › Meta & OG/Twitter tags on /pricing (398ms)
+  ✓   67 [chromium] › tests/seo/meta.spec.ts:9:3 › Metadata, Open Graph & Twitter Card Completeness (META-01..07) › Meta & OG/Twitter tags on / (652ms)
+  ✓   68 [chromium] › tests/seo/meta.spec.ts:9:3 › Metadata, Open Graph & Twitter Card Completeness (META-01..07) › Meta & OG/Twitter tags on /about (533ms)
+  ✓   70 [chromium] › tests/seo/meta.spec.ts:9:3 › Metadata, Open Graph & Twitter Card Completeness (META-01..07) › Meta & OG/Twitter tags on /alerts/explosive-swings (498ms)
+  ✓   72 [chromium] › tests/seo/meta.spec.ts:9:3 › Metadata, Open Graph & Twitter Card Completeness (META-01..07) › Meta & OG/Twitter tags on /courses/day-trading-masterclass (382ms)
+  ✓   73 [chromium] › tests/seo/meta.spec.ts:9:3 › Metadata, Open Graph & Twitter Card Completeness (META-01..07) › Meta & OG/Twitter tags on /indicators/rsi (379ms)
+  ✓   71 [chromium] › tests/seo/meta.spec.ts:9:3 › Metadata, Open Graph & Twitter Card Completeness (META-01..07) › Meta & OG/Twitter tags on /live-trading-rooms/day-trading (474ms)
+  ✓   74 [chromium] › tests/seo/meta.spec.ts:9:3 › Metadata, Open Graph & Twitter Card Completeness (META-01..07) › Meta & OG/Twitter tags on /authors/billy-ribeiro (367ms)
+  ✓   75 [chromium] › tests/seo/meta.spec.ts:9:3 › Metadata, Open Graph & Twitter Card Completeness (META-01..07) › Meta & OG/Twitter tags on /guides/swing-entry (358ms)
+  ✓   76 [chromium] › tests/seo/meta.spec.ts:9:3 › Metadata, Open Graph & Twitter Card Completeness (META-01..07) › Meta & OG/Twitter tags on /resources/etf-stocks-list (390ms)
+  ✓   78 [chromium] › tests/seo/meta.spec.ts:9:3 › Metadata, Open Graph & Twitter Card Completeness (META-01..07) › Meta & OG/Twitter tags on /classes (377ms)
+  ✓   77 [chromium] › tests/seo/meta.spec.ts:9:3 › Metadata, Open Graph & Twitter Card Completeness (META-01..07) › Meta & OG/Twitter tags on /blog (473ms)
+  ✓   82 [chromium] › tests/seo/robots.spec.ts:4:2 › Robots.txt, Meta Robots & X-Robots-Tag (BOT-01..05) › /robots.txt returns 200 text/plain with Sitemap and AI bot policy (4ms)
+  ✓   80 [chromium] › tests/seo/newsletter.spec.ts:4:2 › Newsletter confirm invalid link is private and server-rendered (269ms)
+  ✓   79 [chromium] › tests/seo/meta.spec.ts:9:3 › Metadata, Open Graph & Twitter Card Completeness (META-01..07) › Meta & OG/Twitter tags on /cookie-policy (367ms)
+  ✓   81 [chromium] › tests/seo/newsletter.spec.ts:4:2 › Newsletter unsubscribe invalid link is private and server-rendered (259ms)
+  ✓   83 [chromium] › tests/seo/robots.spec.ts:20:2 › Robots.txt, Meta Robots & X-Robots-Tag (BOT-01..05) › Indexable pages emit index,follow and max-image-preview:large (496ms)
+  ✓   84 [chromium] › tests/seo/robots.spec.ts:28:2 › Robots.txt, Meta Robots & X-Robots-Tag (BOT-01..05) › Auth/private pages emit noindex,nofollow and X-Robots-Tag header (486ms)
+  ✓   86 [chromium] › tests/seo/semantics.spec.ts:7:3 › Semantic Landmarks, Heading Hierarchy & A11y (SEM-01..05) › Landmarks, H1..H6 hierarchy & axe-core on /about (1.2s)
+  ✓   87 [chromium] › tests/seo/semantics.spec.ts:7:3 › Semantic Landmarks, Heading Hierarchy & A11y (SEM-01..05) › Landmarks, H1..H6 hierarchy & axe-core on /pricing (1.1s)
+  ✓   85 [chromium] › tests/seo/semantics.spec.ts:7:3 › Semantic Landmarks, Heading Hierarchy & A11y (SEM-01..05) › Landmarks, H1..H6 hierarchy & axe-core on / (1.5s)
+  ✓   88 [chromium] › tests/seo/semantics.spec.ts:7:3 › Semantic Landmarks, Heading Hierarchy & A11y (SEM-01..05) › Landmarks, H1..H6 hierarchy & axe-core on /alerts/explosive-swings (1.2s)
+  ✓   91 [chromium] › tests/seo/semantics.spec.ts:7:3 › Semantic Landmarks, Heading Hierarchy & A11y (SEM-01..05) › Landmarks, H1..H6 hierarchy & axe-core on /indicators/rsi (973ms)
+  ✓   89 [chromium] › tests/seo/semantics.spec.ts:7:3 › Semantic Landmarks, Heading Hierarchy & A11y (SEM-01..05) › Landmarks, H1..H6 hierarchy & axe-core on /live-trading-rooms/day-trading (1.2s)
+  ✓   90 [chromium] › tests/seo/semantics.spec.ts:7:3 › Semantic Landmarks, Heading Hierarchy & A11y (SEM-01..05) › Landmarks, H1..H6 hierarchy & axe-core on /courses/day-trading-masterclass (1.2s)
+  ✓   92 [chromium] › tests/seo/semantics.spec.ts:7:3 › Semantic Landmarks, Heading Hierarchy & A11y (SEM-01..05) › Landmarks, H1..H6 hierarchy & axe-core on /authors/billy-ribeiro (1.0s)
+  ✓   93 [chromium] › tests/seo/semantics.spec.ts:7:3 › Semantic Landmarks, Heading Hierarchy & A11y (SEM-01..05) › Landmarks, H1..H6 hierarchy & axe-core on /guides/swing-entry (973ms)
+  ✓   95 [chromium] › tests/seo/semantics.spec.ts:7:3 › Semantic Landmarks, Heading Hierarchy & A11y (SEM-01..05) › Landmarks, H1..H6 hierarchy & axe-core on /blog (1.0s)
+  ✘   98 [chromium] › tests/seo/sitemap.spec.ts:10:2 › XML Sitemap Integrity (MAP-01..06) › /sitemap.xml returns valid XML with only canonical indexable URLs (17ms)
+  ✓   96 [chromium] › tests/seo/semantics.spec.ts:7:3 › Semantic Landmarks, Heading Hierarchy & A11y (SEM-01..05) › Landmarks, H1..H6 hierarchy & axe-core on /classes (1.0s)
+  ✓   94 [chromium] › tests/seo/semantics.spec.ts:7:3 › Semantic Landmarks, Heading Hierarchy & A11y (SEM-01..05) › Landmarks, H1..H6 hierarchy & axe-core on /resources/etf-stocks-list (1.3s)
+(node:28634) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  101 [chromium] › tests/seo/sitemap.spec.ts:35:2 › XML Sitemap Integrity (MAP-01..06) › /news-sitemap.xml and /video-sitemap.xml match current saved published sources (25ms)
+(node:28639) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   99 [chromium] › tests/seo/ssr-parity.spec.ts:6:3 › SSR Parity & No Competing Head Tags (REND-01..06) › SSR parity on / (home) (601ms)
+  ✓  100 [chromium] › tests/seo/ssr-parity.spec.ts:6:3 › SSR Parity & No Competing Head Tags (REND-01..06) › SSR parity on /about (static) (544ms)
+  ✓   97 [chromium] › tests/seo/semantics.spec.ts:7:3 › Semantic Landmarks, Heading Hierarchy & A11y (SEM-01..05) › Landmarks, H1..H6 hierarchy & axe-core on /cookie-policy (946ms)
+  ✓  103 [chromium] › tests/seo/ssr-parity.spec.ts:6:3 › SSR Parity & No Competing Head Tags (REND-01..06) › SSR parity on /alerts/explosive-swings (product) (460ms)
+  ✓  102 [chromium] › tests/seo/ssr-parity.spec.ts:6:3 › SSR Parity & No Competing Head Tags (REND-01..06) › SSR parity on /pricing (product) (459ms)
+  ✓  104 [chromium] › tests/seo/ssr-parity.spec.ts:6:3 › SSR Parity & No Competing Head Tags (REND-01..06) › SSR parity on /live-trading-rooms/day-trading (product) (448ms)
+  ✓  105 [chromium] › tests/seo/ssr-parity.spec.ts:6:3 › SSR Parity & No Competing Head Tags (REND-01..06) › SSR parity on /courses/day-trading-masterclass (course) (437ms)
+  ✓  107 [chromium] › tests/seo/ssr-parity.spec.ts:6:3 › SSR Parity & No Competing Head Tags (REND-01..06) › SSR parity on /authors/billy-ribeiro (profile) (334ms)
+  ✓  106 [chromium] › tests/seo/ssr-parity.spec.ts:6:3 › SSR Parity & No Competing Head Tags (REND-01..06) › SSR parity on /indicators/rsi (software) (354ms)
+  ✓  108 [chromium] › tests/seo/ssr-parity.spec.ts:6:3 › SSR Parity & No Competing Head Tags (REND-01..06) › SSR parity on /guides/swing-entry (article) (366ms)
+  ✓  109 [chromium] › tests/seo/ssr-parity.spec.ts:6:3 › SSR Parity & No Competing Head Tags (REND-01..06) › SSR parity on /resources/etf-stocks-list (article) (379ms)
+  ✓  113 [chromium] › tests/seo/status-and-redirects.spec.ts:4:2 › HTTP Status Codes & Redirects (IDX-01..06) › 404 routes return HTTP 404 with noindex and error UI (IDX-02, IDX-05) (24ms)
+  ✓  114 [chromium] › tests/seo/status-and-redirects.spec.ts:22:2 › HTTP Status Codes & Redirects (IDX-01..06) › Permanent redirect /signup -> /register uses HTTP 308 in a single hop (IDX-06) (10ms)
+  ✓  111 [chromium] › tests/seo/ssr-parity.spec.ts:6:3 › SSR Parity & No Competing Head Tags (REND-01..06) › SSR parity on /classes (listing) (363ms)
+  ✓  112 [chromium] › tests/seo/ssr-parity.spec.ts:6:3 › SSR Parity & No Competing Head Tags (REND-01..06) › SSR parity on /cookie-policy (static) (348ms)
+  ✓  110 [chromium] › tests/seo/ssr-parity.spec.ts:6:3 › SSR Parity & No Competing Head Tags (REND-01..06) › SSR parity on /blog (listing) (431ms)
+
+
+  1) [chromium] › tests/seo/sitemap.spec.ts:10:2 › XML Sitemap Integrity (MAP-01..06) › /sitemap.xml returns valid XML with only canonical indexable URLs
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 200
+    Received: 404
+
+      10 | 	test('/sitemap.xml returns valid XML with only canonical indexable URLs', async ({ request }) => {
+      11 | 		const res = await request.get('/sitemap.xml');
+    > 12 | 		expect(res.status()).toBe(200);
+         | 		                     ^
+      13 | 		expect(res.headers()['content-type']).toContain('application/xml');
+      14 |
+      15 | 		const xml = await res.text();
+        at /Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/seo/sitemap.spec.ts:12:24
+
+    Error Context: test-results/seo-sitemap-XML-Sitemap-In-ff616-ly-canonical-indexable-URLs-chromium/error-context.md
+
+  2) [chromium] › tests/seo/sitemap.spec.ts:35:2 › XML Sitemap Integrity (MAP-01..06) › /news-sitemap.xml and /video-sitemap.xml match current saved published sources
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 200
+    Received: 404
+
+      38 | 		for (const kind of ['news', 'video']) {
+      39 | 			const sourceResponse = await request.get(`/api/seo/sitemaps/${kind}?per_page=1000`);
+    > 40 | 			expect(sourceResponse.status()).toBe(200);
+         | 			                                ^
+      41 | 			const source = record(await sourceResponse.json()),
+      42 | 				entries = record(source.entries),
+      43 | 				meta = record(entries.meta);
+        at /Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/seo/sitemap.spec.ts:40:36
+
+    Error Context: test-results/seo-sitemap-XML-Sitemap-In-8d8e0-ent-saved-published-sources-chromium/error-context.md
+
+  2 failed
+    [chromium] › tests/seo/sitemap.spec.ts:10:2 › XML Sitemap Integrity (MAP-01..06) › /sitemap.xml returns valid XML with only canonical indexable URLs
+    [chromium] › tests/seo/sitemap.spec.ts:35:2 › XML Sitemap Integrity (MAP-01..06) › /news-sitemap.xml and /video-sitemap.xml match current saved published sources
+  112 passed (17.6s)
+[ELIFECYCLE] Command failed with exit code 1.
+Error: ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL
+
+  × "pnpm recursive run" failed in /Users/billyribeiro/dev/revolution-trading-
+  │ pros/frontend
+
+[ELIFECYCLE] Command failed with exit code 1.

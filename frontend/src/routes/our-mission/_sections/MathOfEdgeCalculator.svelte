@@ -233,7 +233,7 @@
 	.field-label {
 		display: block;
 		margin-bottom: 1rem;
-		color: rgb(100 116 139);
+		color: var(--rtp-text-muted);
 		font-size: 0.75rem;
 		font-weight: 700;
 		letter-spacing: 0.14em;
@@ -259,7 +259,7 @@
 		position: absolute;
 		top: 0.75rem;
 		left: 1rem;
-		color: rgb(100 116 139);
+		color: var(--rtp-text-muted);
 		font-family:
 			ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
 			monospace;
@@ -302,7 +302,7 @@
 		justify-content: space-between;
 		gap: 1rem;
 		margin-top: 0.5rem;
-		color: rgb(71 85 105);
+		color: var(--rtp-text-muted);
 		font-family:
 			ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
 			monospace;
@@ -338,7 +338,7 @@
 
 	.metric-label {
 		margin-bottom: 0.25rem;
-		color: rgb(100 116 139);
+		color: var(--rtp-text-muted);
 		font-size: 0.75rem;
 		line-height: 1.2;
 		text-transform: uppercase;
@@ -370,7 +370,7 @@
 		position: absolute;
 		top: 0.5rem;
 		right: 1rem;
-		color: rgb(71 85 105);
+		color: var(--rtp-text-muted);
 		font-family:
 			ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
 			monospace;
@@ -403,7 +403,7 @@
 
 	.analysis-copy {
 		margin: 0.5rem 0 0;
-		color: rgb(100 116 139);
+		color: var(--rtp-text-muted);
 		font-size: 0.75rem;
 		line-height: 1.65;
 	}

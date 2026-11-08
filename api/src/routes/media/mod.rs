@@ -31,6 +31,7 @@ mod crud;
 mod dto;
 mod helpers;
 mod processing;
+mod public_delivery;
 mod scanning;
 mod uploads;
 mod versions;
@@ -89,4 +90,8 @@ pub fn admin_router() -> Router<AppState> {
             "/{id}",
             get(crud::show).put(crud::update).delete(crud::destroy),
         )
+}
+
+pub fn public_router() -> Router<AppState> {
+    Router::new().route("/image/{token}", get(public_delivery::image))
 }

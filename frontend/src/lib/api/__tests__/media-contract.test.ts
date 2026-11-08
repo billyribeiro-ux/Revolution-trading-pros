@@ -10,6 +10,7 @@ const media: RawMedia = {
 	size: 123,
 	path: 'uploads/stored-fixture.png',
 	url: 'https://assets.example.test/uploads/stored-fixture.png',
+	delivery_url: '/api/media/image/01234567-89ab-cdef-0123-456789abcdef',
 	title: null,
 	alt_text: null,
 	caption: null,
@@ -51,6 +52,7 @@ describe('public media client contracts', () => {
 			file_size: 123,
 			url: media.url,
 			preview_url: '/api/admin/media/content/42',
+			cdn_url: media.delivery_url,
 			tags: ['fixture'],
 			created_by: 7,
 			usage_count: null

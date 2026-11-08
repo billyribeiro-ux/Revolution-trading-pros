@@ -7,7 +7,7 @@
 	 * ETF Stock List Page - Google L11 Enterprise Standard
 	 * Comprehensive ETF education and reference resource
 	 */
-	import { fade, fly } from 'svelte/transition';
+	import { motionFade as fade, motionFly as fly } from '#lib/animations/motion.js';
 	import { cubicOut } from 'svelte/easing';
 	import {
 		IconChartLine,

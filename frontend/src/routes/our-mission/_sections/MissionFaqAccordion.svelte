@@ -3,7 +3,7 @@
 	 * Common Questions / FAQ Accordion
 	 * Extracted from /our-mission/+page.svelte (Cascade audit, May 2026).
 	 */
-	import { slide } from 'svelte/transition';
+	import { motionSlide as slide } from '#lib/animations/motion.js';
 	import IconChevronDown from '@tabler/icons-svelte-runes/icons/chevron-down';
 
 	const faqs = [

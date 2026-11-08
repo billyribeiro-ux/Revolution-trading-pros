@@ -1,0 +1,44 @@
+{
+	"name": "@revolution/imagify",
+	"version": "1.0.0",
+	"private": false,
+	"license": "UNLICENSED",
+	"bin": {
+		"imagify": "./dist/cli.js"
+	},
+	"files": [
+		"dist",
+		"README.md",
+		"PLAN.md"
+	],
+	"type": "module",
+	"main": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"default": "./dist/index.js"
+		},
+		"./files": {
+			"types": "./dist/files.d.ts",
+			"default": "./dist/files.js"
+		}
+	},
+	"scripts": {
+		"build": "tsc -p tsconfig.build.json && node -e \"require('node:fs').chmodSync('dist/cli.js', 0o755)\"",
+		"prepack": "pnpm build",
+		"check": "tsc --noEmit",
+		"test": "node --test test/*.test.ts",
+		"bench": "node src/benchmark.ts"
+	},
+	"dependencies": {
+		"sharp": "0.35.5"
+	},
+	"devDependencies": {
+		"@types/node": "26.6.6",
+		"typescript": "6.0.3"
+	},
+	"engines": {
+		"node": ">=20.9.0"
+	}
+}

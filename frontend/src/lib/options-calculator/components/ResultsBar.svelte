@@ -68,7 +68,7 @@
 		<span
 			class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold"
 			style:background="color-mix(in srgb, {moneynessColor} 13%, transparent)"
-			style:color={moneynessColor}
+			style:color={calc.currentMoneyness === 'ATM' ? 'var(--calc-accent-text)' : moneynessColor}
 			style:border="1px solid color-mix(in srgb, {moneynessColor} 27%, transparent)"
 		>
 			{calc.currentMoneyness}
@@ -131,7 +131,7 @@
 			>
 			<span
 				class="text-sm font-semibold"
-				style="color: var(--calc-accent); font-family: var(--calc-font-mono);"
+				style="color: var(--calc-accent-text); font-family: var(--calc-font-mono);"
 			>
 				±{formatCurrency(calc.probabilities.expectedMove)}
 			</span>

@@ -4,7 +4,7 @@
 	 * Accordion of curriculum modules (M1..M6).
 	 * Extracted from /our-mission/+page.svelte (Cascade audit, May 2026).
 	 */
-	import { slide } from 'svelte/transition';
+	import { motionSlide as slide } from '#lib/animations/motion.js';
 	import IconBook from '@tabler/icons-svelte-runes/icons/book';
 	import IconCheck from '@tabler/icons-svelte-runes/icons/check';
 	import IconChevronDown from '@tabler/icons-svelte-runes/icons/chevron-down';

@@ -2,6 +2,7 @@
 	import type { Attachment } from 'svelte/attachments';
 	import { aboutFaqs } from './about-data';
 	import { onMount } from 'svelte';
+	import { prefersReducedMotion } from 'svelte/motion';
 	import { cubicOut } from 'svelte/easing';
 	import { fade, draw, slide } from 'svelte/transition';
 	import { browser } from '$app/env';
@@ -24,6 +25,7 @@
 	// plays on client navigation.
 	let isVisible = $state(true);
 	let openFaqIndex = $state(-1);
+	let tickerPaused = $state(false);
 	let openAnswerHeight = $state(0);
 	const spacerHeight = $derived(Math.max(0, 140 - openAnswerHeight));
 
@@ -37,7 +39,7 @@
 		return () => node.removeEventListener('mousemove', onMouseMove);
 	};
 
-	let gsapContext: ReturnType<typeof import('gsap').gsap.context> | null = null;
+	let gsapMedia: ReturnType<typeof import('gsap').gsap.matchMedia> | null = null;
 
 	onMount(() => {
 		if (!browser) return;
@@ -46,8 +48,8 @@
 
 		return () => {
 			cancelled = true;
-			gsapContext?.revert();
-			gsapContext = null;
+			gsapMedia?.revert();
+			gsapMedia = null;
 		};
 	});
 
@@ -59,7 +61,8 @@
 
 			gsap.registerPlugin(ScrollTrigger);
 
-			gsapContext = gsap.context(() => {
+			gsapMedia = gsap.matchMedia();
+			gsapMedia.add('(prefers-reduced-motion: no-preference)', () => {
 				gsap.to('.parallax-layer', {
 					yPercent: -20,
 					ease: 'none',
@@ -73,8 +76,8 @@
 				ScrollTrigger.refresh();
 			});
 			if (isCancelled()) {
-				gsapContext.revert();
-				gsapContext = null;
+				gsapMedia.revert();
+				gsapMedia = null;
 			}
 		} catch (error) {
 			if (!isCancelled()) {
@@ -85,8 +88,8 @@
 
 	function heavySlide(_node: Element, { delay = 0, duration = 1000 }) {
 		return {
-			delay,
-			duration,
+			delay: prefersReducedMotion.current ? 0 : delay,
+			duration: prefersReducedMotion.current ? 0 : duration,
 			css: (t: number) => {
 				const eased = cubicOut(t);
 				return `transform: translateY(${(1 - eased) * 20}px);`;
@@ -171,11 +174,12 @@
 		<div class="about__gradient"></div>
 	</div>
 
-	<div class="ticker" aria-label="Market ticker">
+	<section class="ticker" aria-label="Illustrative market ticker">
+		<span class="ticker__label">Illustrative data</span>
 		<div class="ticker__inner">
-			<div class="ticker__track">
+			<div class={['ticker__track', tickerPaused && 'ticker__track--paused']}>
 				{#each [...tickerItems, ...tickerItems] as item, i (`ticker-${i}`)}
-					<span class="ticker__cell">
+					<span class="ticker__cell" aria-hidden={i >= tickerItems.length}>
 						<span
 							class={['ticker__dot', item.includes('+') ? 'ticker__dot--up' : 'ticker__dot--down']}
 							aria-hidden="true"
@@ -185,7 +189,14 @@
 				{/each}
 			</div>
 		</div>
-	</div>
+		<button
+			type="button"
+			class="ticker__toggle"
+			onclick={() => (tickerPaused = !tickerPaused)}
+			aria-pressed={tickerPaused}
+			aria-label="Pause market ticker">{tickerPaused ? 'Resume' : 'Pause'}</button
+		>
+	</section>
 
 	<section id="about-content" class="about__content">
 		<!-- HERO -->
@@ -270,13 +281,16 @@
 								stroke-width="2"
 								stroke-linecap="round"
 								vector-effect="non-scaling-stroke"
-								in:draw={{ duration: 3000, easing: cubicOut }}
+								in:draw={{ duration: prefersReducedMotion.current ? 0 : 3000, easing: cubicOut }}
 							></path>
 							<path
 								d="M0 280 L50 250 L100 260 L150 180 L200 200 L250 100 L300 120 L350 50 L400 20 V 300 H 0 Z"
 								fill="url(#grad)"
 								opacity="0.1"
-								in:fade={{ delay: 1000, duration: 2000 }}
+								in:fade={{
+									delay: prefersReducedMotion.current ? 0 : 1000,
+									duration: prefersReducedMotion.current ? 0 : 2000
+								}}
 							></path>
 							<defs>
 								<linearGradient id="grad" x1="0" y1="0" x2="0" y2="1">
@@ -514,7 +528,10 @@
 								</button>
 								{#if openFaqIndex === i}
 									<div
-										transition:slide={{ duration: 300, easing: cubicOut }}
+										transition:slide={{
+											duration: prefersReducedMotion.current ? 0 : 300,
+											easing: cubicOut
+										}}
 										bind:clientHeight={openAnswerHeight}
 										onoutroend={() => (openAnswerHeight = 0)}
 										class="faq__answer"
@@ -608,6 +625,8 @@
 		--a-amber-shadow-hero: rgba(245, 158, 11, 0.3);
 
 		position: relative;
+		isolation: isolate;
+		overflow-wrap: anywhere;
 		background: var(--a-bg);
 		color: var(--rtp-text-muted);
 		font-family: var(--rtp-font-sans);
@@ -619,10 +638,10 @@
 	}
 
 	/* ─────────────────────────────────────────────────────────────────
-	   Atmosphere (fixed background noise + gradient)
+	   Atmosphere (page-contained background noise + gradient)
 	   ───────────────────────────────────────────────────────────────── */
 	.about__atmosphere {
-		position: fixed;
+		position: absolute;
 		inset: 0;
 		pointer-events: none;
 		z-index: 0;
@@ -650,10 +669,8 @@
 	   Top market ticker strip
 	   ───────────────────────────────────────────────────────────────── */
 	.ticker {
-		position: fixed;
-		inset-block-start: 0;
-		inset-inline: 0;
-		z-index: 50;
+		position: relative;
+		z-index: 1;
 		border-block-end: 1px solid var(--rtp-border-soft);
 		background: color-mix(in oklab, var(--a-bg-fixed-strip) 90%, transparent);
 		backdrop-filter: blur(8px);
@@ -661,10 +678,27 @@
 		height: 2.5rem;
 		display: flex;
 		align-items: center;
+		gap: 0.75rem;
+		padding-inline: 1rem;
 		box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
 	}
+	.ticker__label,
+	.ticker__toggle {
+		flex: none;
+		font-size: 0.625rem;
+		font-family: var(--rtp-font-mono);
+		color: var(--rtp-text-subtle);
+	}
+	.ticker__toggle {
+		min-height: 2rem;
+		padding: 0.25rem 0.5rem;
+		border: 1px solid var(--rtp-border-strong);
+		border-radius: var(--rtp-radius-sm);
+		cursor: pointer;
+	}
 	.ticker__inner {
-		width: 100%;
+		flex: 1;
+		min-width: 0;
 		overflow: hidden;
 		white-space: nowrap;
 		mask-image: linear-gradient(to right, transparent, #000 5%, #000 95%, transparent);
@@ -678,7 +712,8 @@
 		display: inline-block;
 		animation: a-ticker 40s linear infinite;
 	}
-	.ticker__track:hover {
+	.ticker__track:hover,
+	.ticker__track--paused {
 		animation-play-state: paused;
 	}
 	@keyframes a-ticker {
@@ -2082,5 +2117,15 @@
 	}
 	.interactive-card:hover::before {
 		opacity: 1;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.about :global(*),
+		.about :global(*::before),
+		.about :global(*::after),
+		.about :global(.chart-card__pulse) {
+			animation: none;
+			transition: none;
+		}
 	}
 </style>

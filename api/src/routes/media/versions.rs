@@ -137,8 +137,11 @@ async fn replace_file(
         let url=format!("{}/{}",state.config.r2_public_url.trim_end_matches('/'),key);
         let filename=key.rsplit('/').next().unwrap_or(&key);
         sqlx::query("UPDATE media SET filename=$2,original_filename=$3,mime_type=$4,size=$5,path=$6,url=$7,width=$8,height=$9,is_optimized=FALSE,scan_status=$10,scan_result=$11,content_version=$12,updated_at=NOW() WHERE id=$1")
-            .bind(media_id).bind(filename).bind(file.name).bind(file.mime).bind(file.bytes.len() as i64).bind(&key).bind(url).bind(info.as_ref().map(|i|i.width as i32)).bind(info.as_ref().map(|i|i.height as i32)).bind(&scan.status).bind(json!(scan)).bind(next).execute(&mut *tx).await.map_err(db)?;
+            .bind(media_id).bind(filename).bind(file.name).bind(&file.mime).bind(file.bytes.len() as i64).bind(&key).bind(url).bind(info.as_ref().map(|i|i.width as i32)).bind(info.as_ref().map(|i|i.height as i32)).bind(&scan.status).bind(json!(scan)).bind(next).execute(&mut *tx).await.map_err(db)?;
         let version_id=record_current(&mut tx,media_id,Some(actor),changes).await?;
+        crate::services::media_jobs::enqueue_default_if_image(
+            state, &mut tx, media_id, &file.mime, &scan.status, next,
+        ).await.map_err(db)?;
         tx.commit().await.map_err(db)?;
         Ok::<i64,ApiError>(version_id)
     }.await;

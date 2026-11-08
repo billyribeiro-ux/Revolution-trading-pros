@@ -1,8 +1,7 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import { slide } from 'svelte/transition';
+	import { scrollReveal } from '#lib/animations/scroll-reveal.js';
+	import { motionSlide as slide } from '#lib/animations/motion.js';
 	import { cubicOut } from 'svelte/easing';
-	import { browser } from '$app/env';
 	import IconMenu2 from '@tabler/icons-svelte-runes/icons/menu-2';
 	import IconLock from '@tabler/icons-svelte-runes/icons/lock';
 
@@ -87,99 +86,6 @@
 	let openFaq: number | null = $state(null);
 	const toggleFaq = (index: number) => (openFaq = openFaq === index ? null : index);
 
-	// --- GSAP ScrollTrigger Animations (PE7 Svelte 5 Pattern) ---
-	let gsapContext: ReturnType<typeof import('gsap').gsap.context> | null = null;
-	let isComponentMounted = false;
-	let scrollRefreshRaf = 0;
-
-	onMount(() => {
-		if (!browser) return;
-		isComponentMounted = true;
-		initGSAP();
-		return () => {
-			isComponentMounted = false;
-			cancelAnimationFrame(scrollRefreshRaf);
-			if (gsapContext) gsapContext.revert();
-		};
-	});
-
-	// PE7: Separate async function for GSAP initialization
-	async function initGSAP(): Promise<void> {
-		try {
-			const { gsap } = await import('gsap');
-			const { ScrollTrigger } = await import('gsap/ScrollTrigger');
-
-			if (!isComponentMounted) return;
-
-			gsap.registerPlugin(ScrollTrigger);
-
-			const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-			if (prefersReducedMotion) {
-				gsap.set('[data-gsap]', { opacity: 1, y: 0 });
-				return;
-			}
-
-			// Use gsap.context() for scoped cleanup - prevents global ScrollTrigger destruction
-			gsapContext = gsap.context(() => {
-				const all = Array.from(document.querySelectorAll('[data-gsap]'));
-				gsap.set(all, { opacity: 0, y: 30 });
-
-				// Elements visible in viewport on mount get an immediate
-				// staggered entrance — ScrollTrigger.batch's onEnter does not
-				// fire for elements already past the trigger position at
-				// registration time, which would otherwise leave hero
-				// elements stuck invisible.
-				const visible: Element[] = [];
-				const hidden: Element[] = [];
-				all.forEach((el) => {
-					const r = el.getBoundingClientRect();
-					if (r.top < window.innerHeight && r.bottom > 0) visible.push(el);
-					else hidden.push(el);
-				});
-
-				if (visible.length > 0) {
-					gsap.to(visible, {
-						opacity: 1,
-						y: 0,
-						duration: 0.9,
-						ease: 'power3.out',
-						stagger: 0.1
-					});
-				}
-
-				if (hidden.length > 0) {
-					ScrollTrigger.batch(hidden, {
-						onEnter: (batch) => {
-							gsap.to(batch, {
-								opacity: 1,
-								y: 0,
-								duration: 0.8,
-								ease: 'power3.out',
-								stagger: 0.1,
-								overwrite: true
-							});
-						},
-						start: 'top 85%',
-						once: true
-					});
-				}
-			});
-
-			// PE7: Refresh ScrollTrigger after layout settles (fonts, images loaded)
-			const refreshTrigger = document.fonts?.ready ?? Promise.resolve();
-			refreshTrigger.then(() => {
-				if (!isComponentMounted) return;
-				scrollRefreshRaf = requestAnimationFrame(() => {
-					scrollRefreshRaf = 0;
-					ScrollTrigger.refresh();
-				});
-			});
-		} catch (error) {
-			console.error('[DayTrading] GSAP initialization failed:', error);
-		}
-	}
-
 	// SEO schemas now emitted via +page.ts (page.data.seo).
 	// FAQ list kept locally for the on-page accordion UI.
 	const faqList = [
@@ -236,7 +142,7 @@
 	];
 </script>
 
-<div class="day-trading">
+<div class="day-trading" {@attach scrollReveal}>
 	<section class="hero">
 		<div class="hero__bg" aria-hidden="true">
 			<div class="hero__bg-grid"></div>
@@ -862,6 +768,9 @@
 	}
 
 	.hero__inner {
+		width: 100%;
+		min-width: 0;
+		grid-template-columns: minmax(0, 1fr);
 		position: relative;
 		z-index: 10;
 		max-width: var(--rtp-content-max);
@@ -879,11 +788,12 @@
 	@media (min-width: 1024px) {
 		.hero__inner {
 			padding-inline: 2rem;
-			grid-template-columns: repeat(2, 1fr);
+			grid-template-columns: repeat(2, minmax(0, 1fr));
 		}
 	}
 
 	.hero__copy {
+		min-width: 0;
 		text-align: center;
 		display: flex;
 		flex-direction: column;
@@ -1353,7 +1263,7 @@
 	}
 	.stats__grid {
 		display: grid;
-		grid-template-columns: repeat(2, 1fr);
+		grid-template-columns: repeat(2, minmax(0, 1fr));
 		gap: 2rem;
 	}
 	@media (min-width: 768px) {
@@ -1562,7 +1472,7 @@
 	}
 	@media (min-width: 1024px) {
 		.why__grid {
-			grid-template-columns: repeat(2, 1fr);
+			grid-template-columns: repeat(2, minmax(0, 1fr));
 		}
 	}
 	.why__title {

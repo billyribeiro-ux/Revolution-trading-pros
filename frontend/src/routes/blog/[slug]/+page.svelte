@@ -228,6 +228,7 @@
 						loading="eager"
 						decoding="async"
 						sizes="(max-width: 768px) 100vw, 800px"
+						autoSrcset={post.featured_image.startsWith('/api/media/image/')}
 					/>
 				</div>
 			{/if}

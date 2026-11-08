@@ -1,0 +1,621 @@
+
+Running 17 tests using 4 workers
+
+(node:44069) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:44070) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:44072) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:44071) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘   4 [chromium] › tests/all-marketing.spec.ts:11:2 › public indicator moving-averages matches the catalog instead of another product (10.9s)
+  ✘   1 [chromium] › tests/all-marketing.spec.ts:11:2 › public indicator bollinger-bands matches the catalog instead of another product (10.9s)
+  ✘   3 [chromium] › tests/all-marketing.spec.ts:11:2 › public indicator vwap matches the catalog instead of another product (10.9s)
+  ✘   2 [chromium] › tests/all-marketing.spec.ts:11:2 › public indicator stochastic matches the catalog instead of another product (11.1s)
+(node:44141) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:44140) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:44142) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:44143) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘   5 [chromium] › tests/all-marketing.spec.ts:21:2 › /courses/options-trading keeps enlarged heading text in its viewport (358ms)
+  ✘   7 [chromium] › tests/all-marketing.spec.ts:21:2 › /live-trading-rooms keeps enlarged heading text in its viewport (457ms)
+  ✘   8 [chromium] › tests/all-marketing.spec.ts:21:2 › /mentorship keeps enlarged heading text in its viewport (368ms)
+(node:44166) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:44167) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:44168) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘   9 [chromium] › tests/all-marketing.spec.ts:21:2 › /our-mission keeps enlarged heading text in its viewport (395ms)
+(node:44185) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘   6 [chromium] › tests/all-marketing.spec.ts:21:2 › /contact keeps enlarged heading text in its viewport (1.7s)
+(node:44194) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  10 [chromium] › tests/all-marketing.spec.ts:33:1 › SPX marketing page owns no second main landmark (10.5s)
+(node:44925) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  11 [chromium] › tests/all-marketing.spec.ts:38:1 › stock index region filter has an accessible name and changes results (11.1s)
+  ✘  12 [chromium] › tests/all-marketing.spec.ts:47:2 › / suppresses continuous animation for reduced motion (10.7s)
+(node:44941) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:44942) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  13 [chromium] › tests/all-marketing.spec.ts:47:2 › /alerts suppresses continuous animation for reduced motion (10.4s)
+(node:44953) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  17 [chromium] › tests/all-marketing.spec.ts:47:2 › /live-trading-rooms/day-trading suppresses continuous animation for reduced motion (9.5s)
+  ✘  15 [chromium] › tests/all-marketing.spec.ts:47:2 › /mentorship suppresses continuous animation for reduced motion (10.4s)
+  ✘  16 [chromium] › tests/all-marketing.spec.ts:47:2 › /our-mission suppresses continuous animation for reduced motion (10.4s)
+  ✘  14 [chromium] › tests/all-marketing.spec.ts:47:2 › /courses suppresses continuous animation for reduced motion (12.2s)
+
+
+  1) [chromium] › tests/all-marketing.spec.ts:11:2 › public indicator moving-averages matches the catalog instead of another product
+
+    Error: expect(locator).toHaveText(expected) failed
+
+    Locator:  locator('h1')
+    Expected: "Moving Averages (SMA/EMA)"
+    Received: "Volume Max Tool Kit (formerly VWAP)"
+    Timeout:  10000ms
+
+    Call log:
+      - Expect "toHaveText" locator('h1') with timeout 10000ms
+      - waiting for locator('h1')
+        24 × locator resolved to <h1 class="svelte-lejqfj">Volume Max Tool Kit (formerly VWAP)</h1>
+           - unexpected value "Volume Max Tool Kit (formerly VWAP)"
+
+
+      11 | 	test(`public indicator ${slug} matches the catalog instead of another product`, async ({ page }) => {
+      12 | 		await page.goto(`/indicators/${slug}`);
+    > 13 | 		await expect(page.locator('h1')).toHaveText(name);
+         | 		                                 ^
+      14 | 		await expect(page.locator('a[href*="st-download-file"]')).toHaveCount(0);
+      15 | 		await expect(page.locator('[aria-label="Breadcrumb"]')).toHaveCount(1);
+      16 | 		await expect(page.locator('main')).not.toContainText('Volume Max Tool Kit');
+        at /Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts:13:36
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/all-marketing-public-indic-9648e--instead-of-another-product-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/all-marketing-public-indic-9648e--instead-of-another-product-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/all-marketing-public-indic-9648e--instead-of-another-product-chromium/error-context.md
+
+  2) [chromium] › tests/all-marketing.spec.ts:11:2 › public indicator bollinger-bands matches the catalog instead of another product
+
+    Error: expect(locator).toHaveText(expected) failed
+
+    Locator:  locator('h1')
+    Expected: "Bollinger Bands"
+    Received: "Volume Max Tool Kit (formerly VWAP)"
+    Timeout:  10000ms
+
+    Call log:
+      - Expect "toHaveText" locator('h1') with timeout 10000ms
+      - waiting for locator('h1')
+        24 × locator resolved to <h1 class="svelte-lejqfj">Volume Max Tool Kit (formerly VWAP)</h1>
+           - unexpected value "Volume Max Tool Kit (formerly VWAP)"
+
+
+      11 | 	test(`public indicator ${slug} matches the catalog instead of another product`, async ({ page }) => {
+      12 | 		await page.goto(`/indicators/${slug}`);
+    > 13 | 		await expect(page.locator('h1')).toHaveText(name);
+         | 		                                 ^
+      14 | 		await expect(page.locator('a[href*="st-download-file"]')).toHaveCount(0);
+      15 | 		await expect(page.locator('[aria-label="Breadcrumb"]')).toHaveCount(1);
+      16 | 		await expect(page.locator('main')).not.toContainText('Volume Max Tool Kit');
+        at /Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts:13:36
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/all-marketing-public-indic-e1d03--instead-of-another-product-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/all-marketing-public-indic-e1d03--instead-of-another-product-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/all-marketing-public-indic-e1d03--instead-of-another-product-chromium/error-context.md
+
+  3) [chromium] › tests/all-marketing.spec.ts:11:2 › public indicator vwap matches the catalog instead of another product
+
+    Error: expect(locator).toHaveText(expected) failed
+
+    Locator:  locator('h1')
+    Expected: "VWAP - Volume Weighted Average Price"
+    Received: "Volume Max Tool Kit (formerly VWAP)"
+    Timeout:  10000ms
+
+    Call log:
+      - Expect "toHaveText" locator('h1') with timeout 10000ms
+      - waiting for locator('h1')
+        24 × locator resolved to <h1 class="svelte-lejqfj">Volume Max Tool Kit (formerly VWAP)</h1>
+           - unexpected value "Volume Max Tool Kit (formerly VWAP)"
+
+
+      11 | 	test(`public indicator ${slug} matches the catalog instead of another product`, async ({ page }) => {
+      12 | 		await page.goto(`/indicators/${slug}`);
+    > 13 | 		await expect(page.locator('h1')).toHaveText(name);
+         | 		                                 ^
+      14 | 		await expect(page.locator('a[href*="st-download-file"]')).toHaveCount(0);
+      15 | 		await expect(page.locator('[aria-label="Breadcrumb"]')).toHaveCount(1);
+      16 | 		await expect(page.locator('main')).not.toContainText('Volume Max Tool Kit');
+        at /Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts:13:36
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/all-marketing-public-indic-bb5aa--instead-of-another-product-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/all-marketing-public-indic-bb5aa--instead-of-another-product-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/all-marketing-public-indic-bb5aa--instead-of-another-product-chromium/error-context.md
+
+  4) [chromium] › tests/all-marketing.spec.ts:11:2 › public indicator stochastic matches the catalog instead of another product
+
+    Error: expect(locator).toHaveText(expected) failed
+
+    Locator:  locator('h1')
+    Expected: "Stochastic Oscillator"
+    Received: "Volume Max Tool Kit (formerly VWAP)"
+    Timeout:  10000ms
+
+    Call log:
+      - Expect "toHaveText" locator('h1') with timeout 10000ms
+      - waiting for locator('h1')
+        24 × locator resolved to <h1 class="svelte-lejqfj">Volume Max Tool Kit (formerly VWAP)</h1>
+           - unexpected value "Volume Max Tool Kit (formerly VWAP)"
+
+
+      11 | 	test(`public indicator ${slug} matches the catalog instead of another product`, async ({ page }) => {
+      12 | 		await page.goto(`/indicators/${slug}`);
+    > 13 | 		await expect(page.locator('h1')).toHaveText(name);
+         | 		                                 ^
+      14 | 		await expect(page.locator('a[href*="st-download-file"]')).toHaveCount(0);
+      15 | 		await expect(page.locator('[aria-label="Breadcrumb"]')).toHaveCount(1);
+      16 | 		await expect(page.locator('main')).not.toContainText('Volume Max Tool Kit');
+        at /Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts:13:36
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/all-marketing-public-indic-aa149--instead-of-another-product-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/all-marketing-public-indic-aa149--instead-of-another-product-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/all-marketing-public-indic-aa149--instead-of-another-product-chromium/error-context.md
+
+  5) [chromium] › tests/all-marketing.spec.ts:21:2 › /contact keeps enlarged heading text in its viewport
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 1
+    + Received  + 3
+
+    - Array []
+    + Array [
+    +   427.171875,
+    + ]
+
+      27 | 			return [...range.getClientRects()].filter(rect => rect.width > 0 && (rect.left < 0 || rect.right > document.documentElement.clientWidth)).map(rect => rect.right);
+      28 | 		}));
+    > 29 | 		expect(overflow).toEqual([]);
+         | 		                 ^
+      30 | 	});
+      31 | }
+      32 |
+        at /Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts:29:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/all-marketing--contact-kee-a21ef-eading-text-in-its-viewport-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/all-marketing--contact-kee-a21ef-eading-text-in-its-viewport-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/all-marketing--contact-kee-a21ef-eading-text-in-its-viewport-chromium/error-context.md
+
+  6) [chromium] › tests/all-marketing.spec.ts:21:2 › /courses/options-trading keeps enlarged heading text in its viewport
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 1
+    + Received  + 4
+
+    - Array []
+    + Array [
+    +   464.40625,
+    +   464.40625,
+    + ]
+
+      27 | 			return [...range.getClientRects()].filter(rect => rect.width > 0 && (rect.left < 0 || rect.right > document.documentElement.clientWidth)).map(rect => rect.right);
+      28 | 		}));
+    > 29 | 		expect(overflow).toEqual([]);
+         | 		                 ^
+      30 | 	});
+      31 | }
+      32 |
+        at /Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts:29:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/all-marketing--courses-opt-63edf-eading-text-in-its-viewport-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/all-marketing--courses-opt-63edf-eading-text-in-its-viewport-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/all-marketing--courses-opt-63edf-eading-text-in-its-viewport-chromium/error-context.md
+
+  7) [chromium] › tests/all-marketing.spec.ts:21:2 › /live-trading-rooms keeps enlarged heading text in its viewport
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 1
+    + Received  + 6
+
+    - Array []
+    + Array [
+    +   644.328125,
+    +   527.4375,
+    +   644.328125,
+    +   644.328125,
+    + ]
+
+      27 | 			return [...range.getClientRects()].filter(rect => rect.width > 0 && (rect.left < 0 || rect.right > document.documentElement.clientWidth)).map(rect => rect.right);
+      28 | 		}));
+    > 29 | 		expect(overflow).toEqual([]);
+         | 		                 ^
+      30 | 	});
+      31 | }
+      32 |
+        at /Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts:29:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/all-marketing--live-tradin-959a5-eading-text-in-its-viewport-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/all-marketing--live-tradin-959a5-eading-text-in-its-viewport-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/all-marketing--live-tradin-959a5-eading-text-in-its-viewport-chromium/error-context.md
+
+  8) [chromium] › tests/all-marketing.spec.ts:21:2 › /mentorship keeps enlarged heading text in its viewport
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 1
+    + Received  + 3
+
+    - Array []
+    + Array [
+    +   489.578125,
+    + ]
+
+      27 | 			return [...range.getClientRects()].filter(rect => rect.width > 0 && (rect.left < 0 || rect.right > document.documentElement.clientWidth)).map(rect => rect.right);
+      28 | 		}));
+    > 29 | 		expect(overflow).toEqual([]);
+         | 		                 ^
+      30 | 	});
+      31 | }
+      32 |
+        at /Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts:29:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/all-marketing--mentorship--b5d9c-eading-text-in-its-viewport-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/all-marketing--mentorship--b5d9c-eading-text-in-its-viewport-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/all-marketing--mentorship--b5d9c-eading-text-in-its-viewport-chromium/error-context.md
+
+  9) [chromium] › tests/all-marketing.spec.ts:21:2 › /our-mission keeps enlarged heading text in its viewport
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 1
+    + Received  + 5
+
+    - Array []
+    + Array [
+    +   498.515625,
+    +   506.71875,
+    +   506.71875,
+    + ]
+
+      27 | 			return [...range.getClientRects()].filter(rect => rect.width > 0 && (rect.left < 0 || rect.right > document.documentElement.clientWidth)).map(rect => rect.right);
+      28 | 		}));
+    > 29 | 		expect(overflow).toEqual([]);
+         | 		                 ^
+      30 | 	});
+      31 | }
+      32 |
+        at /Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts:29:20
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/all-marketing--our-mission-c9e50-eading-text-in-its-viewport-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/all-marketing--our-mission-c9e50-eading-text-in-its-viewport-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/all-marketing--our-mission-c9e50-eading-text-in-its-viewport-chromium/error-context.md
+
+  10) [chromium] › tests/all-marketing.spec.ts:33:1 › SPX marketing page owns no second main landmark
+
+    Error: expect(locator).toHaveCount(expected) failed
+
+    Locator:  locator('main')
+    Expected: 1
+    Received: 2
+    Timeout:  10000ms
+
+    Call log:
+      - Expect "toHaveCount" locator('main') with timeout 10000ms
+      - waiting for locator('main')
+        24 × locator resolved to 2 elements
+           - unexpected value "2"
+
+
+      33 | test('SPX marketing page owns no second main landmark', async ({ page }) => {
+      34 | 	await page.goto('/alerts/spx-profit-pulse');
+    > 35 | 	await expect(page.locator('main')).toHaveCount(1);
+         | 	                                   ^
+      36 | });
+      37 |
+      38 | test('stock index region filter has an accessible name and changes results', async ({ page }) => {
+        at /Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts:35:37
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/all-marketing-SPX-marketin-2a75c-wns-no-second-main-landmark-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/all-marketing-SPX-marketin-2a75c-wns-no-second-main-landmark-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/all-marketing-SPX-marketin-2a75c-wns-no-second-main-landmark-chromium/error-context.md
+
+  11) [chromium] › tests/all-marketing.spec.ts:38:1 › stock index region filter has an accessible name and changes results
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByRole('combobox', { name: /region/i })
+    Expected: visible
+    Timeout: 10000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByRole('combobox', { name: /region/i }) with timeout 10000ms
+      - waiting for getByRole('combobox', { name: /region/i })
+
+
+      39 | 	await page.goto('/resources/stock-indexes-list');
+      40 | 	const region = page.getByRole('combobox', { name: /region/i });
+    > 41 | 	await expect(region).toBeVisible();
+         | 	                     ^
+      42 | 	await region.selectOption('europe');
+      43 | 	await expect(page.locator('.index-card')).not.toContainText('S&P 500');
+      44 | });
+        at /Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts:41:23
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/all-marketing-stock-index--36350-le-name-and-changes-results-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/all-marketing-stock-index--36350-le-name-and-changes-results-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/all-marketing-stock-index--36350-le-name-and-changes-results-chromium/error-context.md
+
+  12) [chromium] › tests/all-marketing.spec.ts:47:2 › / suppresses continuous animation for reduced motion
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 0
+    Received: 12
+
+    Call Log:
+    - Timeout 10000ms exceeded while waiting on the predicate
+
+      48 | 		await page.emulateMedia({ reducedMotion: 'reduce' });
+      49 | 		await page.goto(route);
+    > 50 | 		await expect.poll(() => page.locator('#main-content').evaluate(element => element.getAnimations({ subtree: true }).filter(animation => animation.playState === 'running' && animation.effect?.getTiming().iterations === Infinity).length)).toBe(0);
+         | 		                                                                                                                                                                                                                                            ^
+      51 | 	});
+      52 | }
+      53 |
+        at /Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts:50:239
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/all-marketing--suppresses--e68ef-nimation-for-reduced-motion-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/all-marketing--suppresses--e68ef-nimation-for-reduced-motion-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/all-marketing--suppresses--e68ef-nimation-for-reduced-motion-chromium/error-context.md
+
+  13) [chromium] › tests/all-marketing.spec.ts:47:2 › /alerts suppresses continuous animation for reduced motion
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 0
+    Received: 1
+
+    Call Log:
+    - Timeout 10000ms exceeded while waiting on the predicate
+
+      48 | 		await page.emulateMedia({ reducedMotion: 'reduce' });
+      49 | 		await page.goto(route);
+    > 50 | 		await expect.poll(() => page.locator('#main-content').evaluate(element => element.getAnimations({ subtree: true }).filter(animation => animation.playState === 'running' && animation.effect?.getTiming().iterations === Infinity).length)).toBe(0);
+         | 		                                                                                                                                                                                                                                            ^
+      51 | 	});
+      52 | }
+      53 |
+        at /Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts:50:239
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/all-marketing--alerts-supp-5b108-nimation-for-reduced-motion-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/all-marketing--alerts-supp-5b108-nimation-for-reduced-motion-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/all-marketing--alerts-supp-5b108-nimation-for-reduced-motion-chromium/error-context.md
+
+  14) [chromium] › tests/all-marketing.spec.ts:47:2 › /courses suppresses continuous animation for reduced motion
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 0
+    Received: 1
+
+    Call Log:
+    - Timeout 10000ms exceeded while waiting on the predicate
+
+      48 | 		await page.emulateMedia({ reducedMotion: 'reduce' });
+      49 | 		await page.goto(route);
+    > 50 | 		await expect.poll(() => page.locator('#main-content').evaluate(element => element.getAnimations({ subtree: true }).filter(animation => animation.playState === 'running' && animation.effect?.getTiming().iterations === Infinity).length)).toBe(0);
+         | 		                                                                                                                                                                                                                                            ^
+      51 | 	});
+      52 | }
+      53 |
+        at /Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts:50:239
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/all-marketing--courses-sup-df47a-nimation-for-reduced-motion-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/all-marketing--courses-sup-df47a-nimation-for-reduced-motion-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/all-marketing--courses-sup-df47a-nimation-for-reduced-motion-chromium/error-context.md
+
+  15) [chromium] › tests/all-marketing.spec.ts:47:2 › /mentorship suppresses continuous animation for reduced motion
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 0
+    Received: 1
+
+    Call Log:
+    - Timeout 10000ms exceeded while waiting on the predicate
+
+      48 | 		await page.emulateMedia({ reducedMotion: 'reduce' });
+      49 | 		await page.goto(route);
+    > 50 | 		await expect.poll(() => page.locator('#main-content').evaluate(element => element.getAnimations({ subtree: true }).filter(animation => animation.playState === 'running' && animation.effect?.getTiming().iterations === Infinity).length)).toBe(0);
+         | 		                                                                                                                                                                                                                                            ^
+      51 | 	});
+      52 | }
+      53 |
+        at /Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts:50:239
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/all-marketing--mentorship--02ba4-nimation-for-reduced-motion-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/all-marketing--mentorship--02ba4-nimation-for-reduced-motion-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/all-marketing--mentorship--02ba4-nimation-for-reduced-motion-chromium/error-context.md
+
+  16) [chromium] › tests/all-marketing.spec.ts:47:2 › /our-mission suppresses continuous animation for reduced motion
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 0
+    Received: 3
+
+    Call Log:
+    - Timeout 10000ms exceeded while waiting on the predicate
+
+      48 | 		await page.emulateMedia({ reducedMotion: 'reduce' });
+      49 | 		await page.goto(route);
+    > 50 | 		await expect.poll(() => page.locator('#main-content').evaluate(element => element.getAnimations({ subtree: true }).filter(animation => animation.playState === 'running' && animation.effect?.getTiming().iterations === Infinity).length)).toBe(0);
+         | 		                                                                                                                                                                                                                                            ^
+      51 | 	});
+      52 | }
+      53 |
+        at /Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts:50:239
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/all-marketing--our-mission-306a1-nimation-for-reduced-motion-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/all-marketing--our-mission-306a1-nimation-for-reduced-motion-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/all-marketing--our-mission-306a1-nimation-for-reduced-motion-chromium/error-context.md
+
+  17) [chromium] › tests/all-marketing.spec.ts:47:2 › /live-trading-rooms/day-trading suppresses continuous animation for reduced motion
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 0
+    Received: 4
+
+    Call Log:
+    - Timeout 10000ms exceeded while waiting on the predicate
+
+      48 | 		await page.emulateMedia({ reducedMotion: 'reduce' });
+      49 | 		await page.goto(route);
+    > 50 | 		await expect.poll(() => page.locator('#main-content').evaluate(element => element.getAnimations({ subtree: true }).filter(animation => animation.playState === 'running' && animation.effect?.getTiming().iterations === Infinity).length)).toBe(0);
+         | 		                                                                                                                                                                                                                                            ^
+      51 | 	});
+      52 | }
+      53 |
+        at /Users/billyribeiro/dev/revolution-trading-pros/frontend/tests/all-marketing.spec.ts:50:239
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/all-marketing--live-tradin-e4515-nimation-for-reduced-motion-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results/all-marketing--live-tradin-e4515-nimation-for-reduced-motion-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/all-marketing--live-tradin-e4515-nimation-for-reduced-motion-chromium/error-context.md
+
+  17 failed
+    [chromium] › tests/all-marketing.spec.ts:11:2 › public indicator moving-averages matches the catalog instead of another product
+    [chromium] › tests/all-marketing.spec.ts:11:2 › public indicator bollinger-bands matches the catalog instead of another product
+    [chromium] › tests/all-marketing.spec.ts:11:2 › public indicator vwap matches the catalog instead of another product
+    [chromium] › tests/all-marketing.spec.ts:11:2 › public indicator stochastic matches the catalog instead of another product
+    [chromium] › tests/all-marketing.spec.ts:21:2 › /contact keeps enlarged heading text in its viewport
+    [chromium] › tests/all-marketing.spec.ts:21:2 › /courses/options-trading keeps enlarged heading text in its viewport
+    [chromium] › tests/all-marketing.spec.ts:21:2 › /live-trading-rooms keeps enlarged heading text in its viewport
+    [chromium] › tests/all-marketing.spec.ts:21:2 › /mentorship keeps enlarged heading text in its viewport
+    [chromium] › tests/all-marketing.spec.ts:21:2 › /our-mission keeps enlarged heading text in its viewport
+    [chromium] › tests/all-marketing.spec.ts:33:1 › SPX marketing page owns no second main landmark
+    [chromium] › tests/all-marketing.spec.ts:38:1 › stock index region filter has an accessible name and changes results
+    [chromium] › tests/all-marketing.spec.ts:47:2 › / suppresses continuous animation for reduced motion
+    [chromium] › tests/all-marketing.spec.ts:47:2 › /alerts suppresses continuous animation for reduced motion
+    [chromium] › tests/all-marketing.spec.ts:47:2 › /courses suppresses continuous animation for reduced motion
+    [chromium] › tests/all-marketing.spec.ts:47:2 › /mentorship suppresses continuous animation for reduced motion
+    [chromium] › tests/all-marketing.spec.ts:47:2 › /our-mission suppresses continuous animation for reduced motion
+    [chromium] › tests/all-marketing.spec.ts:47:2 › /live-trading-rooms/day-trading suppresses continuous animation for reduced motion
+Error: ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL
+
+  × "pnpm recursive exec" failed in /Users/billyribeiro/dev/revolution-
+  │ trading-pros/frontend

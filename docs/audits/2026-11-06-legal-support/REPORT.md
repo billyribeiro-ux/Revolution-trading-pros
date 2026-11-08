@@ -1,0 +1,55 @@
+# Legal and support page standardization — 2026-11-06
+
+The six public legal/support routes (`/privacy`, `/terms`, `/refund`, `/disclaimer`, `/cookie-policy`, `/contact`) now share the marketing document layout and typography. This implements the user's requested visual standard. The audit also confirmed and repaired a broken Cookie Settings flow.
+
+## Findings and repairs
+
+| Finding                                                             | Before / reproduction                                                                                                                                                                                                | Final behavior and evidence                                                                                                                                                                                                                                                                                                                                                                    |
+| ------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Inconsistent page presentation                                      | Source defined 720px, 780px and 1000px content containers. At 1280px, H1 sizes were 36px or 40px and weights were 400, 700 or 800; Cookie Policy alone used a centered cyan gradient header and separate background. | `InformationPage.svelte` uses marketing tokens, a shared 52rem reading column, a responsive 2–3.5rem title, 800 weight, Inter, a 1rem/1.8 prose scale, consistent spacing, metadata and focus styles. All six measured desktop titles are 56px, weight 800, line-height 61.6px. This is a requested design consistency repair; the original pages had no axe violations in the sampled states. |
+| Legal/support navigation absent                                     | Readers depended on the global footer to find related policies or support.                                                                                                                                           | Every page has the same six crawlable links in an accessible navigation region and exactly one current-page marker. All six navigation/history and enlarged-heading regressions pass. Shared root breadcrumbs and SEO ownership remain intact.                                                                                                                                                 |
+| Cookie Settings does nothing                                        | Click Cookie Settings on `/cookie-policy`: the store changes, but no dialog appears. Root layout intentionally mounts no consent UI. The original browser regression fails.                                          | The cookie route mounts the existing preferences dialog. No global banner is enabled. Language changes, open/close, rejecting optional cookies and downloading the resulting receipt pass in an isolated browser context.                                                                                                                                                                      |
+| Dialog keyboard focus escapes                                       | The existing modal handled Escape but had no Tab boundary logic despite describing a focus trap.                                                                                                                     | Tab/Shift+Tab wrap inside the dialog; focus returns to the opener. Scroll locking restores the previous body overflow on close/unmount. Motion preference comes from reactive Svelte motion state. Keyboard, narrow-screen enlarged-text and active-dialog axe checks pass.                                                                                                                    |
+| Policy scaffold presented as unfinished implementation instructions | Privacy and Terms displayed `TODO — human copy` and instructions to replace the page, rather than a reader-facing publication status.                                                                                | Both explicitly state that their final policy is pending publication and link to verified support. Existing page-update dates are preserved and identified as page updates; SEO descriptions match the pending status. No final legal terms, rights, jurisdiction, effective date or approval was invented. Existing Refund and Risk Disclaimer body wording is preserved.                     |
+
+The newly working preference flow also exposed a stale cookie declaration: the page only scanned cookies on mount. A controlled browser fixture adds a cookie, changes preferences, and originally fails to display the new declaration row. The route now rescans on the existing consent-change event and unsubscribes on unmount. The regression passes without substituting invented cookie data. A separate history-navigation check confirms that leaving an open dialog restores scrolling and returning does not reopen it; that suspected teardown problem did not reproduce and required no extra repair.
+
+## Evidence and verification
+
+Investigation began with a clean worktree at `5f26b36a4104e8547f6f83f264a5454763bdaccf`. Installed versions: Svelte 5.57.3, Kit 3.1.0, Vite Plus 1.4.0, Playwright Chromium 1.64.1. Baseline and final rendering use the supported production preview on isolated loopback port 4196. The actual Rust public API fixture on 19085 supplies the backend-dependent SEO sources; its PostgreSQL cluster is disposable and its HTTP surface permits public reads only.
+
+[audit.mjs](audit.mjs) records typography, main-content axe, page exceptions, screenshots, widths 320/390/639/640/767/768/1023/1024/1280/1920 and enlarged 200% headings. Font readiness is bounded. This is layout/behavior verification, not a legal compliance review. The baseline paragraph sample may be header metadata; the H1 comparison and reading-column design are the consistency measurements used here.
+
+- [Before measurements](artifacts/before/summary.json), [after measurements](artifacts/after/summary.json), [unchanged live baseline](artifacts/live-before/summary.json).
+- Privacy: [before](artifacts/before/privacy-390.png) / [after](artifacts/after/privacy-390.png).
+- Refund: [before](artifacts/before/refund-1280.png) / [after](artifacts/after/refund-1280.png).
+- Cookie Policy: [before](artifacts/before/cookie-policy-390.png) / [after](artifacts/after/cookie-policy-390.png).
+- Contact: [before](artifacts/before/contact-1280.png) / [after](artifacts/after/contact-1280.png).
+- Other route captures are retained alongside the summaries. Browser test logs are retained under artifacts.
+
+Eight original baseline regressions fail, including the missing preferences dialog; a further controlled test confirms a stale cookie declaration after preference changes; twelve final legal/support regressions pass. An intermediate test mistakenly used an unsupported Playwright `current` role-filter option; it was corrected to inspect the actual `aria-current="page"` attribute without changing the expected behavior. Existing marketing and SEO cases also pass; no thresholds or existing tests were weakened.
+
+Final acceptance: **154 browser cases pass** (12 legal/support, 28 existing marketing and 114 SEO); the exact `pnpm test:seo` command also passes all 114. The final receipt check inspects the downloaded JSON and confirms necessary=true and optional categories=false after Reject All. Text comparison confirms Refund and Risk Disclaimer body text is unchanged. The six-page measurement matrix records zero clipping, exceptions or axe violations; the active dialog also passes axe.
+
+Required gates: `vp check`, `CI=true vp test`, `vp build`, `vp pack`, frontend `check`, `lint`, `test:unit`, `build`, and `pnpm test:seo` pass. Root unit tests: 3,089 passed; frontend: 3,081 passed; 32 pre-existing skips remain. Framework checking reports zero errors/warnings. Svelte MCP analysis reports no issues/suggestions for changed components. Pack's generated dist change was reverted because package source is unchanged. [Verification data](artifacts/verification.json); logs are retained under artifacts. Node's inherited NO_COLOR/FORCE_COLOR notice is a tooling environment notice. Svelte compilation and lint must remain free of warnings.
+
+Reproduce:
+
+```sh
+# Build the actual frontend; start the owned public API fixture for the complete SEO suite.
+bash api/scripts/marketing-fixture.sh
+pnpm --filter revolution-svelte build
+API_BASE_URL=http://127.0.0.1:19085 BACKEND_URL=http://127.0.0.1:19085 pnpm --filter revolution-svelte preview --host 127.0.0.1 --port 4196 --strictPort
+AUDIT_ORIGIN=http://127.0.0.1:4196 AUDIT_LABEL=after node docs/audits/2026-11-06-legal-support/audit.mjs
+FRONTEND_URL=http://127.0.0.1:4196 pnpm --filter revolution-svelte exec playwright test tests/legal-support.spec.ts tests/marketing-pages.spec.ts tests/all-marketing.spec.ts tests/seo --project=chromium
+```
+
+## Scope and limits
+
+Coverage is the six existing public routes, their shared layout, the cookie dialog, Chromium and production output. Authenticated support/account flows, inbox delivery, legal sufficiency and other browsers are not established by this work. Privacy and Terms still require approved final policy content. Existing refund conditions, disclaimer statements, legal/billing/privacy email aliases and their verification status are not redefined by visual standardization. The previously verified support/sales address is preserved. No production account, payment, message or consent change was submitted; cookie preference tests run in isolated local browser contexts.
+
+Git delivery follows the user's earlier authorization for this marketing workstream. The PR and Git history record the final squash merge; this report records pre-merge acceptance.
+
+## Technical references
+
+The implementation follows [Svelte snippets](https://svelte.dev/docs/svelte/snippet), [scoped styles](https://svelte.dev/docs/svelte/scoped-styles) and [SvelteKit accessibility](https://svelte.dev/docs/kit/accessibility). [WAI's modal dialog pattern](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/) supports focus containment/restoration and Escape behavior; [Resize Text](https://www.w3.org/WAI/WCAG22/Understanding/resize-text.html) supports checking 200% text without loss of content or controls. These references establish technical expectations, not legal compliance certification.

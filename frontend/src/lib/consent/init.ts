@@ -17,7 +17,8 @@ import { loadVendorsForConsent } from '#lib/consent/vendor-loader.js';
 import { vendors } from '#lib/consent/vendors/index.js';
 import {
 	initConsentAwareBehaviorTracking,
-	cleanupBehaviorIntegration
+	cleanupBehaviorIntegration,
+	getBehaviorTracker
 } from '#lib/consent/behavior-integration.js';
 import { exportAnalyticsData, trackConsentInteraction } from '#lib/consent/analytics.js';
 import { exportAuditLog } from '#lib/consent/audit-log.js';
@@ -95,7 +96,7 @@ export function initializeConsent(): () => void {
  */
 export function onPageNavigation(): void {
 	if (!browser) return;
-	console.debug('[Consent] Page navigation detected');
+	getBehaviorTracker()?.trackNavigation();
 }
 
 /**

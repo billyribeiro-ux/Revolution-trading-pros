@@ -1,0 +1,14 @@
+note: You are running `vp test` as a Vite+ built-in command. If you meant to run the test npm script, use `vpr test` instead.
+Using secrets defined in .env.local
+
+ RUN  v5.0.5 /Users/billyribeiro/dev/revolution-trading-pros
+
+
+ Test Files  137 passed (137)
+      Tests  3078 passed | 32 skipped (3110)
+   Start at  20:35:17
+   Duration  7.23s (transform 49%, environment 27%, setup 13%, tests 7%, import 3%)
+
+Environment  |revolution-svelte| jsdom was created 136 times · 43.83s total, 27% of tracked time
+             create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)
+             learn more: https://vitest.dev/guide/improving-performance#test-environments

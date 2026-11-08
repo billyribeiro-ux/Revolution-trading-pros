@@ -12,6 +12,7 @@ const eicar = Buffer.from(
 );
 type MediaRecord = {
 	id: number;
+	processing_job_id?: number | null;
 	original_filename: string;
 	url: string | null;
 	path: string;
@@ -176,12 +177,8 @@ test('recurring image worker persists real variants, measured sizes, and deletes
 	});
 	expect(upload.ok(), await upload.text()).toBe(true);
 	const record = ((await upload.json()) as { data: MediaRecord[] }).data[0];
-	const queued = await request.post(`${api}/files/${record.id}/optimize`, {
-		headers,
-		data: { preset: 'balanced' }
-	});
-	expect(queued.status(), await queued.text()).toBe(202);
-	const jobId = ((await queued.json()) as { data: { id: number; media_id: number } }).data.id;
+	const jobId = record.processing_job_id;
+	expect(jobId).toBeGreaterThan(0);
 	let job:
 		| { status: string; error: string | null; original_size: number; optimized_size: number }
 		| undefined;
@@ -277,7 +274,8 @@ test('decode failure retains a retry error and never publishes optimized media',
 	const upload = await request.post(`${api}/upload`, {
 		headers,
 		multipart: {
-			file: { name: `broken-${Date.now()}.png`, mimeType: 'image/png', buffer: original }
+			file: { name: `broken-${Date.now()}.png`, mimeType: 'image/png', buffer: original },
+			optimize: 'false'
 		}
 	});
 	expect(upload.ok(), await upload.text()).toBe(true);
