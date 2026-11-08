@@ -34,6 +34,7 @@ class Observer {
 	}
 }
 it('finalizes one measurement across both hide events and records a measured zero CLS', async () => {
+	history.replaceState({}, '', '/marketing?private_token=secret#private-fragment');
 	vi.stubGlobal('PerformanceObserver', Observer);
 	vi.stubGlobal('performance', { getEntriesByType: () => [] });
 	vi.spyOn(document, 'visibilityState', 'get').mockReturnValue('hidden');
@@ -48,8 +49,22 @@ it('finalizes one measurement across both hide events and records a measured zer
 	await vi.waitFor(() => expect(fetch).toHaveBeenCalledTimes(2));
 	const metrics = fetch.mock.calls.map(([, options]) => {
 		if (typeof options?.body !== 'string') throw new Error('Expected serialized observation');
-		return JSON.parse(options.body) as { metric: string; value: number; id: string };
+		return JSON.parse(options.body) as {
+			metric: string;
+			value: number;
+			id: string;
+			url: string;
+			userAgent?: string;
+			connection?: string;
+			deviceMemory?: number;
+		};
 	});
+	expect(metrics.every((metric) => metric.url === `${location.origin}/marketing`)).toBe(true);
+	expect(
+		metrics.every(
+			(metric) => !('userAgent' in metric || 'connection' in metric || 'deviceMemory' in metric)
+		)
+	).toBe(true);
 	expect(metrics.filter((metric) => metric.metric === 'LCP')).toEqual([
 		expect.objectContaining({ value: 123, id: expect.any(String) })
 	]);

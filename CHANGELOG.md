@@ -27,6 +27,22 @@ All notable changes to this project. Format roughly follows [Keep a Changelog](h
 
 - The package build, TypeScript check, and Vite endpoint tests pass with the installed Svelte 5/Vite 8 stack. Other declared peer combinations and remote development hosts remain untested.
 
+## [Unreleased] — 2026-11-07 — Performance observation lifecycle
+
+### Fixed
+
+- Resume a paused email campaign immediately after its planned time is cleared, instead of reusing the obsolete delivery engine date. Use the PostgreSQL transaction clock for send and resume decisions so small application/database clock differences cannot leave an immediate send scheduled.
+
+### Changed
+
+- Prune first-party performance observations outside the 90-day reporting window in bounded PostgreSQL batches, reusing the existing observation-time index.
+- Stop the unused FPS animation-frame loop from starting on every website page.
+- Send only the path-level URL and fields the backend stores in Web Vitals observations; strip URL queries and fragments in both the browser payload and edge proxy, and omit unused device metadata.
+
+### Validation and limits
+
+- Extended the disposable PostgreSQL performance integration proof with expiry cleanup and the browser metric test with payload minimization. The isolated behavior analytics PostgreSQL proof and two Chromium flows against its disposable Rust API passed. The guarded full email/CRM/member suite passed with loopback providers and owned Redis (427 seconds); it now checks disposable database and provider URLs at startup. The Imagify tarball was installed and converted an image in a separate temporary project. Production ingestion load, abuse controls, and deployment remain to be measured.
+
 ## [Unreleased] — 2026-11-07 — Marketing plugin runtime audit
 
 ### Fixed

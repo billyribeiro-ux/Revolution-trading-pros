@@ -253,6 +253,31 @@ pub async fn run_host_sampler() {
     }
 }
 
+/// Remove old observations in small locked batches to keep ingest responsive.
+pub async fn prune_expired(pool: &sqlx::PgPool) -> Result<u64, sqlx::Error> {
+    sqlx::query("WITH expired AS (SELECT measurement_id,metric FROM performance_samples WHERE observed_at<NOW()-INTERVAL '90 days' ORDER BY observed_at LIMIT 1000 FOR UPDATE SKIP LOCKED) DELETE FROM performance_samples AS sample USING expired WHERE sample.measurement_id=expired.measurement_id AND sample.metric=expired.metric")
+        .execute(pool)
+        .await
+        .map(|result| result.rows_affected())
+}
+
+pub async fn run_retention(pool: sqlx::PgPool) {
+    let mut interval = tokio::time::interval(Duration::from_secs(3600));
+    loop {
+        interval.tick().await;
+        for _ in 0..100 {
+            match prune_expired(&pool).await {
+                Ok(1000) => tokio::time::sleep(Duration::from_millis(25)).await,
+                Ok(_) => break,
+                Err(error) => {
+                    tracing::error!(%error, "Performance retention cleanup failed");
+                    break;
+                }
+            }
+        }
+    }
+}
+
 async fn database(state: &AppState) -> Result<Value, ApiError> {
     let available: bool =
         sqlx::query_scalar("SELECT to_regclass('pg_stat_statements') IS NOT NULL")

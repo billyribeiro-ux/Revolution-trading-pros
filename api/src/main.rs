@@ -117,6 +117,9 @@ async fn main() -> anyhow::Result<()> {
         .map_err(|error| anyhow::anyhow!("MFA storage upgrade failed: {:?}", error))?;
 
     tokio::spawn(revolution_api::routes::performance::run_host_sampler());
+    tokio::spawn(revolution_api::routes::performance::run_retention(
+        state.db.pool.clone(),
+    ));
     tokio::spawn(revolution_api::services::media_jobs::run(state.clone()));
     tokio::spawn(revolution_api::services::crm_webhooks::run(
         state.db.pool.clone(),

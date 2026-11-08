@@ -27,11 +27,10 @@ struct Source {
     segment_id: Option<i64>,
     authoring_config: Value,
     authoring_version: i64,
-    scheduled_at: Option<DateTime<Utc>>,
     has_legacy_activity: bool,
 }
 async fn source(pool: &sqlx::PgPool, id: i64) -> Result<Source, ApiError> {
-    sqlx::query_as("SELECT n.id,n.name,n.subject,n.html_content,n.text_content,n.template_id,n.segment_id,n.authoring_config,n.authoring_version,COALESCE(d.scheduled_at,n.scheduled_at AT TIME ZONE 'UTC') AS scheduled_at,(COALESCE(n.sent_count,0)>0 OR COALESCE(n.open_count,0)>0 OR COALESCE(n.click_count,0)>0 OR COALESCE(n.bounce_count,0)>0 OR COALESCE(n.unsubscribe_count,0)>0 OR n.sent_at IS NOT NULL) AS has_legacy_activity FROM email_campaigns n LEFT JOIN crm_campaigns d ON d.id=n.delivery_campaign_id WHERE n.id=$1").bind(id).fetch_optional(pool).await.map_err(db)?.ok_or_else(||ApiError::not_found("Campaign"))
+    sqlx::query_as("SELECT n.id,n.name,n.subject,n.html_content,n.text_content,n.template_id,n.segment_id,n.authoring_config,n.authoring_version,(COALESCE(n.sent_count,0)>0 OR COALESCE(n.open_count,0)>0 OR COALESCE(n.click_count,0)>0 OR COALESCE(n.bounce_count,0)>0 OR COALESCE(n.unsubscribe_count,0)>0 OR n.sent_at IS NOT NULL) AS has_legacy_activity FROM email_campaigns n WHERE n.id=$1").bind(id).fetch_optional(pool).await.map_err(db)?.ok_or_else(||ApiError::not_found("Campaign"))
 }
 fn audience(source: &Source) -> Value {
     json!({"members":true,"member_segment":source.segment_id,"eligibility":"confirmed_only"})
@@ -58,7 +57,7 @@ pub(super) async fn synchronize(
     id: i64,
     engine: i64,
 ) -> Result<(), ApiError> {
-    let source:Source=sqlx::query_as("SELECT n.id,n.name,n.subject,n.html_content,n.text_content,n.template_id,n.segment_id,n.authoring_config,n.authoring_version,COALESCE(d.scheduled_at,n.scheduled_at AT TIME ZONE 'UTC') AS scheduled_at,(COALESCE(n.sent_count,0)>0 OR COALESCE(n.open_count,0)>0 OR COALESCE(n.click_count,0)>0 OR COALESCE(n.bounce_count,0)>0 OR COALESCE(n.unsubscribe_count,0)>0 OR n.sent_at IS NOT NULL) AS has_legacy_activity FROM email_campaigns n LEFT JOIN crm_campaigns d ON d.id=n.delivery_campaign_id WHERE n.id=$1").bind(id).fetch_one(&mut **tx).await.map_err(db)?;
+    let source:Source=sqlx::query_as("SELECT n.id,n.name,n.subject,n.html_content,n.text_content,n.template_id,n.segment_id,n.authoring_config,n.authoring_version,(COALESCE(n.sent_count,0)>0 OR COALESCE(n.open_count,0)>0 OR COALESCE(n.click_count,0)>0 OR COALESCE(n.bounce_count,0)>0 OR COALESCE(n.unsubscribe_count,0)>0 OR n.sent_at IS NOT NULL) AS has_legacy_activity FROM email_campaigns n WHERE n.id=$1").bind(id).fetch_one(&mut **tx).await.map_err(db)?;
     let config: Config = serde_json::from_value(source.authoring_config.clone())
         .map_err(|_| ApiError::database_error("Stored campaign configuration is invalid"))?;
     let (body, text, kind) = content(&source);
@@ -132,9 +131,14 @@ async fn submit(
     mode: Submission,
 ) -> Result<Value, ApiError> {
     let prepared = prepare(state, id).await?;
+    let mut tx = state.db.pool.begin().await.map_err(db)?;
+    let database_now: DateTime<Utc> = sqlx::query_scalar("SELECT NOW()")
+        .fetch_one(&mut *tx)
+        .await
+        .map_err(db)?;
     let due = match mode {
         Submission::Schedule(due) => {
-            if due <= Utc::now() {
+            if due <= database_now {
                 return Err(invalid("Schedule must be in the future"));
             }
             due
@@ -142,12 +146,10 @@ async fn submit(
         Submission::Resume => prepared
             .config
             .planned_at
-            .or(prepared.source.scheduled_at)
-            .unwrap_or_else(Utc::now)
-            .max(Utc::now()),
-        Submission::Send => Utc::now(),
+            .unwrap_or(database_now)
+            .max(database_now),
+        Submission::Send => database_now,
     };
-    let mut tx = state.db.pool.begin().await.map_err(db)?;
     let (_, existing, status) = lock_row(&mut tx, id).await?;
     let version: i64 =
         sqlx::query_scalar("SELECT authoring_version FROM email_campaigns WHERE id=$1")
