@@ -39,10 +39,21 @@ export const performanceProxy: RequestHandler = async ({ request, fetch }) => {
 			'Content-Type': 'application/json',
 			Accept: 'application/json'
 		});
-		for (const name of ['referer', 'user-agent']) {
-			const value = request.headers.get(name);
-			if (value) forwarded.set(name, value);
+		const referer = request.headers.get('referer');
+		if (referer) {
+			try {
+				const url = new URL(referer);
+				if (url.protocol === 'http:' || url.protocol === 'https:') {
+					url.search = '';
+					url.hash = '';
+					forwarded.set('referer', url.toString());
+				}
+			} catch {
+				// Invalid referrers are not needed for metric storage.
+			}
 		}
+		const userAgent = request.headers.get('user-agent');
+		if (userAgent) forwarded.set('user-agent', userAgent);
 		const response = await fetch(`${API_ROOT}/api/analytics/web-vitals`, {
 			method: 'POST',
 			headers: forwarded,

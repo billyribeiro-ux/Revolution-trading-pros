@@ -119,16 +119,10 @@ async function reportMetric(metric: WebVitalMetric, options: WebVitalsOptions): 
 				{
 					metric: metric.name,
 					value: metric.value,
-					rating: metric.rating,
-					delta: metric.delta,
 					id: metric.id,
-					url: window.location.href,
+					url: window.location.origin + window.location.pathname,
 					timestamp: Date.now(),
-					navigationType: metric.navigationType,
-					userAgent: navigator.userAgent,
-					connection: (navigator as Navigator & { connection?: { effectiveType?: string } })
-						.connection?.effectiveType,
-					deviceMemory: (navigator as Navigator & { deviceMemory?: number }).deviceMemory
+					navigationType: metric.navigationType
 				},
 				options.headers,
 				options.signal

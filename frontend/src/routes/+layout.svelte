@@ -43,7 +43,6 @@
 	import { afterNavigate } from '$app/navigation';
 	import { page } from '$app/state';
 	import { registerServiceWorker } from '#lib/utils/registerServiceWorker.js';
-	import { initPerformanceMonitoring } from '#lib/utils/performance.js';
 	import { isAdminUser } from '#lib/stores/auth.svelte.js';
 	import { initializeAuth } from '#lib/api/auth.js';
 	import type { Snippet } from 'svelte';
@@ -200,12 +199,6 @@
 			registerServiceWorker();
 		} catch (err) {
 			logger.error('[Layout] Service worker registration failed (non-critical):', err);
-		}
-
-		try {
-			initPerformanceMonitoring();
-		} catch (err) {
-			logger.error('[Layout] Performance monitoring init failed (non-critical):', err);
 		}
 
 		let cleanupConsent: (() => void) | undefined;

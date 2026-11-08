@@ -54,6 +54,27 @@ pub(super) async fn proof(api: &Router, pool: &PgPool, tokens: &[String]) {
         .unwrap();
     assert_eq!(stored.len(), 4);
     assert!(stored.iter().all(|value| value == url));
+    sqlx::query("INSERT INTO performance_samples(measurement_id,metric,value,device,observed_at,received_at) VALUES('performance-expired','LCP',1000,'desktop',NOW()-INTERVAL '91 days',NOW()-INTERVAL '91 days')")
+        .execute(pool)
+        .await
+        .unwrap();
+    assert_eq!(
+        revolution_api::routes::performance::prune_expired(pool)
+            .await
+            .unwrap(),
+        1
+    );
+    assert_eq!(
+        revolution_api::routes::performance::prune_expired(pool)
+            .await
+            .unwrap(),
+        0
+    );
+    let retained: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM performance_samples")
+        .fetch_one(pool)
+        .await
+        .unwrap();
+    assert_eq!(retained, 4);
     let id = json!({"name":"CLS","value":0,"id":"performance-cls","timestamp":now,"url":url,"userAgent":"Fixture Mobile"});
     assert_eq!(
         request(api, "POST", "/api/analytics/performance", None, id)

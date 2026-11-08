@@ -1396,6 +1396,11 @@ async fn transactional_receipts_newsletter_and_email_jobs_use_real_adapter_ackno
     let parsed = reqwest::Url::parse(&url).unwrap();
     assert_eq!(parsed.host_str(), Some("127.0.0.1"));
     assert!(parsed.path().starts_with("/admin_move_verify"));
+    assert_eq!(
+        std::env::var("DATABASE_URL").as_deref(),
+        Ok(url.as_str()),
+        "Nested fixture connections must use the same disposable database"
+    );
     assert_eq!(std::env::var("ENVIRONMENT").as_deref(), Ok("development"));
     assert_eq!(
         std::env::var("POSTMARK_TOKEN").as_deref(),
@@ -1417,6 +1422,11 @@ async fn transactional_receipts_newsletter_and_email_jobs_use_real_adapter_ackno
     assert!(endpoint.query().is_none());
     assert!(endpoint.fragment().is_none());
     assert!(endpoint.username().is_empty());
+    assert_eq!(
+        std::env::var("CONNECTION_TEST_BASE_URL").as_deref(),
+        Ok("http://127.0.0.1:19021"),
+        "Only the disposable connection provider adapter may be used"
+    );
     // Keep real application failures visible in the retained fixture log. The
     // guards above establish this process has only explicit local test inputs.
     if let Err(error) = tracing_subscriber::fmt()

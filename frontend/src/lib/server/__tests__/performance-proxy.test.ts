@@ -9,7 +9,7 @@ function event(body: string, fetch: typeof globalThis.fetch) {
 			body,
 			headers: {
 				'Content-Type': 'text/plain',
-				Referer: 'http://localhost/fixture',
+				Referer: 'http://localhost/fixture?private=secret#fragment',
 				'User-Agent': 'Fixture',
 				Authorization: 'Bearer must-not-be-forwarded',
 				Cookie: 'must-not-be-forwarded'
