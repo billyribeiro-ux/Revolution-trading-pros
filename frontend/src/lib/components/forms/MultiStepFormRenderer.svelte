@@ -131,7 +131,7 @@
 		// Initialize form data with default values
 		if (form.fields) {
 			form.fields.forEach((field) => {
-				if (field.default_value) {
+				if (field.default_value != null) {
 					formData[field.name] = field.default_value;
 				}
 			});
@@ -452,7 +452,7 @@
 				setVisitedSteps([0]);
 				if (form.fields) {
 					form.fields.forEach((field) => {
-						if (field.default_value) {
+						if (field.default_value != null) {
 							formData[field.name] = field.default_value;
 						}
 					});

@@ -1314,10 +1314,10 @@ class FormsService {
 	): Promise<{ valid: boolean; errors: string[] }> {
 		const errors: string[] = [];
 
-		// Required validation — `null`, `undefined`, `false`, `0`, `""`, and `[]`
-		// all fail the truthiness check. For arrays we additionally require
-		// at least one element.
-		const isEmpty = !value || (Array.isArray(value) && value.length === 0);
+		const isEmpty =
+			value == null ||
+			(typeof value === 'string' && value.trim().length === 0) ||
+			(Array.isArray(value) && value.length === 0);
 		if (field.required && isEmpty) {
 			errors.push(`${field.label} is required`);
 		}
@@ -1326,10 +1326,10 @@ class FormsService {
 		if (field.validation) {
 			// Min/Max length
 			if (typeof value === 'string') {
-				if (field.validation.min_length && value.length < field.validation.min_length) {
+				if (field.validation.min_length != null && value.length < field.validation.min_length) {
 					errors.push(`${field.label} must be at least ${field.validation.min_length} characters`);
 				}
-				if (field.validation.max_length && value.length > field.validation.max_length) {
+				if (field.validation.max_length != null && value.length > field.validation.max_length) {
 					errors.push(
 						`${field.label} must be no more than ${field.validation.max_length} characters`
 					);
@@ -1341,9 +1341,13 @@ class FormsService {
 			// stringifying to `"undefined"` (a latent bug); now we only run
 			// the regex when the input is genuinely a string.
 			if (field.validation.pattern && typeof value === 'string') {
-				const regex = new RegExp(field.validation.pattern);
-				if (!regex.test(value)) {
-					errors.push(field.validation.pattern_message || `${field.label} format is invalid`);
+				try {
+					const regex = new RegExp(field.validation.pattern);
+					if (!regex.test(value)) {
+						errors.push(field.validation.pattern_message || `${field.label} format is invalid`);
+					}
+				} catch {
+					errors.push(`${field.label} validation pattern is invalid`);
 				}
 			}
 
@@ -1359,11 +1363,13 @@ class FormsService {
 						}
 					);
 
-					if (!response.valid && response.message) {
-						errors.push(response.message);
+					if (response.valid !== true) {
+						const message = typeof response.message === 'string' ? response.message.trim() : '';
+						errors.push(message || `${field.label} could not be validated`);
 					}
 				} catch (error) {
 					logger.error('[FormsService] Async validation failed', { error });
+					errors.push(`${field.label} could not be validated`);
 				}
 			}
 		}

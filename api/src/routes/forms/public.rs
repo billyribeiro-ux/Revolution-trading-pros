@@ -399,9 +399,13 @@ fn validate_form_submission(
             let validation = field.get("validation");
 
             let value = data.get(field_name);
-            let value_str = value.and_then(|v| v.as_str()).unwrap_or("");
-            let is_empty =
-                value.is_none() || value_str.is_empty() || value.is_some_and(|v| v.is_null());
+            let value_str = value.and_then(serde_json::Value::as_str);
+            let is_empty = match value {
+                None | Some(serde_json::Value::Null) => true,
+                Some(serde_json::Value::String(text)) => text.trim().is_empty(),
+                Some(serde_json::Value::Array(items)) => items.is_empty(),
+                _ => false,
+            };
 
             // Required field validation
             if required && is_empty {
@@ -417,10 +421,21 @@ fn validate_form_submission(
                 continue;
             }
 
+            if validation
+                .and_then(|rules| rules.get("async"))
+                .and_then(serde_json::Value::as_bool)
+                == Some(true)
+            {
+                errors
+                    .entry(field_name.to_string())
+                    .or_default()
+                    .push(format!("{field_label} could not be validated"));
+                continue;
+            }
+
             // Email validation
             if field_type == "email"
-                && !value_str.is_empty()
-                && (!value_str.contains('@') || !value_str.contains('.'))
+                && !value_str.is_some_and(|text| text.contains('@') && text.contains('.'))
             {
                 errors
                     .entry(field_name.to_string())
@@ -428,51 +443,74 @@ fn validate_form_submission(
                     .push(format!("{field_label} must be a valid email address"));
             }
 
-            // Min/max length validation
+            let number = if field_type == "number" {
+                value
+                    .and_then(serde_json::Value::as_f64)
+                    .or_else(|| value_str.and_then(|text| text.parse::<f64>().ok()))
+                    .filter(|number| number.is_finite())
+            } else {
+                None
+            };
+            if field_type == "number" && number.is_none() {
+                errors
+                    .entry(field_name.to_string())
+                    .or_default()
+                    .push(format!("{field_label} must be a valid number"));
+                continue;
+            }
+
             if let Some(validation) = validation {
-                if let Some(min_length) = validation.get("min_length").and_then(|v| v.as_u64())
-                    && (value_str.len() as u64) < min_length
-                {
-                    errors
-                        .entry(field_name.to_string())
-                        .or_default()
-                        .push(format!(
-                            "{field_label} must be at least {min_length} characters"
-                        ));
+                if let Some(text) = value_str {
+                    let length = text.encode_utf16().count() as u64;
+                    if let Some(min_length) = validation.get("min_length").and_then(|v| v.as_u64())
+                        && length < min_length
+                    {
+                        errors
+                            .entry(field_name.to_string())
+                            .or_default()
+                            .push(format!(
+                                "{field_label} must be at least {min_length} characters"
+                            ));
+                    }
+
+                    if let Some(max_length) = validation.get("max_length").and_then(|v| v.as_u64())
+                        && length > max_length
+                    {
+                        errors
+                            .entry(field_name.to_string())
+                            .or_default()
+                            .push(format!(
+                                "{field_label} must be no more than {max_length} characters"
+                            ));
+                    }
+
+                    if let Some(pattern) = validation.get("pattern").and_then(|v| v.as_str()) {
+                        match regex::RegexBuilder::new(pattern)
+                            .size_limit(1 << 16)
+                            .build()
+                        {
+                            Ok(regex) if !regex.is_match(text) => {
+                                let message = validation
+                                    .get("pattern_message")
+                                    .and_then(|v| v.as_str())
+                                    .unwrap_or("Invalid format");
+                                errors
+                                    .entry(field_name.to_string())
+                                    .or_default()
+                                    .push(message.to_string());
+                            }
+                            Err(_) => {
+                                errors
+                                    .entry(field_name.to_string())
+                                    .or_default()
+                                    .push(format!("{field_label} validation pattern is invalid"));
+                            }
+                            _ => {}
+                        }
+                    }
                 }
 
-                if let Some(max_length) = validation.get("max_length").and_then(|v| v.as_u64())
-                    && (value_str.len() as u64) > max_length
-                {
-                    errors
-                        .entry(field_name.to_string())
-                        .or_default()
-                        .push(format!(
-                            "{field_label} must be no more than {max_length} characters"
-                        ));
-                }
-
-                // Pattern validation
-                if let Some(pattern) = validation.get("pattern").and_then(|v| v.as_str())
-                    && let Ok(regex) = regex::RegexBuilder::new(pattern)
-                        .size_limit(1 << 16)
-                        .build()
-                    && !regex.is_match(value_str)
-                {
-                    let message = validation
-                        .get("pattern_message")
-                        .and_then(|v| v.as_str())
-                        .unwrap_or("Invalid format");
-                    errors
-                        .entry(field_name.to_string())
-                        .or_default()
-                        .push(message.to_string());
-                }
-
-                // Number validation (min/max)
-                if field_type == "number"
-                    && let Ok(num_value) = value_str.parse::<f64>()
-                {
+                if let Some(num_value) = number {
                     if let Some(min) = validation.get("min").and_then(|v| v.as_f64())
                         && num_value < min
                     {
@@ -586,4 +624,57 @@ pub(super) async fn track_form_view(
     .ok();
 
     Ok(Json(json!({"success": true})))
+}
+
+#[cfg(test)]
+mod validation_tests {
+    use super::validate_form_submission;
+    use serde_json::json;
+
+    #[test]
+    fn required_fields_accept_zero_and_false_but_reject_empty_values() {
+        let fields = json!([
+            {"name":"quantity","label":"Quantity","field_type":"number","required":true},
+            {"name":"enabled","label":"Enabled","field_type":"toggle","required":true},
+            {"name":"choices","label":"Choices","field_type":"multiselect","required":true},
+            {"name":"comment","label":"Comment","field_type":"text","required":true}
+        ]);
+        let errors = validate_form_submission(
+            &fields,
+            &json!({"quantity":0,"enabled":false,"choices":[],"comment":"  "}),
+        );
+        assert!(!errors.contains_key("quantity"));
+        assert!(!errors.contains_key("enabled"));
+        assert_eq!(errors["choices"], ["Choices is required"]);
+        assert_eq!(errors["comment"], ["Comment is required"]);
+    }
+
+    #[test]
+    fn numeric_bounds_and_invalid_patterns_fail_closed() {
+        let fields = json!([
+            {"name":"quantity","label":"Quantity","field_type":"number","validation":{"min":1}},
+            {"name":"invalid_number","label":"Count","field_type":"number"},
+            {"name":"email","label":"Email","field_type":"email"},
+            {"name":"pattern","label":"Code","field_type":"text","validation":{"pattern":"["}},
+            {"name":"emoji","label":"Emoji","field_type":"text","validation":{"max_length":1}}
+        ]);
+        let errors = validate_form_submission(
+            &fields,
+            &json!({"quantity":0,"invalid_number":"oops","email":false,"pattern":"abc","emoji":"😀"}),
+        );
+        assert_eq!(errors["quantity"], ["Quantity must be at least 1"]);
+        assert_eq!(errors["invalid_number"], ["Count must be a valid number"]);
+        assert_eq!(errors["email"], ["Email must be a valid email address"]);
+        assert_eq!(errors["pattern"], ["Code validation pattern is invalid"]);
+        assert_eq!(errors["emoji"], ["Emoji must be no more than 1 characters"]);
+    }
+
+    #[test]
+    fn unsupported_async_policy_cannot_be_bypassed_by_direct_submission() {
+        let fields = json!([
+            {"name":"code","label":"Code","field_type":"text","validation":{"async":true}}
+        ]);
+        let errors = validate_form_submission(&fields, &json!({"code":"unverified"}));
+        assert_eq!(errors["code"], ["Code could not be validated"]);
+    }
 }
